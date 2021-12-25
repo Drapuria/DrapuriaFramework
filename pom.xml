@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>net.drapuria.framework</groupId>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-RELEASE</version>
+    <modules>
+        <module>core</module>
+        <module>bukkit</module>
+    </modules>
+
+    <distributionManagement>
+        <repository>
+            <id>vantrex-nexus</id>
+            <name>DrapuriaFramework</name>
+            <url>http://maven.vantrex.de/repository/maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>vantrex-nexus</id>
+            <name>DrapuriaFramework</name>
+            <url>http://maven.vantrex.de/repository/maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>vantrex-nexus</id>
+            <name>vantrex-nexus</name>
+            <url>http://maven.vantrex.de/repository/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <!-- Imanity Repository -->
+        <repository>
+            <id>imanity-libraries</id>
+            <url>https://maven.imanity.dev/repository/imanity-libraries</url>
+        </repository>
+    </repositories>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+</project>

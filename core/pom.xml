@@ -15,7 +15,7 @@
         <module>core-misc</module>
         <module>core-common</module>
         <module>core-services</module>
-        <module>core-module</module>
+        <module>core-modules</module>
     </modules>
 
     <properties>

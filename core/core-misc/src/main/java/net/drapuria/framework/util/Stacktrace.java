@@ -10,7 +10,7 @@ import java.io.StringWriter;
 @UtilityClass
 public class Stacktrace {
 
-    private static final Logger LOGGER = LogManager.getLogger("ImanityFramework-Error");
+    private static final Logger LOGGER = LogManager.getLogger("DrapuriaFramework-Error");
 
     public void print(Throwable throwable) {
         LOGGER.error("An error occurs! : " + getStacktrace(throwable));

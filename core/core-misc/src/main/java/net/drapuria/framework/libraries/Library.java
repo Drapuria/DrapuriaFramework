@@ -12,19 +12,19 @@ import java.util.List;
 
 @Getter
 public class Library {
-    public static final String IMANITY_LIB_PACKAGE = "net.drapuria.framework.libs.";
+    public static final String DRAPURIA_LIB_PACKAGE = "net.drapuria.framework.libs.";
 
     public static Library REDISSON = new Library(
             "org{}redisson",
             "redisson-all", // Include all
             "3.13.6",
             "3YN36wajaTShvnJVRh7Q/SyH7HhsZhAIjqxm1vvqQYM=",
-            new Relocate("io{}netty", IMANITY_LIB_PACKAGE + "redisson.netty"),
-            new Relocate("org{}jboss{}marshalling", IMANITY_LIB_PACKAGE + "redisson.marshalling"),
-            new Relocate("org{}xerial{}snappy", IMANITY_LIB_PACKAGE + "redisson.snappy"),
-            new Relocate("org{}yaml", IMANITY_LIB_PACKAGE + "redisson.yaml"),
-            new Relocate("net{}bytebuddy", IMANITY_LIB_PACKAGE + "redisson.bytebuddy"),
-            new Relocate("com{}fasterxml{}jackson", IMANITY_LIB_PACKAGE + "redisson.jackson")
+            new Relocate("io{}netty", DRAPURIA_LIB_PACKAGE + "redisson.netty"),
+            new Relocate("org{}jboss{}marshalling", DRAPURIA_LIB_PACKAGE + "redisson.marshalling"),
+            new Relocate("org{}xerial{}snappy", DRAPURIA_LIB_PACKAGE + "redisson.snappy"),
+            new Relocate("org{}yaml", DRAPURIA_LIB_PACKAGE + "redisson.yaml"),
+            new Relocate("net{}bytebuddy", DRAPURIA_LIB_PACKAGE + "redisson.bytebuddy"),
+            new Relocate("com{}fasterxml{}jackson", DRAPURIA_LIB_PACKAGE + "redisson.jackson")
     ),
     YAML = new Library(
             "org{}yaml",
@@ -55,7 +55,7 @@ public class Library {
             "caffeine",
             "2.9.0",
             "VFMotEO3XLbTHfRKfL3m36GlN72E/dzRFH9B5BJiX2o=",
-            new Relocate("com{}github{}ben-manes{}caffeine", IMANITY_LIB_PACKAGE + "caffeine")
+            new Relocate("com{}github{}ben-manes{}caffeine", DRAPURIA_LIB_PACKAGE + "caffeine")
     ),
     GUAVA = new Library(
             "com{}google{}guava",
@@ -90,28 +90,28 @@ public class Library {
                     "mariadb-java-client",
                     "2.7.0",
                     "ABURDun85Q01kf119r4yjDtl5ju9Fg9uV2nXyU3SEdw=",
-            new Relocate("org{}mariadb{}jdbc", IMANITY_LIB_PACKAGE + "mariadb")
+            new Relocate("org{}mariadb{}jdbc", DRAPURIA_LIB_PACKAGE + "mariadb")
     ),
     MYSQL_DRIVER = new Library(
             "mysql",
                     "mysql-connector-java",
                     "8.0.22",
                     "UBne+9EjFilel6bojyqbB/EYNFpOmCcQu6Iy5JmyL08=",
-            new Relocate("com{}mysql", IMANITY_LIB_PACKAGE + "mysql")
+            new Relocate("com{}mysql", DRAPURIA_LIB_PACKAGE + "mysql")
     ),
     POSTGRESQL_DRIVER = new Library(
             "org{}postgresql",
                     "postgresql",
                     "9.4.1212",
                     "DLKhWL4xrPIY4KThjI89usaKO8NIBkaHc/xECUsMNl0=",
-            new Relocate("org{}postgresql", IMANITY_LIB_PACKAGE + "postgresql")
+            new Relocate("org{}postgresql", DRAPURIA_LIB_PACKAGE + "postgresql")
     ),
     HIKARI = new Library(
             "com{}zaxxer",
                     "HikariCP",
                     "3.4.5",
-                    "i3MvlHBXDUqEHcHvbIJrWGl4sluoMHEv8fpZ3idd+mE=",
-            new Relocate("com{}zaxxer{}hikari", IMANITY_LIB_PACKAGE + "hikari")
+                    "i3MvlHBXDUqEHcHvbIJrWGl4sluoMHEv8fpZ3idd+mE="
+         //   new Relocate("com{}zaxxer{}hikari", DRAPURIA_LIB_PACKAGE + "hikari")
     ),
     SPRING_CORE = new Library(
             "org.springframework",

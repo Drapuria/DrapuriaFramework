@@ -1,8 +1,5 @@
 package net.drapuria.framework;
 
-
-
-
 public class DrapuriaInstanceFactory {
 
     public static Object createInstanceOf(Class<?> type) {

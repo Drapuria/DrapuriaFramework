@@ -6,22 +6,30 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.impl.*;
+import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
 import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.Menu;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
+import net.drapuria.framework.module.service.ModuleService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.services.ComponentRegistry;
 import net.drapuria.framework.util.FastRandom;
+import org.apache.http.util.Asserts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.helpers.Assert;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * The Bukkit Framework Main class
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Drapuria {
 
@@ -36,13 +44,21 @@ public class Drapuria {
         PluginManager.initialize(new BukkitPluginHandler());
     }
 
+    /**
+     * @param plugin The BukkitPlugin managing this framework
+     */
     public static void init(Plugin plugin) {
+        Asserts.check(Drapuria.PLUGIN == null, "Drapuria already initiated.");
         Drapuria.PLUGIN = plugin;
         // CLASS LOADER
         Drapuria.CLASS_LOADER = new PluginClassLoader(plugin.getClass().getClassLoader());
         RANDOM = new FastRandom();
         SpigotUtil.init();
         Drapuria.initCommon();
+        final ModuleService moduleService = (ModuleService) DrapuriaCommon.BEAN_CONTEXT.getBean(ModuleService.class);
+        moduleService.registerScanner(PluginDependenciesScanner.class);
+        // load internal modules (modules managed by the framework)
+        DrapuriaCommon.TASK_SCHEDULER.runSync(moduleService::loadInternalModules);
     }
 
     @SneakyThrows

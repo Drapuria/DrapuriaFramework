@@ -15,8 +15,8 @@ public @interface ModuleData {
 
     String version();
 
-    String[] description() default "";
+    String[] description() default {};
 
-    String[] moduleDependencies() default "";
+    String[] moduleDependencies() default {};
 
 }

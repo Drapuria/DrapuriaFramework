@@ -37,6 +37,7 @@ public final class DrapuriaCommon {
 
             Library.BSON,
             Library.CAFFEINE,
+            Library.GSON,
 
             // Spring
             Library.SPRING_CORE,

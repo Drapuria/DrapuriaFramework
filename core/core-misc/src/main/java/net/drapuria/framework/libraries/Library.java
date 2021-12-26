@@ -144,6 +144,12 @@ public class Library {
                     "jar-relocator",
                     "1.4",
                     "1RsiF3BiVztjlfTA+svDCuoDSGFuSpTZYHvUK8yBx8I="
+    ),
+    GSON = new Library(
+            "com.google.code.gson",
+            "gson",
+            "2.8.9",
+            null
     );
 
     private final String mavenRepoPath;

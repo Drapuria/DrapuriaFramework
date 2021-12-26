@@ -6,14 +6,17 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.impl.*;
+import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
 import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.Menu;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
+import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.module.service.ModuleService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
+import net.drapuria.framework.services.Autowired;
 import net.drapuria.framework.services.ComponentRegistry;
 import net.drapuria.framework.util.FastRandom;
 import org.apache.http.util.Asserts;
@@ -40,6 +43,10 @@ public class Drapuria {
     public static PluginClassLoader CLASS_LOADER;
     public static boolean SHUTTING_DOWN = false;
 
+    @Autowired
+    public static CommandService getCommandService;
+    public static BukkitCommandProvider getCommandProvider;
+
     public static void preInit() {
         PluginManager.initialize(new BukkitPluginHandler());
     }
@@ -49,12 +56,17 @@ public class Drapuria {
      */
     public static void init(Plugin plugin) {
         Asserts.check(Drapuria.PLUGIN == null, "Drapuria already initiated.");
+
         Drapuria.PLUGIN = plugin;
-        // CLASS LOADER
         Drapuria.CLASS_LOADER = new PluginClassLoader(plugin.getClass().getClassLoader());
-        RANDOM = new FastRandom();
+        Drapuria.RANDOM = new FastRandom();
+
         SpigotUtil.init();
         Drapuria.initCommon();
+
+        getCommandService.registerCommandProvider(new BukkitCommandProvider(getCommandService));
+        getCommandProvider = (BukkitCommandProvider) getCommandService.getCommandProvider();
+
         final ModuleService moduleService = (ModuleService) DrapuriaCommon.BEAN_CONTEXT.getBean(ModuleService.class);
         moduleService.registerScanner(PluginDependenciesScanner.class);
         // load internal modules (modules managed by the framework)

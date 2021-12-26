@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.impl.module.classloader;
+package net.drapuria.framework.bukkit.impl.module.loader;
 
 import net.drapuria.framework.bukkit.impl.module.reflection.ModuleReflectionHelper;
 import net.drapuria.framework.module.classloader.ModuleClassLoader;

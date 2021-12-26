@@ -562,7 +562,6 @@ public class BeanContext {
                                 removeIterator.remove();
                                 break search;
                             case SUB_DISABLE:
-                                System.out.println(beanDetails.getName());
                                 removeIterator.remove();
                                 break search;
                             case SUB:

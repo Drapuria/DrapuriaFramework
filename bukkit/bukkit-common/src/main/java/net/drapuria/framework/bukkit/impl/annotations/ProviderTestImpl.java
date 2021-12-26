@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.impl.annotation;
+package net.drapuria.framework.bukkit.impl.annotations;
 
 
 import net.drapuria.framework.bukkit.impl.test.ImplementationTest;

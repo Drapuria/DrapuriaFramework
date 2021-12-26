@@ -8,7 +8,6 @@ import net.drapuria.framework.module.scanner.data.EnvironmentScanMissingDependen
 import net.drapuria.framework.module.scanner.data.MissingDependencyData;
 import net.drapuria.framework.module.service.ModuleService;
 import org.bukkit.Bukkit;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.Plugin;
 
 import java.util.HashSet;

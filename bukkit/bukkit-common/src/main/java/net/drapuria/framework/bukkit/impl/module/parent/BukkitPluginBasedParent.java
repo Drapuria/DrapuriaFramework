@@ -2,7 +2,7 @@ package net.drapuria.framework.bukkit.impl.module.parent;
 
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.impl.module.BukkitModule;
-import net.drapuria.framework.bukkit.impl.module.classloader.BukkitModuleClassLoader;
+import net.drapuria.framework.bukkit.impl.module.loader.BukkitModuleClassLoader;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;
 import net.drapuria.framework.module.Module;
 import net.drapuria.framework.module.annotations.ModuleData;

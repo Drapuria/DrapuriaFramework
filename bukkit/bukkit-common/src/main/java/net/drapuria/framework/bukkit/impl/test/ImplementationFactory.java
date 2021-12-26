@@ -1,8 +1,7 @@
 package net.drapuria.framework.bukkit.impl.test;
 
 
-import net.drapuria.framework.bukkit.impl.annotation.ProviderTestImpl;
-import net.drapuria.framework.bukkit.impl.test.ImplementationTest;
+import net.drapuria.framework.bukkit.impl.annotations.ProviderTestImpl;
 
 import javax.annotation.Nullable;
 import java.util.Map;

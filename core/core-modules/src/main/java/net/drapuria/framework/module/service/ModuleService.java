@@ -205,7 +205,6 @@ public class ModuleService {
     }
 
     private void unloadModules() {
-        System.out.println("repository size: " + repositories.size());
         globalModuleRepository.getModules().forEach(module -> unloadModule(module.getName()));
     }
 
@@ -225,7 +224,7 @@ public class ModuleService {
 
     private void addModuleToRepository(ModuleRepository<?> repository, ModuleAdapter adapter) {
         if (!this.repositories.containsKey(adapter.getModule().getModuleParent())) {
-            return;
+            this.repositories.put(adapter.getModule().getModuleParent(), repository);
         }
         this.repositories.get(adapter.getModule().getModuleParent()).addModule(adapter);
     }

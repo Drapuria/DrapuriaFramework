@@ -5,9 +5,12 @@ import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.command.FrameworkCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitCommandMeta> {
@@ -26,34 +29,33 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 execute(player);
             return;
         }
-        String baseCommandInput = arguments[0];
-        BukkitSubCommandMeta subCommandMeta = this.commandMeta.getSubCommandMeta(baseCommandInput);
-
-        if (subCommandMeta == null) {
-            player.sendMessage(generateDefaultUsage(null, baseCommandInput));
-            return;
+        final String cmdLine = Strings.join(arguments, " ");
+        final StringBuilder actualCommand = new StringBuilder();
+        Map<BukkitSubCommandMeta, String[]> objects = new HashMap<>();
+        for (final String argument : arguments) {
+            if (actualCommand.length() > 0)
+                actualCommand.append(" ");
+            actualCommand.append(argument);
+            BukkitSubCommandMeta subCommandMeta = this.commandMeta.getSubCommandMeta(actualCommand.toString());
+            if (subCommandMeta != null) {
+                String[] array = cmdLine.replaceFirst(actualCommand.toString(), "").split(" ");
+                objects.put(subCommandMeta, array);
+            }
         }
 
-        String permissionString = subCommandMeta.getCommandPermission();
-
-        if (!player.hasPermission(permissionString)) {
-            player.sendMessage(this.generateDefaultPermission());
-            return;
-        }
-        StringBuilder builder = new StringBuilder();
-
-        for (String args : arguments) {
-            builder.append(args);
-
-            String[] array = Arrays.copyOfRange(arguments, 1, arguments.length);
-            if (!this.commandMeta.getSubCommandMeta(builder.toString()).execute(player, array))
-                player.sendMessage(generateDefaultUsage(subCommandMeta, baseCommandInput));
-            break;
+        if (objects.isEmpty()) {
+            if (this.commandMeta.isUseUnlySubCommands())
+                player.sendMessage(generateDefaultUsage(null, ""));
+            else
+                execute(player);
+        } else {
+            objects.entrySet().stream().max(Comparator.comparingInt(value -> value.getValue().length)).ifPresent(entry -> {
+                entry.getKey().execute(player, entry.getValue());
+            });
         }
     }
 
-    public void execute(Player player) {
-    }
+    public void execute(Player player) { }
 
     @Override
     public BukkitCommandMeta getCommandMeta() {

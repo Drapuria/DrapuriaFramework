@@ -3,6 +3,8 @@ package net.drapuria.framework.bukkit.impl.command;
 import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
+import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
+import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
@@ -17,11 +19,12 @@ import java.util.*;
  * Credits to https://github.com/pleek3/minecraft-core - We worked on his CommandMap/Command executor countless hours via discord and he gave
  * me permissions to use it as well.
  * As you might see the structure of the command executor is also similar, but i think that´s cool!
- *
  */
 public class DrapuriaCommandMap extends SimpleCommandMap {
 
     private final BukkitCommandProvider commandProvider;
+
+    private static final String[] emptyStringArray = new String[]{};
 
     public DrapuriaCommandMap(Server server, BukkitCommandProvider commandProvider) {
         super(server);
@@ -36,90 +39,108 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine, Location location) {
         if (!(sender instanceof Player)) return Collections.emptyList();
-
         Player player = (Player) sender;
-
-        boolean doneHere;
-
         Set<String> completions = new HashSet<>();
-        Set<String[]> multipleArgumentList = new HashSet<>();
-
-        int index = cmdLine.split(" ").length; //run integer to get current location of our string
-        String inputString = cmdLine.toLowerCase();
-        String[] input = cmdLine.split(" ");
-        int spaceIndex = cmdLine.indexOf(" ");
-
-        for (final DrapuriaCommand drapuriaCommand : commandProvider.getCommandRepository().getCommands()) {
-            if (!drapuriaCommand.canAccess(player)) continue;
-
-            final BukkitCommandMeta meta = drapuriaCommand.getCommandMeta();
-
-            for (final String command : meta.getCommandAliases()) {
-                if (spaceIndex < 0 && inputString.length() < command.length() && StringUtils.startsWithIgnoreCase(
-                        command,
-                        inputString)) {  //If we are in the main command (no space), we add the all commands to the completion
-                    completions.add("/" + command.toLowerCase());
-                    continue;
-                }
-
-                //check if our input starts with command
-                if (!inputString.startsWith(command.toLowerCase() + " ")) {
-                    continue;
-                }
-
-                //iterate over all subcommands and checks if player can access this
-                for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta().values()) {
-                    if (!subCommand.canAccess(player)) {
+        try {
+            boolean doneHere = true;
+            String inputString = cmdLine.toLowerCase();
+            String[] input = cmdLine.split(" ");
+            String mainCommand = input[0] + " ";
+            final String subCommands = cmdLine.replaceFirst(mainCommand, "");
+            int index = input.length; //run integer to get current location of our string
+            int spaceIndex = cmdLine.indexOf(" ");
+            // loop through every command
+            commandLoop:
+            for (final DrapuriaCommand drapuriaCommand : commandProvider.getCommandRepository().getCommands()) {
+                if (!drapuriaCommand.canAccess(player)) continue;
+                final BukkitCommandMeta meta = drapuriaCommand.getCommandMeta();
+                // loop through all command aliases if we have the permission to use this command
+                for (final String command : meta.getCommandAliases()) {
+                    if (spaceIndex < 0 && inputString.length() < command.length() && StringUtils.startsWithIgnoreCase(
+                            command,
+                            inputString)) {  //If we are in the main command (no space), we add the all commands to the completion
+                        completions.add("/" + command.toLowerCase());
                         continue;
                     }
-                    //We search all aliases from the subcommand and see if it is a single subcommand (create, delete) or multiple (option set, option remove)
-                    for (String subCommandAlias : subCommand.getAliases()) {
-                        String[] argumentSplit = subCommandAlias.split(" ");
-                        if (argumentSplit.length > 1) {
-                            multipleArgumentList.add(argumentSplit);
 
-                            // hallo server
-                            // hallo spieler
-
-                            // 0 == hallo; 1 == subcommand
-
-                            completions.add(argumentSplit[0]);
-                        } else
-                            completions.add(subCommandAlias);
+                    //check if our input starts with command
+                    if (!inputString.startsWith(command.toLowerCase() + " ")) {
+                        continue;
                     }
-                    String current = input[index - 1]; //We always want the first element of the array
 
-                    //We make a copy of our completions list and iterate through it
-                    for (String next : new ArrayList<>(completions)) {
-
-                        //We check if our current element does not match the next entry of the completion list and is not our main command
-                        if ((!current.startsWith(next) && !current.equalsIgnoreCase(command))) {
-                            completions.remove(next);
+                    // loop through all subcommands and checks if player can access this
+                    subCommandMeta:
+                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta().values()) {
+                        if (!subCommand.canAccess(player)) {
+                            continue;
                         }
-
-                        //We look if our current element is a SubCommand with multiple arguments(e.g. option set)
-                        if (hasMultipleArguments(current, multipleArgumentList)) {
-                            //We look at all the arguments of the SubCommand and see if the first element is our next entry.... If not, we remove this
-                            for (String[] multipleArg : multipleArgumentList) {
-                                if (!multipleArg[0].startsWith(next)) {
-                                    completions.remove(next);
+                        // loop through all subcommand aliases a
+                        for (String subCommandAlias : subCommand.getAliases()) {
+                            subCommandAlias = subCommandAlias.toLowerCase();
+                            String[] argumentSplit = subCommandAlias.split(" ");
+                            final BukkitParameterData parameterData = subCommand.getParameterData();
+                            // check if command has entered the command
+                            if (StringUtils.startsWithIgnoreCase(subCommandAlias, subCommands) || StringUtils.startsWithIgnoreCase(subCommands, subCommandAlias)) {
+                                // check if there is paramter left to complete
+                                if (subCommands.toLowerCase().startsWith(subCommandAlias.toLowerCase() + " ") && parameterData.getParameterCount() > 0) {
+                                    int parameterIndex = index - argumentSplit.length;
+                                    if (parameterIndex == subCommand.getParameterData().getParameterCount() || !cmdLine.endsWith(" ")) {
+                                        parameterIndex -= 1;
+                                    }
+                                    if (parameterIndex < 0)
+                                        parameterIndex = 0;
+                                    if (parameterData.getParameterCount() <= parameterIndex && parameterData.get(parameterData.getParameterCount() - 1).isWildcard()) { // TODO HIER EVTL ANDERS (MAN KANN UNENDLICH OFT NAMEN TABBEN)
+                                        completions.addAll(tabCompleteParameter(player, input[index - 1].toLowerCase(), Player.class, emptyStringArray));
+                                        doneHere = true;
+                                        break commandLoop;
+                                    }
+                                    if (parameterData.getParameterCount() <= parameterIndex) {
+                                        continue subCommandMeta;
+                                    }
+                                    BukkitParameter parameter = parameterData.get(parameterIndex);
+                                    List<String> tabCompletions = tabCompleteParameter(player,
+                                            cmdLine.endsWith(" ") ? "" : input[index - 1],
+                                            parameter.getClassType(), parameter.getTabCompleteFlags());
+                                    if (tabCompletions != null) {
+                                        completions.addAll(tabCompletions);
+                                        doneHere = true;
+                                    }
+                                    continue subCommandMeta;
                                 }
-                                //If the first element is our next entry, we remove it and add all further SubCommand arguments to the completion list
-                                completions.remove(next);
-                                completions.addAll(Arrays.asList(Arrays.copyOfRange(multipleArg,
-                                        1,
-                                        multipleArg.length)));
+                                // get missing  aliases
+                                final String missing = subCommandAlias.replaceFirst(subCommands, "");
+                                // split missing string into parts
+                                final String[] missingParts = missing.split(" ");
+                                // get real arguments
+                                final String[] realArguments = subCommandAlias.split(" ");
+                                // get the missing parts
+                                final String toComplete = missingParts[0];
+                                // get the realarguments
+                                for (String m : realArguments) {
+                                    if (StringUtils.endsWithIgnoreCase(m, toComplete) || StringUtils.endsWithIgnoreCase(toComplete, m)) {
+                                        completions.add(m);
+                                        continue subCommandMeta;
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
+
+            List<String> completionList = new ArrayList<>(completions);
+            if (player.hasPermission("drapuria.command.tabcomplete.all") && !doneHere) {
+                List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine, (null));
+                if (vanillaCompletionList != null) {
+                    completionList.addAll(vanillaCompletionList);
+                }
+            }
+            completionList.sort(Comparator.comparingInt(String::length));
+            return completionList;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        List<String> completionList = new ArrayList<>(completions);
-        completionList.sort(Comparator.comparingInt(String::length));
-
-        return completionList;
+        return new ArrayList<>();
     }
 
     public boolean hasMultipleArguments(String value, Set<String[]> lis) {

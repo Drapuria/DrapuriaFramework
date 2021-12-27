@@ -50,8 +50,20 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
         registerTypeParameterParser(new PlayerParameterTypeParser());
     }
 
+    @Override
+    public void shutdown() {
+        unregisterCommandMap();
+    }
+
     public CommandTypeParameter<?> getTypeParameter(Class<?> type) {
         return this.getCommandTypeParameterParser().get(type);
+    }
+
+    @SneakyThrows
+    private void unregisterCommandMap() {
+        Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+        commandMapField.setAccessible(true);
+        commandMapField.set(Bukkit.getServer(), oldCommandMap);
     }
 
     @SneakyThrows

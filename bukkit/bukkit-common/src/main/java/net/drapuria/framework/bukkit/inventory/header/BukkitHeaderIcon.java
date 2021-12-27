@@ -9,7 +9,7 @@ import java.util.Arrays;
 public class BukkitHeaderIcon<H> extends HeaderIcon<H, ItemStack> {
 
     static {
-        getClickDescriptionTemplate = new String[]{ "", "§3Klicke§7, um diese Kategorie zu §a§ffnen§7." };
+        getClickDescriptionTemplate = new String[]{ "", "§3Klicke§7, um diese Kategorie zu §aöffnen§7." };
     }
 
 

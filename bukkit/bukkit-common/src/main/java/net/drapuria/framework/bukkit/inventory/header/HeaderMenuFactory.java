@@ -1,6 +1,5 @@
 package net.drapuria.framework.bukkit.inventory.header;
 
-
 import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.header.HeaderButton;
 import net.drapuria.framework.bukkit.item.ItemBuilder;

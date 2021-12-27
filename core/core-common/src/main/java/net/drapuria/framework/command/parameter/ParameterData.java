@@ -3,7 +3,6 @@ package net.drapuria.framework.command.parameter;
 public abstract class ParameterData<P extends Parameter> {
 
     private final P[] parameters;
-
     private final int length;
 
     public ParameterData(P[] parameters) {

@@ -2,6 +2,7 @@ package net.drapuria.framework.command.service;
 
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.command.provider.CommandProvider;
+import net.drapuria.framework.services.PostDestroy;
 import net.drapuria.framework.services.PostInitialize;
 import net.drapuria.framework.services.PreInitialize;
 import net.drapuria.framework.services.Service;
@@ -26,6 +27,12 @@ public class CommandService {
     public void init() {
 
     }
+
+    @PostDestroy
+    public void shutdown() {
+        commandProvider.shutdown();
+    }
+
     public void registerCommandProvider(CommandProvider<?, ?> commandProvider) {
         if (this.commandProvider != null) {
             DrapuriaCommon.getLogger().error("[Drapuria] Command Provier already registered.");

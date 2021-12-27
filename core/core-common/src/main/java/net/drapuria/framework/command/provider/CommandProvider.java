@@ -47,6 +47,8 @@ public abstract class CommandProvider<C extends FrameworkCommand<?>, P extends C
 
     public abstract void registerDefaults();
 
+    public abstract void shutdown();
+
     protected List<Class<C>> loadCommandClasses() {
         final CommandService commandService = (CommandService) DrapuriaCommon.BEAN_CONTEXT.getBean(CommandService.class);
         TypeAnnotationScanner annotationScanner = new TypeAnnotationScanner(ClasspathScanner.getCodeSourceOf(this),

@@ -15,15 +15,12 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
-/**
- * Credits to https://github.com/pleek3/minecraft-core - We worked on his CommandMap/Command executor countless hours via discord and he gave
- * me permissions to use it as well.
- * As you might see the structure of the command executor is also similar, but i think that´s cool!
- */
+
 public class DrapuriaCommandMap extends SimpleCommandMap {
 
     private final BukkitCommandProvider commandProvider;
 
+    private static final List<String> EMPTY_ARRAY_LIST = new ArrayList<>();
     private static final String[] emptyStringArray = new String[]{};
 
     public DrapuriaCommandMap(Server server, BukkitCommandProvider commandProvider) {
@@ -42,7 +39,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
         Player player = (Player) sender;
         Set<String> completions = new HashSet<>();
         try {
-            boolean doneHere = true;
+            boolean doneHere = false;
             String inputString = cmdLine.toLowerCase();
             String[] input = cmdLine.split(" ");
             String mainCommand = input[0] + " ";
@@ -56,7 +53,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                 final BukkitCommandMeta meta = drapuriaCommand.getCommandMeta();
                 // loop through all command aliases if we have the permission to use this command
                 for (final String command : meta.getCommandAliases()) {
-                    if (spaceIndex < 0 && inputString.length() < command.length() && StringUtils.startsWithIgnoreCase(
+                    if (spaceIndex < 0
+                            && inputString.length() < command.length() && StringUtils.startsWithIgnoreCase(
                             command,
                             inputString)) {  //If we are in the main command (no space), we add the all commands to the completion
                         completions.add("/" + command.toLowerCase());
@@ -70,7 +68,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
 
                     // loop through all subcommands and checks if player can access this
                     subCommandMeta:
-                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta().values()) {
+                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()
+                            .values()) {
                         if (!subCommand.canAccess(player)) {
                             continue;
                         }
@@ -80,17 +79,24 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                             String[] argumentSplit = subCommandAlias.split(" ");
                             final BukkitParameterData parameterData = subCommand.getParameterData();
                             // check if command has entered the command
-                            if (StringUtils.startsWithIgnoreCase(subCommandAlias, subCommands) || StringUtils.startsWithIgnoreCase(subCommands, subCommandAlias)) {
+                            if (StringUtils.startsWithIgnoreCase(subCommandAlias, subCommands)
+                                    || StringUtils.startsWithIgnoreCase(subCommands, subCommandAlias)) {
                                 // check if there is paramter left to complete
-                                if (subCommands.toLowerCase().startsWith(subCommandAlias.toLowerCase() + " ") && parameterData.getParameterCount() > 0) {
+                                if (subCommands.toLowerCase().startsWith(subCommandAlias.toLowerCase() + " ")
+                                        && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
-                                    if (parameterIndex == subCommand.getParameterData().getParameterCount() || !cmdLine.endsWith(" ")) {
+                                    if (parameterIndex == subCommand.getParameterData().getParameterCount()
+                                            || !cmdLine.endsWith(" ")) {
                                         parameterIndex -= 1;
                                     }
                                     if (parameterIndex < 0)
                                         parameterIndex = 0;
-                                    if (parameterData.getParameterCount() <= parameterIndex && parameterData.get(parameterData.getParameterCount() - 1).isWildcard()) { // TODO HIER EVTL ANDERS (MAN KANN UNENDLICH OFT NAMEN TABBEN)
-                                        completions.addAll(tabCompleteParameter(player, input[index - 1].toLowerCase(), Player.class, emptyStringArray));
+                                    if (parameterData.getParameterCount() <= parameterIndex
+                                            && parameterData.get(parameterData.getParameterCount() - 1).isWildcard()) {
+                                        completions.addAll(tabCompleteParameter(player,
+                                                input[index - 1].toLowerCase(),
+                                                Player.class,
+                                                emptyStringArray));
                                         doneHere = true;
                                         break commandLoop;
                                     }
@@ -117,7 +123,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                                 final String toComplete = missingParts[0];
                                 // get the realarguments
                                 for (String m : realArguments) {
-                                    if (StringUtils.endsWithIgnoreCase(m, toComplete) || StringUtils.endsWithIgnoreCase(toComplete, m)) {
+                                    if (StringUtils.endsWithIgnoreCase(m, toComplete)
+                                            || StringUtils.endsWithIgnoreCase(toComplete, m)) {
                                         completions.add(m);
                                         continue subCommandMeta;
                                     }
@@ -129,26 +136,19 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
             }
 
             List<String> completionList = new ArrayList<>(completions);
-            if (player.hasPermission("drapuria.command.tabcomplete.all") && !doneHere) {
+            // check if we have to go through bukkit completions & check if the players has permission to go through every command
+            if (!doneHere && player.hasPermission("drapuria.command.tabcomplete.all")) {
                 List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine, (null));
-                if (vanillaCompletionList != null) {
+                if (vanillaCompletionList != null)
                     completionList.addAll(vanillaCompletionList);
-                }
             }
             completionList.sort(Comparator.comparingInt(String::length));
             return completionList;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return new ArrayList<>();
+        return EMPTY_ARRAY_LIST;
     }
-
-    public boolean hasMultipleArguments(String value, Set<String[]> lis) {
-        for (String[] array : lis)
-            return (array[0].startsWith(value));
-        return false;
-    }
-
 
     public List<String> tabCompleteParameter(Player sender, String parameter, Class<?> transformTo, String[] tabCompleteFlags) {
         if (!commandProvider.getCommandTypeParameterParser().containsKey(transformTo)) {

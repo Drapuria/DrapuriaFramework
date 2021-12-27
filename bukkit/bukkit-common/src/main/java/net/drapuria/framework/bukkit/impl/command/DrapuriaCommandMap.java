@@ -40,12 +40,12 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
         Set<String> completions = new HashSet<>();
         try {
             boolean doneHere = false;
-            String inputString = cmdLine.toLowerCase();
-            String[] input = cmdLine.split(" ");
-            String mainCommand = input[0] + " ";
+            final String inputString = cmdLine.toLowerCase();
+            final String[] input = cmdLine.split(" ");
+            final String mainCommand = input[0] + " ";
             final String subCommands = cmdLine.replaceFirst(mainCommand, "");
-            int index = input.length; //run integer to get current location of our string
-            int spaceIndex = cmdLine.indexOf(" ");
+            final int index = input.length; //run integer to get current location of our string
+            final int spaceIndex = cmdLine.indexOf(" ");
             // loop through every command
             commandLoop:
             for (final DrapuriaCommand drapuriaCommand : commandProvider.getCommandRepository().getCommands()) {

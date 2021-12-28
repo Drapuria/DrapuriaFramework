@@ -3,11 +3,13 @@ package net.drapuria.framework.bukkit.impl.command;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.command.FrameworkCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +40,9 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             actualCommand.append(argument);
             BukkitSubCommandMeta subCommandMeta = this.commandMeta.getSubCommandMeta(actualCommand.toString());
             if (subCommandMeta != null) {
-                String[] array = cmdLine.replaceFirst(actualCommand.toString(), "").split(" ");
+                String[] array = Arrays.stream(cmdLine.replaceFirst(actualCommand.toString(), "")
+                        .split(" "))
+                        .filter(s -> !s.isEmpty()).toArray(String[]::new);
                 objects.put(subCommandMeta, array);
             }
         }
@@ -49,7 +53,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             else
                 execute(player);
         } else {
-            objects.entrySet().stream().max(Comparator.comparingInt(value -> value.getValue().length)).ifPresent(entry -> {
+            objects.entrySet().stream().max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length)).ifPresent(entry -> {
                 entry.getKey().execute(player, entry.getValue());
             });
         }

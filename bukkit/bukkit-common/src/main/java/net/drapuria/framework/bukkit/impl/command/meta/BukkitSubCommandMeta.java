@@ -7,6 +7,7 @@ import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypePara
 import net.drapuria.framework.command.annotations.SubCommand;
 import net.drapuria.framework.command.meta.SubCommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +43,9 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
             if (parameter.getClassType() == String.class && i + 1 >= this.parameterData.getParameterCount() && i + 1 < params.length) {
                 String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
                 objects[i + 1] = builder;
-            } else objects[i + 1] = commandTypeParameter.parse(player, params[i]);
+            } else {
+                objects[i + 1] = commandTypeParameter.parse(player, params[i]);
+            }
         }
 
         try {

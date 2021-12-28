@@ -16,6 +16,8 @@
         <module>core-common</module>
         <module>core-services</module>
         <module>core-modules</module>
+        <module>core-repository</module>
+        <module>core-database</module>
     </modules>
 
     <properties>

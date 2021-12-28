@@ -110,13 +110,13 @@ public class ModuleService {
     }
 
     private void loadModules(File base, ModuleParent<?> parent, ModuleRepository<?> repository, boolean log) {
-        if (!base.exists()) {
-            base.mkdir();
-        }
+        if (!base.exists())
+            base.mkdirs();
         if (log)
             logger.info("[Drapuria-Modules] Searching for modules in " + base.getPath());
         final File[] possibleModules = Arrays.stream(Objects.requireNonNull(base
-                .listFiles(pathname -> pathname.getName().endsWith(".jar"))))
+                .listFiles(pathName -> pathName.getName().endsWith(".jar"))))
+                .filter(Objects::nonNull)
                 .filter(this::isModule).toArray(File[]::new);
         final List<ModuleAdapter> moduleAdapters = new ArrayList<>();
         final List<ModuleAdapter> toEnable = new ArrayList<>();
@@ -226,7 +226,7 @@ public class ModuleService {
         if (!this.repositories.containsKey(adapter.getModule().getModuleParent())) {
             this.repositories.put(adapter.getModule().getModuleParent(), repository);
         }
-        this.repositories.get(adapter.getModule().getModuleParent()).addModule(adapter);
+        this.repositories.get(adapter.getModule().getModuleParent()).save(adapter);
     }
 
     @SneakyThrows

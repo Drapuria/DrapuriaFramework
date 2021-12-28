@@ -8,9 +8,10 @@ import net.drapuria.framework.module.repository.ModuleRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class BukkitPluginModuleRepository implements ModuleRepository<BukkitPluginBasedParent> {
+public class BukkitPluginModuleRepository extends ModuleRepository<BukkitPluginBasedParent> {
 
     private final List<ModuleAdapter> modules = new ArrayList<>();
 
@@ -26,7 +27,6 @@ public class BukkitPluginModuleRepository implements ModuleRepository<BukkitPlug
         return parent;
     }
 
-    @Override
     public List<Module> getModules() {
         return modules.stream()
                 .map(ModuleAdapter::getModule)
@@ -34,7 +34,6 @@ public class BukkitPluginModuleRepository implements ModuleRepository<BukkitPlug
                 .collect(Collectors.toList());
     }
 
-    @Override
     public ModuleAdapter findAdapterByName(String name) {
         return modules.stream()
                 .filter(module -> module.getModuleData().name().equalsIgnoreCase(name))
@@ -42,7 +41,6 @@ public class BukkitPluginModuleRepository implements ModuleRepository<BukkitPlug
                 .orElse(null);
     }
 
-    @Override
     public ModuleAdapter getAdapterFromModule(Module module) {
         return modules.stream()
                 .filter(adapter -> adapter.getModule() == module)
@@ -50,7 +48,6 @@ public class BukkitPluginModuleRepository implements ModuleRepository<BukkitPlug
                 .orElse(null);
     }
 
-    @Override
     public Module findByName(String name) {
         return modules.stream()
                 .filter(module -> module.getModuleData().name().equalsIgnoreCase(name))
@@ -61,17 +58,13 @@ public class BukkitPluginModuleRepository implements ModuleRepository<BukkitPlug
     }
 
     @Override
-    public void addModule(ModuleAdapter module) {
-        this.modules.add(module);
+    public void init() {
+
     }
 
     @Override
-    public void removeModule(Module module) {
-        this.modules.removeIf(adapter -> adapter.getModule() == module);
+    public <Q> Optional<ModuleAdapter> findByQuery(String query, Q value) {
+        return Optional.empty();
     }
 
-    @Override
-    public void removeModule(ModuleAdapter adapter) {
-        this.modules.remove(adapter);
-    }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class PlatformModuleRepository implements ModuleRepository<PlatformBasedParent> {
+public class PlatformModuleRepository extends ModuleRepository<PlatformBasedParent> {
     private final PlatformBasedParent parent;
 
     private final List<ModuleAdapter> modules = new ArrayList<>();
@@ -23,7 +23,6 @@ public class PlatformModuleRepository implements ModuleRepository<PlatformBasedP
         return parent;
     }
 
-    @Override
     public List<Module> getModules() {
         return modules.stream()
                 .map(ModuleAdapter::getModule)
@@ -31,7 +30,6 @@ public class PlatformModuleRepository implements ModuleRepository<PlatformBasedP
                 .collect(Collectors.toList());
     }
 
-    @Override
     public ModuleAdapter findAdapterByName(String name) {
         return modules.stream()
                 .filter(module -> module.getModuleData().name().equalsIgnoreCase(name))
@@ -39,7 +37,6 @@ public class PlatformModuleRepository implements ModuleRepository<PlatformBasedP
                 .orElse(null);
     }
 
-    @Override
     public ModuleAdapter getAdapterFromModule(Module module) {
         return modules.stream()
                 .filter(adapter -> adapter.getModule() == module)
@@ -47,7 +44,6 @@ public class PlatformModuleRepository implements ModuleRepository<PlatformBasedP
                 .orElse(null);
     }
 
-    @Override
     public Module findByName(String name) {
         return modules.stream()
                 .filter(module -> module.getModuleData().name().equalsIgnoreCase(name))
@@ -57,18 +53,20 @@ public class PlatformModuleRepository implements ModuleRepository<PlatformBasedP
                 .orElse(null);
     }
 
-    @Override
     public void addModule(ModuleAdapter module) {
         this.modules.add(module);
     }
 
-    @Override
     public void removeModule(Module module) {
         this.modules.removeIf(adapter -> adapter.getModule() == module);
     }
 
-    @Override
     public void removeModule(ModuleAdapter adapter) {
         this.modules.remove(adapter);
+    }
+
+    @Override
+    public void init() {
+
     }
 }

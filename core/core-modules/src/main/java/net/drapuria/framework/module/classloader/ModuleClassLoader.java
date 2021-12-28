@@ -152,7 +152,7 @@ public abstract class ModuleClassLoader extends URLClassLoader {
             DrapuriaCommon.PLATFORM.getLogger().error("[Drapuria-Modules] Could not create new instance of " + moduleClass);
             return null;
         }
-        this.moduleAdapter = new ModuleAdapter(moduleParent.createModule(module, data), data, this);
+        this.moduleAdapter = new ModuleAdapter(data.name(), moduleParent.createModule(module, data), data, this);
         this.initialize((JavaModule) this.moduleAdapter.getModule());
         return this.moduleAdapter;
     }

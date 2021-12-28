@@ -3,12 +3,17 @@ package net.drapuria.framework.module.repository;
 import net.drapuria.framework.module.Module;
 import net.drapuria.framework.module.ModuleAdapter;
 import net.drapuria.framework.module.parent.ModuleParent;
+import net.drapuria.framework.module.parent.PlatformBasedParent;
 import net.drapuria.framework.module.service.ModuleService;
+import net.drapuria.framework.repository.CachedRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class GlobalModuleRepository implements ModuleRepository {
+public class GlobalModuleRepository extends ModuleRepository<PlatformBasedParent> {
 
     private final ModuleService service;
 
@@ -16,60 +21,72 @@ public class GlobalModuleRepository implements ModuleRepository {
         this.service = service;
     }
 
-    @Override
-    public ModuleParent<?> getParent() {
-        return null;
-    }
-
-    @Override
     public List<Module> getModules() {
         final List<Module> list = new ArrayList<>();
-        service.getRepositories()
-                .values()
-                .stream()
-                .map(ModuleRepository::getModules)
-                .forEach(list::addAll);
+        service.getRepositories().values().stream()
+                .map(CachedRepository::findAll)
+                .forEach(moduleAdapters -> moduleAdapters.forEach(adapter -> list.add(adapter.getModule())));
         return list;
     }
 
-    @Override
     public ModuleAdapter findAdapterByName(String name) {
         return null;
     }
 
-    @Override
     public ModuleAdapter getAdapterFromModule(Module module) {
         return null;
     }
 
-    @Override
     public Module findByName(String name) {
+        return getModules()
+                .stream()
+                .filter(module -> module.getName().equalsIgnoreCase(name))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public Optional<ModuleAdapter> findById(String s) {
         return service.getRepositories()
                 .values()
                 .stream()
-                .map(ModuleRepository::getModules)
-                .filter(modules -> modules.stream().anyMatch(module -> module.getName().equalsIgnoreCase(name)))
-                .map(modules -> modules.stream().findFirst().orElse(null)).findFirst().orElse(null);
+                .map(repository -> repository.findById(s)
+                        .orElse(null))
+                .filter(Objects::nonNull).findFirst();
     }
-
-
-
-    @Override
     public void addModule(ModuleAdapter module) {
         throw new UnsupportedOperationException("Cannot add module into this repository");
     }
 
-    @Override
     public void removeModule(Module module) {
         this.service.getRepositories()
                 .values()
-                .forEach(repository -> repository.removeModule(module));
+                .forEach(repository -> repository.deleteById(module.getName()));
     }
 
-    @Override
     public void removeModule(ModuleAdapter adapter) {
         this.service.getRepositories()
                 .values()
-                .forEach(repository -> repository.removeModule(adapter));
+                .forEach(repository -> repository.deleteById(adapter.getModuleName()));
+    }
+
+    @Override
+    public void init() {
+
+    }
+
+    @Override
+    public <Q> Optional<ModuleAdapter> findByQuery(String query, Q value) {
+        return Optional.empty();
+    }
+
+    @Override
+    public long count() {
+        return getModules().size();
+    }
+
+    @Override
+    public PlatformBasedParent getParent() {
+        return null;
     }
 }

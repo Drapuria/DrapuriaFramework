@@ -28,6 +28,7 @@ public class BukkitPlugin extends JavaPlugin implements AbstractPlugin {
         this.onPreEnable();
         PluginManager.INSTANCE.onPluginEnable(this);
         Thread.currentThread().setContextClassLoader(originalContextClassLoader);
+        this.onPluginEnable();
     }
 
     @Override

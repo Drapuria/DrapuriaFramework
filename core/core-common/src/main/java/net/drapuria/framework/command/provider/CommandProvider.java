@@ -49,6 +49,7 @@ public abstract class CommandProvider<C extends FrameworkCommand<?>, P extends C
 
     public abstract void shutdown();
 
+    @SuppressWarnings("unchecked")
     protected List<Class<C>> loadCommandClasses() {
         final CommandService commandService = (CommandService) DrapuriaCommon.BEAN_CONTEXT.getBean(CommandService.class);
         TypeAnnotationScanner annotationScanner = new TypeAnnotationScanner(ClasspathScanner.getCodeSourceOf(this),
@@ -60,7 +61,7 @@ public abstract class CommandProvider<C extends FrameworkCommand<?>, P extends C
                 .map(aClass -> (Class<C>)aClass)
                 .collect(Collectors.toList());
     }
-
+    @SuppressWarnings("unchecked")
     public List<Class<C>> loadCommandClasses(CodeSource codeSource, String packageName) {
         final CommandService commandService = (CommandService) DrapuriaCommon.BEAN_CONTEXT.getBean(CommandService.class);
         TypeAnnotationScanner annotationScanner = new TypeAnnotationScanner(codeSource,

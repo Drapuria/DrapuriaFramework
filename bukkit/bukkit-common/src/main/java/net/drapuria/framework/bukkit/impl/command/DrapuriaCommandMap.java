@@ -7,6 +7,7 @@ import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -87,7 +88,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                                     int parameterIndex = index - argumentSplit.length;
                                     if (parameterIndex == subCommand.getParameterData().getParameterCount()
                                             || !cmdLine.endsWith(" ")) {
-                                        parameterIndex -= 1;
+                                        parameterIndex = parameterIndex - 2;
                                     }
                                     if (parameterIndex < 0)
                                         parameterIndex = 0;
@@ -101,6 +102,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                                         break commandLoop;
                                     }
                                     if (parameterData.getParameterCount() <= parameterIndex) {
+                                        doneHere = true;
                                         continue subCommandMeta;
                                     }
                                     BukkitParameter parameter = parameterData.get(parameterIndex);

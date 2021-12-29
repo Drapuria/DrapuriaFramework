@@ -110,7 +110,7 @@
             <groupId>org.imanity.framework</groupId>
             <artifactId>reflect</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>

@@ -1,4 +1,4 @@
-package net.drapuria.framework.util;
+package net.drapuria.framework.random;
 
 public class FastRandom extends java.util.Random {
 

@@ -1,12 +1,22 @@
 package net.drapuria.framework.bukkit.plugin;
 
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
+import net.drapuria.framework.libraries.annotation.MavenRepository;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 
+/*
+        <dependency>
+            <groupId>org.imanity.framework</groupId>
+            <artifactId>reflect</artifactId>
+            <version>${reflect.version}</version>
+            <scope>provided</scope>
+        </dependency>
+ */
 public final class DrapuriaStandalonePlugin extends JavaPlugin {
 
     public DrapuriaStandalonePlugin() {

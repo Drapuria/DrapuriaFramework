@@ -6,6 +6,8 @@ import com.google.common.collect.Lists;
 import lombok.NonNull;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.NonNullArrayList;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
+import net.drapuria.framework.libraries.annotation.MavenRepository;
 import net.drapuria.framework.plugin.AbstractPlugin;
 import net.drapuria.framework.plugin.PluginListenerAdapter;
 import net.drapuria.framework.plugin.PluginManager;
@@ -26,6 +28,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+
+// https://maven.imanity.dev/repository/imanity-libraries/org/imanity/framework/reflect/0.0.1-SNAPSHOT/reflect-0.0.1-20210415.103015-6.jar
+// https://maven.imanity.dev/repository/imanity-libraries/org/imanity/framework/reflect/0.0.1-SNAPSHOT/reflect-0.0.1-20210415.103015-6.jar
+@MavenDependency(groupId = "org{}imanity{}framework", artifactId = "reflect", versionPackage = "0.0.1-SNAPSHOT", version = "0.0.1-20210415.103015-6",
+        repo = @MavenRepository(url = "https://maven.imanity.dev/repository/imanity-libraries/"))
 public class BeanContext {
 
     public static boolean SHOW_LOGS = false;
@@ -36,11 +43,13 @@ public class BeanContext {
      * Logging
      */
     protected static final Logger LOGGER = LogManager.getLogger(BeanContext.class);
+
     protected static void log(String msg, Object... replacement) {
         if (SHOW_LOGS) {
             LOGGER.info("[BeanContext] " + String.format(msg, replacement));
         }
     }
+
     protected static SimpleTiming logTiming(String msg) {
         return SimpleTiming.create(time -> log("Ended %s - took %d ms", msg, time));
     }
@@ -552,7 +561,8 @@ public class BeanContext {
             for (Map.Entry<ServiceDependencyType, List<String>> allDependency : beanDetails.getDependencyEntries()) {
                 final ServiceDependencyType type = allDependency.getKey();
 
-                search: for (String dependency : allDependency.getValue()) {
+                search:
+                for (String dependency : allDependency.getValue()) {
                     BeanDetails dependencyDetails = this.getBeanByName(dependency);
 
                     if (dependencyDetails == null) {
@@ -567,7 +577,7 @@ public class BeanContext {
                             case SUB:
                                 break;
                         }
-                    // Prevent dependency each other
+                        // Prevent dependency each other
                     } else {
                         if (dependencyDetails.hasDependencies()
                                 && dependencyDetails.getAllDependencies().contains(beanDetails.getName())) {

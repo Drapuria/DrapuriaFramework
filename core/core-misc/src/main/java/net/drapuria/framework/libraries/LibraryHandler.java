@@ -14,7 +14,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,12 +34,13 @@ public class LibraryHandler {
     private final Map<AbstractPlugin, PluginClassLoader> pluginClassLoaders = new ConcurrentHashMap<>();
     private final Map<ImmutableSet<Library>, IsolatedClassLoader> loaders = new HashMap<>();
 
+
     private final Logger LOGGER = LogManager.getLogger();
     private final ExecutorService EXECUTOR = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-        .setDaemon(true)
-        .setNameFormat("Library Downloader - %d")
-        .setUncaughtExceptionHandler((thread, throwable) -> Stacktrace.print(throwable))
-        .build());
+            .setDaemon(true)
+            .setNameFormat("Library Downloader - %d")
+            .setUncaughtExceptionHandler((thread, throwable) -> Stacktrace.print(throwable))
+            .build());
 
     public LibraryHandler() {
         File file = new File(FrameworkMisc.PLATFORM.getDataFolder(), "libs");
@@ -142,6 +142,7 @@ public class LibraryHandler {
 
     }
 
+
     private void loadLibrary(Library library, boolean addToUCP) throws Exception {
         if (loaded.containsKey(library)) {
             return;
@@ -180,16 +181,24 @@ public class LibraryHandler {
 
     protected Path downloadLibrary(Library library) throws LibraryDownloadException {
         Path file = this.libFolder.resolve(library.getFileName() + ".jar");
-
         if (Files.exists(file)) {
             return file;
         }
 
         LibraryDownloadException lastError = null;
 
-        for (LibraryRepository repository : LibraryRepository.values()) {
+        if (library.getMavenRepo() == null) {
+            for (LibraryRepository repository : LibraryRepository.values()) {
+                try {
+                    repository.download(library, file);
+                    return file;
+                } catch (LibraryDownloadException ex) {
+                    lastError = ex;
+                }
+            }
+        } else {
             try {
-                repository.download(library, file);
+                LibraryRepository.MAVEN_CENTRAL.download(library, file, library.getMavenRepo());
                 return file;
             } catch (LibraryDownloadException ex) {
                 lastError = ex;
@@ -197,5 +206,9 @@ public class LibraryHandler {
         }
 
         throw Objects.requireNonNull(lastError);
+    }
+
+    public Map<Library, Path> getLoaded() {
+        return loaded;
     }
 }

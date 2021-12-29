@@ -11,6 +11,7 @@ import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -31,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Setter
+@MavenDependency(groupId = "org.json", artifactId = "json", version = "20200518")
 public class Skin {
 
     private static final LoadingCache<String, Skin> SKIN_CACHE = Caffeine.newBuilder()

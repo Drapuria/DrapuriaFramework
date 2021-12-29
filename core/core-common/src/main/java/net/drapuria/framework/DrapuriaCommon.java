@@ -6,8 +6,11 @@ import lombok.experimental.UtilityClass;
 import net.drapuria.framework.events.IEventHandler;
 import net.drapuria.framework.libraries.Library;
 import net.drapuria.framework.libraries.LibraryHandler;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.drapuria.framework.services.BeanContext;
 import net.drapuria.framework.task.ITaskScheduler;
+import net.drapuria.framework.util.ClasspathScanner;
+import net.drapuria.framework.util.TypeAnnotationScanner;
 import net.drapuria.framework.util.terminable.Terminable;
 import org.apache.logging.log4j.Logger;
 
@@ -41,7 +44,12 @@ public final class DrapuriaCommon {
 
             // Spring
             Library.SPRING_CORE,
-            Library.SPRING_EL
+            Library.SPRING_EL,
+
+            // Jackson
+            Library.JACKSON_CORE,
+            Library.JACKSON_DATABIND,
+            Library.JACKSON_ANNOTATIONS
     );
 
     public DrapuriaPlatform PLATFORM;
@@ -101,7 +109,34 @@ public final class DrapuriaCommon {
         }
         DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, Library.REDISSON);
 
+        getLogger().info("Scanning for annotated maven dependencies");
+        loadAnnotatedDependencies("net.drapuria");
         FrameworkMisc.LIBRARY_HANDLER = DrapuriaCommon.LIBRARY_HANDLER;
+    }
+
+    public void loadAnnotatedDependencies(String packageName) {
+        TypeAnnotationScanner typeAnnotationScanner = new TypeAnnotationScanner(
+                ClasspathScanner.getCodeSourceOf(DrapuriaCommon.LIBRARY_HANDLER),
+                packageName, MavenDependency.class);
+        for (Class<?> annotatedClass : typeAnnotationScanner.getResult()) {
+            getLogger().info("found " + annotatedClass.getName());
+            for (MavenDependency mavenDependency : annotatedClass.getAnnotationsByType(MavenDependency.class)) {
+                if (DrapuriaCommon.LIBRARY_HANDLER.getLoaded().keySet()
+                        .stream().noneMatch(library ->
+                                library.getName().equalsIgnoreCase(mavenDependency.artifactId())
+                                        && library.getVersion().equalsIgnoreCase(mavenDependency.version())
+                                        && library.getGroupId().equalsIgnoreCase(mavenDependency.groupId()))) {
+                    DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, new Library(
+                            mavenDependency.groupId(),
+                            mavenDependency.artifactId(),
+                            mavenDependency.versionPackage().isEmpty() ? mavenDependency.version() : mavenDependency.versionPackage(),
+                            mavenDependency.version(),
+                            null,
+                            mavenDependency.repo().url()
+                    ));
+                }
+            }
+        }
     }
 
     public Logger getLogger() {

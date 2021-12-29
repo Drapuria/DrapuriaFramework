@@ -58,7 +58,7 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
 
     @Override
     public <Q> void deleteByQuery(String query, Q value) {
-        throw new UnsupportedOperationException("Cannot delete by query in cached repository.");
+        throw new UnsupportedOperationException("Cannot delete by query in in memory repository.");
     }
 
     @Override

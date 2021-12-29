@@ -20,5 +20,4 @@ public abstract class CommandMeta<E> {
 
     public abstract boolean canAccess(E executor);
 
-
 }

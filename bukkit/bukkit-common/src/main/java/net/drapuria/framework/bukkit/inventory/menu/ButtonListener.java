@@ -20,7 +20,6 @@ public class ButtonListener implements Listener {
 
     private final Plugin plugin = Drapuria.PLUGIN;
 
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onButtonClick(final InventoryClickEvent event) {
         final Player player = (Player) event.getWhoClicked();
@@ -94,7 +93,6 @@ public class ButtonListener implements Listener {
                     }
                 }
             }
-
         }
     }
 

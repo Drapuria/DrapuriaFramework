@@ -53,7 +53,9 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             else
                 execute(player);
         } else {
-            objects.entrySet().stream().max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length)).ifPresent(entry -> {
+            objects.entrySet().stream()
+                    .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
+                    .ifPresent(entry -> {
                 entry.getKey().execute(player, entry.getValue());
             });
         }

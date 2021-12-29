@@ -2,16 +2,14 @@ package net.drapuria.framework.module.repository;
 
 import net.drapuria.framework.module.Module;
 import net.drapuria.framework.module.ModuleAdapter;
-import net.drapuria.framework.module.parent.ModuleParent;
 import net.drapuria.framework.module.parent.PlatformBasedParent;
 import net.drapuria.framework.module.service.ModuleService;
-import net.drapuria.framework.repository.CachedRepository;
+import net.drapuria.framework.repository.InMemoryRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class GlobalModuleRepository extends ModuleRepository<PlatformBasedParent> {
 
@@ -24,7 +22,7 @@ public class GlobalModuleRepository extends ModuleRepository<PlatformBasedParent
     public List<Module> getModules() {
         final List<Module> list = new ArrayList<>();
         service.getRepositories().values().stream()
-                .map(CachedRepository::findAll)
+                .map(InMemoryRepository::findAll)
                 .forEach(moduleAdapters -> moduleAdapters.forEach(adapter -> list.add(adapter.getModule())));
         return list;
     }

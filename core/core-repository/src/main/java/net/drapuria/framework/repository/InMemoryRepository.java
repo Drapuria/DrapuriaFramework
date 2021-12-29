@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * @param <T> Object to cache
  * @param <ID> ID of the object - has to be the first object in the list
  */
-public abstract class CachedRepository<T, ID extends Serializable> implements Repository<T, ID> {
+public abstract class InMemoryRepository<T, ID extends Serializable> implements Repository<T, ID> {
 
     private final Map<String, Field> fieldCache = new HashMap<>();
 
@@ -25,7 +25,7 @@ public abstract class CachedRepository<T, ID extends Serializable> implements Re
     private final Class<ID> key;
 
     @SuppressWarnings("unchecked")
-    public CachedRepository() {
+    public InMemoryRepository() {
         Class<?>[] types = findIdType();
         daoType = (Class<T>) types[0];
         key = (Class<ID>) types[1];
@@ -115,6 +115,6 @@ public abstract class CachedRepository<T, ID extends Serializable> implements Re
     @SuppressWarnings("unchecked")
     private Class<?>[] findIdType() {
         TypeResolver.enableCache();
-        return  TypeResolver.resolveRawArguments(CachedRepository.class, getClass());
+        return  TypeResolver.resolveRawArguments(InMemoryRepository.class, getClass());
     }
 }

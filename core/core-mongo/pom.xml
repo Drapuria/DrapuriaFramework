@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>core-database</artifactId>
+    <artifactId>core-mongo</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -18,15 +18,22 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.drapuria.framework</groupId>
-            <artifactId>core-services</artifactId>
-            <version>1.0-RELEASE</version>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.12.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>bson</artifactId>
+            <version>4.2.3</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
-            <artifactId>core-misc</artifactId>
+            <artifactId>core-services</artifactId>
             <version>1.0-RELEASE</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

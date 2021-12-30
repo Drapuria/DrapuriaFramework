@@ -8,9 +8,11 @@ import net.drapuria.framework.bukkit.impl.module.repository.BukkitPluginModuleRe
 import net.drapuria.framework.bukkit.plugin.BukkitPlugin;
 import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.module.service.ModuleService;
+import net.drapuria.framework.services.ClasspathScan;
 
 import java.io.File;
 
+@ClasspathScan("net.drapuria.framework.bukkit.plugin.example")
 public class ExamplePlugin extends BukkitPlugin {
 
     @Override

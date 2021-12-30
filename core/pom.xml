@@ -18,6 +18,9 @@
         <module>core-modules</module>
         <module>core-repository</module>
         <module>core-database</module>
+        <module>core-sql</module>
+        <module>core-redis</module>
+        <module>core-mongo</module>
     </modules>
 
     <properties>

@@ -14,6 +14,7 @@ import net.drapuria.framework.util.TypeAnnotationScanner;
 import net.drapuria.framework.util.terminable.Terminable;
 import org.apache.logging.log4j.Logger;
 
+import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -109,17 +110,17 @@ public final class DrapuriaCommon {
         }
         DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, Library.REDISSON);
 
-        getLogger().info("Scanning for annotated maven dependencies");
-        loadAnnotatedDependencies("net.drapuria");
+
+        loadAnnotatedDependencies(ClasspathScanner.getCodeSourceOf(DrapuriaCommon.LIBRARY_HANDLER), "net.drapuria");
         FrameworkMisc.LIBRARY_HANDLER = DrapuriaCommon.LIBRARY_HANDLER;
     }
 
-    public void loadAnnotatedDependencies(String packageName) {
-        TypeAnnotationScanner typeAnnotationScanner = new TypeAnnotationScanner(
-                ClasspathScanner.getCodeSourceOf(DrapuriaCommon.LIBRARY_HANDLER),
+    public void loadAnnotatedDependencies(CodeSource codeSource, String packageName) {
+        getLogger().info("[Drapuria] Scanning for annotated maven dependencies in " + packageName);
+        final TypeAnnotationScanner typeAnnotationScanner = new TypeAnnotationScanner(
+                codeSource,
                 packageName, MavenDependency.class);
         for (Class<?> annotatedClass : typeAnnotationScanner.getResult()) {
-            getLogger().info("found " + annotatedClass.getName());
             for (MavenDependency mavenDependency : annotatedClass.getAnnotationsByType(MavenDependency.class)) {
                 if (DrapuriaCommon.LIBRARY_HANDLER.getLoaded().keySet()
                         .stream().noneMatch(library ->

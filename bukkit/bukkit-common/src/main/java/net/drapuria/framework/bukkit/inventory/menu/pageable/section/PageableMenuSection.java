@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.inventory.menu.pageable;
+package net.drapuria.framework.bukkit.inventory.menu.pageable.section;
 
 
 import net.drapuria.framework.bukkit.inventory.menu.Button;
@@ -6,6 +6,7 @@ import net.drapuria.framework.bukkit.inventory.menu.Menu;
 import net.drapuria.framework.bukkit.inventory.menu.buttons.DisplayButton;
 import net.drapuria.framework.bukkit.inventory.menu.buttons.NextPageButton;
 import net.drapuria.framework.bukkit.inventory.menu.buttons.PreviousPageButton;
+import net.drapuria.framework.bukkit.inventory.menu.pageable.PaginatedButton;
 import net.drapuria.framework.pageable.section.PageableGuiSection;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

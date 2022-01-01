@@ -1,9 +1,10 @@
 package net.drapuria.framework.bukkit.impl.command;
 
+import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.command.FrameworkCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
@@ -27,8 +28,13 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
         if (arguments.length == 0) {
             if (this.commandMeta.isUseUnlySubCommands())
                 player.sendMessage(generateDefaultUsage(null, ""));
-            else
-                execute(player);
+            else {
+                if (this.commandMeta.getMethod() == null)
+                    execute(player);
+                else {
+                    this.commandMeta.execute(player, arguments);
+                }
+            }
             return;
         }
         final String cmdLine = Strings.join(arguments, " ");
@@ -50,22 +56,31 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
         if (objects.isEmpty()) {
             if (this.commandMeta.isUseUnlySubCommands())
                 player.sendMessage(generateDefaultUsage(null, ""));
-            else
-                execute(player);
+            else {
+                if (this.commandMeta.getMethod() == null)
+                    execute(player);
+                else {
+                    this.commandMeta.execute(player, arguments);
+                }
+            }
         } else {
             objects.entrySet().stream()
                     .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
                     .ifPresent(entry -> {
-                entry.getKey().execute(player, entry.getValue());
-            });
+                        if (entry.getKey().isAsyncExecution()) {
+                            DrapuriaCommon.executorService.execute(() -> entry.getKey().execute(player, entry.getValue()));
+                        } else
+                            entry.getKey().execute(player, entry.getValue());
+                    });
         }
     }
-
-    public void execute(Player player) { }
 
     @Override
     public BukkitCommandMeta getCommandMeta() {
         return this.commandMeta;
+    }
+
+    public void execute(Player player) {
     }
 
     @Override

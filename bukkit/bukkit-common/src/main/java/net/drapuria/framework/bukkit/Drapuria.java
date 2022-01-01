@@ -59,8 +59,6 @@ public class Drapuria {
 
         SpigotUtil.init();
         Drapuria.initCommon();
-
-        getCommandService.registerCommandProvider(new BukkitCommandProvider(getCommandService));
         getCommandProvider = (BukkitCommandProvider) getCommandService.getCommandProvider();
 
         final ModuleService moduleService = (ModuleService) DrapuriaCommon.BEAN_CONTEXT.getBean(ModuleService.class);

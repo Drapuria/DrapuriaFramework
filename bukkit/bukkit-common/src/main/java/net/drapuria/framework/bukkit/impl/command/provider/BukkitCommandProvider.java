@@ -8,15 +8,17 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.annotations.UseFrameworkPlugin;
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommandMap;
-import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameter;
-import net.drapuria.framework.bukkit.impl.command.parameter.type.PlayerParameterTypeParser;
-import net.drapuria.framework.bukkit.impl.command.parameter.type.StringParameterTypeParser;
+import net.drapuria.framework.bukkit.impl.command.parameter.type.*;
 import net.drapuria.framework.bukkit.impl.command.repository.BukkitCommandRepository;
 import net.drapuria.framework.command.annotations.Command;
 import net.drapuria.framework.command.annotations.CommandParameter;
 import net.drapuria.framework.command.annotations.SubCommand;
 import net.drapuria.framework.command.provider.CommandProvider;
 import net.drapuria.framework.command.service.CommandService;
+import net.drapuria.framework.plugin.AbstractPlugin;
+import net.drapuria.framework.plugin.PluginListenerAdapter;
+import net.drapuria.framework.plugin.PluginManager;
+import net.drapuria.framework.services.ComponentRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
@@ -40,14 +42,25 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
         this.commandService.setSubCommandAnnotation(SubCommand.class);
         this.commandService.setParameterAnnotation(CommandParameter.class);
         loadCommands(Drapuria.PLUGIN, "net.drapuria.framework.bukkit");
+
+        PluginManager.INSTANCE.registerListener(new PluginListenerAdapter() {
+            @Override
+            public void onPluginEnable(AbstractPlugin plugin) {
+                loadCommands(plugin, "");
+            }
+
+            @Override
+            public int priority() {
+                return -5;
+            }
+        });
     }
 
     @Override
     public void registerDefaults() {
         ((BukkitCommandRepository) getCommandRepository()).setCommandProvider(this);
         registerCommandMap();
-        registerTypeParameterParser(new StringParameterTypeParser());
-        registerTypeParameterParser(new PlayerParameterTypeParser());
+        ComponentRegistry.registerComponentHolder(new CommandTypeParameterComponentHolder(this));
     }
 
     @Override

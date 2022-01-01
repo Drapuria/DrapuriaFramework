@@ -9,14 +9,6 @@ import org.bukkit.plugin.java.JavaPluginLoader;
 
 import java.io.File;
 
-/*
-        <dependency>
-            <groupId>org.imanity.framework</groupId>
-            <artifactId>reflect</artifactId>
-            <version>${reflect.version}</version>
-            <scope>provided</scope>
-        </dependency>
- */
 public final class DrapuriaStandalonePlugin extends JavaPlugin {
 
     public DrapuriaStandalonePlugin() {

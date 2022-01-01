@@ -26,6 +26,7 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
         this.commandPermission = this.subCommand.permission();
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public boolean execute(Player player, String[] params) {
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];

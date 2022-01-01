@@ -21,6 +21,8 @@
         <module>core-sql</module>
         <module>core-redis</module>
         <module>core-mongo</module>
+        <module>core-yaml</module>
+        <module>core-config</module>
     </modules>
 
     <properties>

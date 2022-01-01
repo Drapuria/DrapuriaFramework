@@ -7,4 +7,6 @@ Its main goal is to help developers and improve the overall quality of the end p
 
 The Framework offers an annotation based Module / Command system.
 
-Drapuria framework is used on various Minecraft Networks managed by Drapuria
+Drapuria framework is used on various Minecraft Networks managed by Drapuria.
+
+YAML System is based on https://github.com/Exlll/ConfigLib

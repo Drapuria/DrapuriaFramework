@@ -1,4 +1,4 @@
-package net.drapuria.database.connection;
+package net.drapuria.framework.database.connection;
 
 import java.sql.Connection;
 import java.sql.SQLException;

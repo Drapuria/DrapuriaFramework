@@ -2,7 +2,10 @@ package net.drapuria.framework.bukkit.impl;
 
 import net.drapuria.framework.DrapuriaPlatform;
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
+import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.plugin.PluginClassLoader;
+import net.drapuria.framework.services.BeanContext;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.spigotmc.RestartCommand;
@@ -43,5 +46,11 @@ public class BukkitDrapuriaPlatform implements DrapuriaPlatform {
     @Override
     public boolean isServerThread() {
         return Bukkit.isPrimaryThread();
+    }
+
+    @Override
+    public void registerCommandProvider() {
+        CommandService commandService = (CommandService) BeanContext.INSTANCE.getBean(CommandService.class);
+        commandService.registerCommandProvider(new BukkitCommandProvider(commandService));
     }
 }

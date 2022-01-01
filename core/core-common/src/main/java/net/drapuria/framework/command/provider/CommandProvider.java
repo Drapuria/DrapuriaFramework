@@ -37,7 +37,7 @@ public abstract class CommandProvider<C extends FrameworkCommand<?>, P extends C
         this.commandRepository.unregisterCommand(command);
     }
 
-    public void registerTypeParameterParser(P parser) {
+    public void registerTypeParameter(P parser) {
         this.commandTypeParameterParser.put(parser.getType(), parser);
     }
 

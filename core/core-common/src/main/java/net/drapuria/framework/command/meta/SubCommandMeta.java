@@ -16,13 +16,14 @@ public abstract class SubCommandMeta<E, T extends ParameterData<?>> {
 
     protected final String defaultAlias;
     protected final String parameterString;
+    protected boolean asyncExecution;
 
     public SubCommandMeta(T parameterData, String[] aliases, Object instance, Method method, String parameterString) {
         this.parameterData = parameterData;
         this.aliases = aliases;
         this.instance = instance;
         this.method = method;
-        this.defaultAlias = aliases[0];
+        this.defaultAlias = aliases.length == 0 ? "" : aliases[0];
         this.parameterString = parameterString;
     }
 

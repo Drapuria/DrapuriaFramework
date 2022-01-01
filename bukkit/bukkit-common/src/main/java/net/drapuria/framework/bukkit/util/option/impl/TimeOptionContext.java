@@ -19,6 +19,7 @@ public class TimeOptionContext<C> extends OptionContext<Long, C, String> {
 
     private void setDisplayAdapter() {
         setDisplayAdapter(new DisplayAdapter<OptionContext<Long, C, String>>(this, getDisplayAdapter().getDisplayName(), getDisplayAdapter().getDisplayItem(), getDisplayAdapter().getDescription()) {
+            @SuppressWarnings("DuplicatedCode")
             @Override
             public ItemStack generateDisplayItem() {
                 ItemStack display = getDisplayItem().clone();

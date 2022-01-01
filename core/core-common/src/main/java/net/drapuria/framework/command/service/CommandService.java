@@ -1,6 +1,7 @@
 package net.drapuria.framework.command.service;
 
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.command.provider.CommandProvider;
 import net.drapuria.framework.services.PostDestroy;
 import net.drapuria.framework.services.PostInitialize;
@@ -21,6 +22,7 @@ public class CommandService {
     @PreInitialize
     private void preInit() {
         INSTANCE = this;
+        FrameworkMisc.PLATFORM.registerCommandProvider();
     }
 
     @PostInitialize

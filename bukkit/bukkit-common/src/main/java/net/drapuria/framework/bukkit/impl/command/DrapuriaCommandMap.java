@@ -66,7 +66,40 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;
                     }
+                    if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
 
+                        // check if there is paramter left to complete
+                        BukkitParameterData parameterData = drapuriaCommand.getCommandMeta().getParameterData();
+                        if (parameterData.getParameterCount() > 0) {
+                            int parameterIndex = index;
+                            if (parameterIndex == parameterData.getParameterCount()
+                                    || !cmdLine.endsWith(" ")) {
+                                parameterIndex = parameterIndex - 2;
+                            }
+                            if (parameterIndex < 0)
+                                parameterIndex = 0;
+                            if (parameterData.getParameterCount() <= parameterIndex
+                                    && parameterData.get(parameterData.getParameterCount() - 1).isWildcard()) {
+                                completions.addAll(tabCompleteParameter(player,
+                                        input[index - 1].toLowerCase(),
+                                        Player.class,
+                                        emptyStringArray));
+                                doneHere = true;
+                                break commandLoop;
+                            }
+                            if (parameterData.getParameterCount() > parameterIndex) {
+                                BukkitParameter parameter = parameterData.get(parameterIndex);
+                                List<String> tabCompletions = tabCompleteParameter(player,
+                                        cmdLine.endsWith(" ") ? "" : input[index - 1],
+                                        parameter.getClassType(), parameter.getTabCompleteFlags());
+                                if (tabCompletions != null) {
+                                    completions.addAll(tabCompletions);
+                                    doneHere = true;
+                                }
+                            }
+                        }
+
+                    }
                     // loop through all subcommands and checks if player can access this
                     subCommandMeta:
                     for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()

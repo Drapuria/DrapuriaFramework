@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.impl.command.parameter.type;
 
+import net.drapuria.framework.services.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
@@ -9,7 +10,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class PlayerParameterTypeParser extends CommandTypeParameter<Player>{
+@Component
+public class PlayerParameterTypeParameter extends CommandTypeParameter<Player>{
     @Override
     public Player parseNonPlayer(CommandSender sender, String value) {
         return null;

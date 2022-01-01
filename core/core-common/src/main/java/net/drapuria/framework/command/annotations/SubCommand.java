@@ -15,4 +15,6 @@ public @interface SubCommand {
 
     String permission() default "";
 
+    boolean async() default false;
+
 }

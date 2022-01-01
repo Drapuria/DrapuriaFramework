@@ -1,12 +1,14 @@
 package net.drapuria.framework.bukkit.impl.command.parameter.type;
 
+import net.drapuria.framework.services.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
 
-public class StringParameterTypeParser extends CommandTypeParameter<String>{
+@Component
+public class StringParameterTypeParameter extends CommandTypeParameter<String>{
     @Override
     public String parseNonPlayer(CommandSender sender, String value) {
         return value;

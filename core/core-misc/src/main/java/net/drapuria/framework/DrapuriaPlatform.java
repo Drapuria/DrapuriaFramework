@@ -26,4 +26,6 @@ public interface DrapuriaPlatform {
     boolean isShuttingDown();
 
     boolean isServerThread();
+
+    void registerCommandProvider();
 }

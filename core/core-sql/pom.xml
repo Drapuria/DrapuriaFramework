@@ -23,6 +23,30 @@
                 <version>3.4.0</version>
                 <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>core-yaml</artifactId>
+            <version>1.0-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>core-misc</artifactId>
+            <version>1.0-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.13.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>core-services</artifactId>
+            <version>1.0-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

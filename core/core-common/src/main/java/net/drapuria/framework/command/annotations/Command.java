@@ -15,7 +15,5 @@ public @interface Command {
 
     String description() default "";
 
-    boolean async() default false;
-
     boolean useSubCommandsOnly() default true;
 }

@@ -108,15 +108,15 @@ public class Library {
                     "org{}mariadb{}jdbc",
                     "mariadb-java-client",
                     "2.7.0",
-                    "ABURDun85Q01kf119r4yjDtl5ju9Fg9uV2nXyU3SEdw=",
-                    new Relocate("org{}mariadb{}jdbc", DRAPURIA_LIB_PACKAGE + "mariadb")
+                    "ABURDun85Q01kf119r4yjDtl5ju9Fg9uV2nXyU3SEdw="
+                  //  new Relocate("org{}mariadb{}jdbc", DRAPURIA_LIB_PACKAGE + "mariadb")
             ),
             MYSQL_DRIVER = new Library(
                     "mysql",
                     "mysql-connector-java",
                     "8.0.22",
-                    "UBne+9EjFilel6bojyqbB/EYNFpOmCcQu6Iy5JmyL08=",
-                    new Relocate("com{}mysql", DRAPURIA_LIB_PACKAGE + "mysql")
+                    "UBne+9EjFilel6bojyqbB/EYNFpOmCcQu6Iy5JmyL08="
+                 //   new Relocate("com{}mysql", DRAPURIA_LIB_PACKAGE + "mysql")
             ),
             POSTGRESQL_DRIVER = new Library(
                     "org{}postgresql",

@@ -75,7 +75,7 @@ public class SqlService {
             st.executeUpdate();
             st.close();
         } catch (Exception e) {
-            FrameworkMisc.PLATFORM.getLogger().warn("executeUpdate konnte nicht ausgeführt werden: " + e.getMessage());
+            FrameworkMisc.PLATFORM.getLogger().warn("Could not perform executeUpdate: " + e.getMessage());
             e.printStackTrace();
         } finally {
             try {
@@ -92,7 +92,7 @@ public class SqlService {
             statement.executeUpdate();
             statement.close();
         } catch (Exception e) {
-            FrameworkMisc.PLATFORM.getLogger().warn("executeUpdate konnte nicht ausgeführt werden: " + e.getMessage());
+            FrameworkMisc.PLATFORM.getLogger().warn("Could not perform executeUpdate: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -101,7 +101,7 @@ public class SqlService {
         try {
             return statement.executeQuery();
         } catch (Exception e) {
-            FrameworkMisc.PLATFORM.getLogger().warn("executeQuery konnte nicht ausgeführt werden: " + e.getMessage());
+            FrameworkMisc.PLATFORM.getLogger().warn("Could not perform executeQuery: " + e.getMessage());
             e.printStackTrace();
         }
         return null;

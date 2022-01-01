@@ -188,6 +188,6 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
     public List<String> tabCompleteParameter(Player sender, String parameter, Class<?> transformTo, String[] tabCompleteFlags) {
         return !commandProvider.getCommandTypeParameterParser().containsKey(transformTo)
                 ? (new ArrayList<>()) : commandProvider.getTypeParameter(transformTo)
-                .tabComplete(sender, ImmutableSet.copyOf(tabCompleteFlags), parameter);
+                .tabComplete(sender, ImmutableSet.copyOf(tabCompleteFlags), parameter.toLowerCase());
     }
 }

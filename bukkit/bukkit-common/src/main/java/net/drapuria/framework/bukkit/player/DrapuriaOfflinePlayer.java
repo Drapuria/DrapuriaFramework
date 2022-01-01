@@ -17,6 +17,9 @@ public class DrapuriaOfflinePlayer {
     }
 
     public CompletableFuture<OfflinePlayer> getOfflinePlayer() {
-        return offlinePlayer == null ? CompletableFuture.supplyAsync(() -> Bukkit.getOfflinePlayer(name)).thenApply(offlinePlayer1 -> this.offlinePlayer = offlinePlayer1) : CompletableFuture.completedFuture(offlinePlayer);
+        return offlinePlayer == null ? CompletableFuture
+                .supplyAsync(() -> Bukkit.getOfflinePlayer(name))
+                .thenApply(offlinePlayer1 -> this.offlinePlayer = offlinePlayer1)
+                : CompletableFuture.completedFuture(offlinePlayer);
     }
 }

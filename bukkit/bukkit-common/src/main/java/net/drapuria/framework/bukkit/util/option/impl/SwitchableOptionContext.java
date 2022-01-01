@@ -9,6 +9,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("DuplicatedCode")
 public class SwitchableOptionContext<C, T> extends OptionContext<T, C, T> {
 
     private List<T> inputList;

@@ -1,6 +1,7 @@
 package net.drapuria.framework.database.connection;
 
 import com.zaxxer.hikari.HikariConfig;
+import net.drapuria.framework.RepositoryType;
 
 public class MySqlConnectionFactory extends HikariConnectionFactory {
 
@@ -16,5 +17,10 @@ public class MySqlConnectionFactory extends HikariConnectionFactory {
         hikariConfig.addDataSourceProperty("user", username);
         hikariConfig.addDataSourceProperty("password", password);
         hikariConfig.setLeakDetectionThreshold(30000);
+    }
+
+    @Override
+    public RepositoryType type() {
+        return RepositoryType.MYSQL;
     }
 }

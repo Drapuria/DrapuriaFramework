@@ -72,6 +72,11 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     }
 
     @Override
+    public boolean existsById(ID id) {
+        return this.storage.containsKey(id);
+    }
+
+    @Override
     public <Q> Optional<T> findByQuery(String query, Q value) {
         return Optional.empty();
     }

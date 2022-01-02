@@ -35,6 +35,12 @@
             <version>1.0-RELEASE</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>core-sql</artifactId>
+            <version>1.0-RELEASE</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

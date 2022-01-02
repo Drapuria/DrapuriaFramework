@@ -4,6 +4,9 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import net.drapuria.framework.FrameworkMisc;
+import net.drapuria.framework.database.orm.statement.LegacySqlStatementBuilder;
+import net.drapuria.framework.database.orm.statement.MySqlStatementBuilder;
+import net.drapuria.framework.database.orm.statement.SqlStatementBuilder;
 
 import java.sql.Connection;
 import java.sql.Driver;
@@ -65,6 +68,10 @@ public abstract class HikariConnectionFactory extends AbstractConnectionFactory 
         }
     }
 
+    @Override
+    public SqlStatementBuilder builder() {
+       return new MySqlStatementBuilder();
+    }
 
     public abstract void configureDatabase(String hostname, String port, String databaseName, String username, String password);
 

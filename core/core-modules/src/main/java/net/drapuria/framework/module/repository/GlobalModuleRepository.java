@@ -74,6 +74,11 @@ public class GlobalModuleRepository extends ModuleRepository<PlatformBasedParent
     }
 
     @Override
+    public Class<?> type() {
+        return ModuleAdapter.class;
+    }
+
+    @Override
     public <Q> Optional<ModuleAdapter> findByQuery(String query, Q value) {
         return Optional.empty();
     }

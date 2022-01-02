@@ -65,8 +65,14 @@ public class PlatformModuleRepository extends ModuleRepository<PlatformBasedPare
         this.modules.remove(adapter);
     }
 
+
     @Override
     public void init() {
 
+    }
+
+    @Override
+    public Class<?> type() {
+        return ModuleAdapter.class;
     }
 }

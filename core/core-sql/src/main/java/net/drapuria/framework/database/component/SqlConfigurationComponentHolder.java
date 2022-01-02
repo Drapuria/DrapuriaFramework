@@ -24,10 +24,10 @@ public class SqlConfigurationComponentHolder extends ComponentHolder {
         if (!configuration.shouldActivate())
             return;
         if (service.getDefaultConfiguration() == null)
-            service.setDefaultConfiguration(configuration);
+            service.setDefaultConfiguration(configuration.getClass());
         AbstractConnectionFactory factory = configuration.factory();
         factory.connect();
-        service.addConnectionFactory(configuration, factory);
+        service.addConnectionFactory(configuration.getClass(), factory);
     }
 
     @Override

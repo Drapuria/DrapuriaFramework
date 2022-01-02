@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.util.uuid;
+package net.drapuria.framework.database.orm.impl;
 
 import net.drapuria.framework.ObjectSerializer;
 import net.drapuria.framework.services.Component;

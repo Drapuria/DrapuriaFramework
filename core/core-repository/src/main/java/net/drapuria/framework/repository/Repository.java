@@ -2,12 +2,14 @@ package net.drapuria.framework.repository;
 
 import net.drapuria.framework.services.DisallowAnnotation;
 import net.drapuria.framework.services.PreInitialize;
+import net.drapuria.framework.services.ServiceDependency;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 @DisallowAnnotation(value = PreInitialize.class)
+@ServiceDependency(dependencies = {"mongodb", "sql"})
 public interface Repository<T, ID extends Serializable> {
 
     default void saveAll() {
@@ -17,6 +19,8 @@ public interface Repository<T, ID extends Serializable> {
     }
 
     void init();
+
+    Class<?> type();
 
     <S extends T> S save(S pojo);
 
@@ -33,6 +37,8 @@ public interface Repository<T, ID extends Serializable> {
     Iterable<T> findAll();
 
     Iterable<T> findAllById(List<ID> ids);
+
+    boolean existsById(ID id);
 
     long count();
 

@@ -18,9 +18,6 @@ public class ExamplePlugin extends BukkitPlugin {
     @Override
     public void onPluginEnable() {
         DrapuriaCommon.TASK_SCHEDULER.runSync(this::loadModules);
-        CommandService commandService = (CommandService) DrapuriaCommon.BEAN_CONTEXT.getBean(CommandService.class);
-        BukkitCommandProvider bukkitCommandProvider = (BukkitCommandProvider) commandService.getCommandProvider();
-        bukkitCommandProvider.loadCommands(this, "net.drapuria.framework.bukkit.plugin.example");
     }
 
     @Override

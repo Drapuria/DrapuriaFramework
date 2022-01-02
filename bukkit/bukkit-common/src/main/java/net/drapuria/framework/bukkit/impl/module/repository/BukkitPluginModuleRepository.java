@@ -63,6 +63,11 @@ public class BukkitPluginModuleRepository extends ModuleRepository<BukkitPluginB
     }
 
     @Override
+    public Class<?> type() {
+        return ModuleAdapter.class;
+    }
+
+    @Override
     public <Q> Optional<ModuleAdapter> findByQuery(String query, Q value) {
         return Optional.empty();
     }

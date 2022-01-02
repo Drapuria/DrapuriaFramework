@@ -1,5 +1,7 @@
 package net.drapuria.framework.database;
 
+import net.drapuria.framework.ProvideConfiguration;
+import net.drapuria.framework.RepositoryType;
 import net.drapuria.framework.database.component.SqlConfigurationComponentHolder;
 import net.drapuria.framework.database.configuration.AbstractSqlConfiguration;
 import net.drapuria.framework.database.connection.AbstractConnectionFactory;
@@ -7,6 +9,7 @@ import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.ObjectSerializer;
 import net.drapuria.framework.libraries.Library;
 import net.drapuria.framework.services.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,7 +25,7 @@ public class SqlService {
 
     private final Map<Class<?>, AbstractConnectionFactory> connectionFactories = new HashMap<>();
 
-    private AbstractSqlConfiguration<?> defaultConfiguration = null;
+    private Class<?> defaultConfiguration = null;
 
     @Autowired
     private SerializerFactory serializerFactory;
@@ -35,16 +38,16 @@ public class SqlService {
         ComponentRegistry.registerComponentHolder(new SqlConfigurationComponentHolder(this));
     }
 
-    public AbstractSqlConfiguration<?> getDefaultConfiguration() {
+    public Class<?> getDefaultConfiguration() {
         return defaultConfiguration;
     }
 
-    public void setDefaultConfiguration(AbstractSqlConfiguration<?> defaultConfiguration) {
+    public void setDefaultConfiguration(Class<?> defaultConfiguration) {
         this.defaultConfiguration = defaultConfiguration;
     }
 
-    public void addConnectionFactory(AbstractSqlConfiguration<?> configuration, AbstractConnectionFactory factory) {
-        connectionFactories.put(configuration.getClass(), factory);
+    public void addConnectionFactory(Class<?> configuration, AbstractConnectionFactory factory) {
+        connectionFactories.put(configuration, factory);
     }
 
     public Map<Class<?>, AbstractConnectionFactory> getConnectionFactories() {
@@ -70,7 +73,7 @@ public class SqlService {
     public void executeUpdate(String statement) {
         Connection conn = null;
         try {
-            conn = getConnectionFactories().get(defaultConfiguration.getClass()).getConnection();
+            conn = getConnectionFactories().get(defaultConfiguration).getConnection();
             PreparedStatement st = conn.prepareStatement(statement);
             st.executeUpdate();
             st.close();
@@ -105,6 +108,45 @@ public class SqlService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public AbstractConnectionFactory factory(Class<?> use, @Nullable RepositoryType repositoryType) {
+        Class<?> type;
+        ProvideConfiguration configuration = use.getAnnotation(ProvideConfiguration.class);
+        if (configuration != null) {
+            type = configuration.value();
+        } else {
+            if (repositoryType != null) {
+                for (AbstractConnectionFactory factory : this.connectionFactories.values()) {
+                    if (factory.type() == repositoryType) {
+                        return factory;
+                    }
+                }
+
+                throw new IllegalArgumentException("There is no sql configuration with specified type " + repositoryType.name() + " registered!");
+            }
+
+            type = this.defaultConfiguration;
+
+            if (type == null) {
+                throw new IllegalArgumentException("There is no sql configuration registered!");
+            }
+        }
+
+        if (!AbstractSqlConfiguration.class.isAssignableFrom(type)) {
+            throw new IllegalArgumentException("The type " + type.getSimpleName() + " wasn't implemented on AbstractMongoConfiguration!");
+        }
+
+        if (this.connectionFactories == null) {
+            throw new IllegalArgumentException("SQLService haven't been loaded!");
+        }
+
+        AbstractConnectionFactory factory = this.connectionFactories.getOrDefault(type, null);
+        if (factory == null) {
+            throw new IllegalArgumentException("The database hasn't registered!");
+        }
+
+        return factory;
     }
 
 }

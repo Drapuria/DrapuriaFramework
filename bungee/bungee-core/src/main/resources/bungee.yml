@@ -1,0 +1,4 @@
+name: "DrapuriaFramework"
+version: ${project.version}
+main: net.drapuria
+author: Drapuria Development Team

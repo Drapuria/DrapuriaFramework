@@ -82,6 +82,14 @@ public abstract class AbstractConnectionFactory {
     }
 
     /**
+     * Returns the first row in a query in a defined pojo. Will return it in a Map if a
+     * class that implements Map is specified
+     */
+    public <T> boolean first(Class<T> clazz, T t) {
+        return new Query(this).first(clazz, t);
+    }
+
+    /**
      * Update a row in a table. It will match an existing row based on the primary
      * key.
      */

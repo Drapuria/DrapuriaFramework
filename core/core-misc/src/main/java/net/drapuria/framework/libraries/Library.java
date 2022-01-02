@@ -20,13 +20,13 @@ public class Library {
             "org{}redisson",
             "redisson-all", // Include all
             "3.13.6",
-            "3YN36wajaTShvnJVRh7Q/SyH7HhsZhAIjqxm1vvqQYM=",
-            new Relocate("io{}netty", DRAPURIA_LIB_PACKAGE + "redisson.netty"),
-            new Relocate("org{}jboss{}marshalling", DRAPURIA_LIB_PACKAGE + "redisson.marshalling"),
-            new Relocate("org{}xerial{}snappy", DRAPURIA_LIB_PACKAGE + "redisson.snappy"),
-            new Relocate("org{}yaml", DRAPURIA_LIB_PACKAGE + "redisson.yaml"),
-            new Relocate("net{}bytebuddy", DRAPURIA_LIB_PACKAGE + "redisson.bytebuddy"),
-            new Relocate("com{}fasterxml{}jackson", DRAPURIA_LIB_PACKAGE + "redisson.jackson")
+            "3YN36wajaTShvnJVRh7Q/SyH7HhsZhAIjqxm1vvqQYM="
+         //   new Relocate("io{}netty", DRAPURIA_LIB_PACKAGE + "redisson.netty"),
+         //   new Relocate("org{}jboss{}marshalling", DRAPURIA_LIB_PACKAGE + "redisson.marshalling"),
+        //    new Relocate("org{}xerial{}snappy", DRAPURIA_LIB_PACKAGE + "redisson.snappy"),
+       //     new Relocate("org{}yaml", DRAPURIA_LIB_PACKAGE + "redisson.yaml"),
+       //     new Relocate("net{}bytebuddy", DRAPURIA_LIB_PACKAGE + "redisson.bytebuddy"),
+       //     new Relocate("com{}fasterxml{}jackson", DRAPURIA_LIB_PACKAGE + "redisson.jackson")
     ),
             JACKSON_CORE = new Library(
                     "com.fasterxml.jackson.core",

@@ -10,11 +10,9 @@ import org.intellij.lang.annotations.Language;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@SuppressWarnings("DuplicatedCode")
 @Getter
 public class Query {
 
@@ -150,6 +148,10 @@ public class Query {
         }
     }
 
+    public <T> boolean first(Class<T> clazz, T t) {
+        return result(clazz, t);
+    }
+
     /**
      * Provides the results as a list of Map objects instead of a list of pojos.
      */
@@ -203,6 +205,55 @@ public class Query {
             close(con);
         }
 
+        return result;
+    }
+
+
+    /**
+     * Provides the results as a list of Map objects instead of a list of pojos.
+     */
+    private boolean resultMap(Class<Map<String, Object>> clazz, Map<String, Object> row) {
+
+        boolean result = false;
+        Connection con = null;
+        PreparedStatement state = null;
+
+        try {
+            if (sql == null) {
+                sql = sqlStatementBuilder.getSelectSql(this, clazz);
+            }
+
+            Connection localCon;
+            if (transaction == null) {
+                localCon = factory.getConnection();
+                con = localCon; // con gets closed below if non-null
+            } else {
+                localCon = transaction.getConnection();
+            }
+
+            state = localCon.prepareStatement(sql);
+            loadArgs(state);
+
+            ResultSet resultSet = state.executeQuery();
+
+            metaData = resultSet.getMetaData();
+            int colCount = metaData.getColumnCount();
+
+            if (resultSet.next()) {
+                for (int i = 1; i <= colCount; i++) {
+                    String columnName = metaData.getColumnLabel(i);
+                    row.put(columnName, resultSet.getObject(i));
+                }
+                result = true;
+            }
+
+        } catch (SQLException | IllegalArgumentException
+                | SecurityException e) {
+            throw new SqlDatabaseException(e);
+        } finally {
+            close(state);
+            close(con);
+        }
         return result;
     }
 
@@ -277,6 +328,74 @@ public class Query {
         return out;
     }
 
+
+    /**
+     * Execute a "select" query and returns boolean if success
+     */
+    @SuppressWarnings("unchecked")
+    public <T> boolean result(Class<T> clazz, T t) {
+        boolean result = false;
+        if (Map.class.isAssignableFrom(clazz)) {
+            return resultMap((Class<Map<String, Object>>) clazz, (Map<String, Object>) t);
+        }
+
+        Connection con = null;
+        PreparedStatement state = null;
+
+        try {
+            if (sql == null) {
+                sql = sqlStatementBuilder.getSelectSql(this, clazz);
+            }
+
+            Connection localCon;
+            if (transaction == null) {
+                localCon = factory.getConnection();
+                con = localCon; // con gets closed below if non-null
+            } else {
+                localCon = transaction.getConnection();
+            }
+
+            state = localCon.prepareStatement(sql);
+            loadArgs(state);
+
+            ResultSet rs = state.executeQuery();
+
+            metaData = rs.getMetaData();
+            int colCount = metaData.getColumnCount();
+
+            if (SQLUtil.isPrimitiveOrString(clazz) || clazz.getPackage().getName().startsWith("java.sql")) {
+                // if the receiver class is a primitive or jdbc type just grab the first column
+                // and assign it
+                if (rs.next()) {
+                    Object colValue = rs.getObject(1);
+                    t = (T) colValue;
+                    result = true;
+                }
+
+            } else {
+                PojoInfo pojoInfo = sqlStatementBuilder.getPojoInfo(clazz);
+                if (rs.next()) {
+                    for (int i = 1; i <= colCount; i++) {
+                        String colName = metaData.getColumnLabel(i);
+                        Object colValue = sqlStatementBuilder.convertValue(rs.getObject(i), metaData.getColumnTypeName(i));
+                        pojoInfo.putValue(t, colName, colValue, true);
+                    }
+                    result = true;
+                }
+            }
+
+        } catch (SQLException | IllegalArgumentException
+                | SecurityException e) {
+            SqlDatabaseException dbe = new SqlDatabaseException(e);
+            dbe.setSql(sql);
+            throw dbe;
+        } finally {
+            close(state);
+            close(con);
+        }
+        return result;
+    }
+
     private void loadArgs(PreparedStatement state) throws SQLException {
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
@@ -340,7 +459,6 @@ public class Query {
 
         sql = sqlStatementBuilder.getUpdateSql(this, row);
         args = sqlStatementBuilder.getUpdateArguments(this, row);
-
         if (execute().getRowsAffected() <= 0) {
             throw new SqlDatabaseException("Row not updated because the primary key was not found");
         }

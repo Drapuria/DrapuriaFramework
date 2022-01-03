@@ -9,4 +9,6 @@ The Framework offers an annotation based Module / Command system.
 
 Drapuria framework is used on various Minecraft Networks managed by Drapuria.
 
+The framework builds on some open source work linked below
+
 YAML System is based on https://github.com/Exlll/ConfigLib

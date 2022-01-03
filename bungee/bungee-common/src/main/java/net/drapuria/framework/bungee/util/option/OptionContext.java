@@ -105,6 +105,7 @@ public abstract class OptionContext<V, C, T> {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public V deserializeData(String base64Enc) {
         if (base64Enc == null)
             return null;

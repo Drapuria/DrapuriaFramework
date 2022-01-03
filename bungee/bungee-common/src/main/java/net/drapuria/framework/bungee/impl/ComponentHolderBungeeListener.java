@@ -15,6 +15,7 @@ public class ComponentHolderBungeeListener extends ComponentHolder {
 
     @Override
     public Object newInstance(Class<?> type) {
+        Drapuria.LOGGER.info("Loading listener " + type.getSimpleName());
         Plugin plugin = Drapuria.PLUGIN;
         Class<? extends Plugin> pluginClass = Plugin.class;
         PluginProvider provider = type.getAnnotation(PluginProvider.class);
@@ -29,10 +30,13 @@ public class ComponentHolderBungeeListener extends ComponentHolder {
                         .newInstance(plugin);
                 break constructor;
             } catch (ReflectiveOperationException e) {
+                Drapuria.LOGGER.error("Failed to load listener " + type.getSimpleName() + " with " + pluginClass);
             }
             try {
                 listener = (Listener) type.newInstance();
+                break constructor;
             } catch (ReflectiveOperationException e) {
+                Drapuria.LOGGER.error("Failed to load listener" + type.getSimpleName());
             }
             throw new RuntimeException("Could not find valid constructor for " + type.getSimpleName());
         }

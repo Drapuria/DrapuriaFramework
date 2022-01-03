@@ -445,9 +445,7 @@ public class Query {
 
         sql = sqlStatementBuilder.getUpsertSql(this, row);
         args = sqlStatementBuilder.getUpsertArguments(this, row);
-
         execute();
-
         return this;
     }
 

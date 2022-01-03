@@ -34,6 +34,10 @@ public class Session implements AutoCloseable {
         return this.query().byId(clazz, id);
     }
 
+    public Query byId(Class<?> clazz, Object id, Object row) {
+        return this.query().byId(clazz, id);
+    }
+
     /**
      * Simple, primitive method for creating a table based on a pojo. Does not add
      * indexes or implement complex data types. Probably not suitable for production

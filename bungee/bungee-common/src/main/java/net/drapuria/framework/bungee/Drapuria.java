@@ -6,6 +6,7 @@ import net.drapuria.framework.bungee.impl.BungeeDrapuriaPlatform;
 import net.drapuria.framework.bungee.impl.BungeeEventHandler;
 import net.drapuria.framework.bungee.impl.BungeeTaskScheduler;
 import net.drapuria.framework.bungee.impl.ComponentHolderBungeeListener;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.services.ComponentRegistry;
@@ -14,6 +15,7 @@ import net.md_5.bungee.api.plugin.Plugin;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+@MavenDependency(groupId = "org.json", artifactId = "json", version = "20200518")
 public class Drapuria {
 
     public static final Logger LOGGER = LogManager.getLogger("Drapuria");

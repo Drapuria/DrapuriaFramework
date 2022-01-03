@@ -9,6 +9,7 @@ import net.drapuria.framework.bukkit.impl.*;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
+import net.drapuria.framework.bukkit.messaging.BungeeMessaging;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
 import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.module.service.ModuleService;
@@ -17,6 +18,7 @@ import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.random.FastRandom;
 import net.drapuria.framework.services.Autowired;
 import net.drapuria.framework.services.ComponentRegistry;
+import org.apache.commons.lang3.Validate;
 import org.apache.http.util.Asserts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,11 +58,11 @@ public class Drapuria {
         Drapuria.PLUGIN = plugin;
         Drapuria.CLASS_LOADER = new PluginClassLoader(plugin.getClass().getClassLoader());
         Drapuria.RANDOM = new FastRandom();
+        BungeeMessaging.init();
 
         SpigotUtil.init();
         Drapuria.initCommon();
         getCommandProvider = (BukkitCommandProvider) getCommandService.getCommandProvider();
-
         final ModuleService moduleService = (ModuleService) DrapuriaCommon.BEAN_CONTEXT.getBean(ModuleService.class);
         moduleService.registerScanner(PluginDependenciesScanner.class);
         // load internal modules (modules managed by the framework)

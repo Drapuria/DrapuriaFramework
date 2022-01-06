@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Getter
 public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> {
@@ -170,7 +169,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
     }
 
     @Override
-    @SuppressWarnings("DuplicatedCode")
+    @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
     public void execute(Player executor, String[] params) {
         if (isAsyncDefaultCommand && Bukkit.isPrimaryThread()) {
             DrapuriaCommon.executorService.execute(() -> execute(executor, params));
@@ -189,8 +188,11 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
             if (parameter.getClassType() == String.class && i + 1 >= this.parameterData.getParameterCount() && i + 1 < params.length) {
                 String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
                 if (parameter.isWildcard()) {
-                    builder = IntStream.range(i, params.length).mapToObj(index -> " " + params[index]).collect(Collectors.joining("", builder, ""));
-                    objects[i + 1] = builder;
+                    StringBuilder stringBuilder = new StringBuilder(builder);
+                    for (int index = i; index < params.length; index++) {
+                        stringBuilder.append(" ").append(params[index]);
+                    }
+                    objects[i + 1] = stringBuilder.toString();
                 } else
                     objects[i + 1] = builder;
             } else {

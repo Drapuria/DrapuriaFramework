@@ -26,7 +26,7 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
         this.commandPermission = this.subCommand.permission();
     }
 
-    @SuppressWarnings("DuplicatedCode")
+    @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
     @Override
     public boolean execute(Player player, String[] params) {
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
@@ -43,7 +43,14 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
 
             if (parameter.getClassType() == String.class && i + 1 >= this.parameterData.getParameterCount() && i + 1 < params.length) {
                 String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
-                objects[i + 1] = builder;
+                if (parameter.isWildcard()) {
+                    StringBuilder stringBuilder = new StringBuilder(builder);
+                    for (int index = i; index < params.length; index++) {
+                        stringBuilder.append(" ").append(params[index]);
+                    }
+                    objects[i + 1] = stringBuilder.toString();
+                } else
+                    objects[i + 1] = builder;
             } else {
                 objects[i + 1] = commandTypeParameter.parse(player, params[i]);
             }

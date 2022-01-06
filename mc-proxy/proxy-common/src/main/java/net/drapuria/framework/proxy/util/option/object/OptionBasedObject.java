@@ -1,6 +1,8 @@
-package net.drapuria.framework.bukkit.util.option.object;
+package net.drapuria.framework.proxy.util.option.object;
 
-import net.drapuria.framework.bukkit.util.option.OptionContext;
+
+import net.drapuria.framework.proxy.util.option.OptionContext;
+
 import java.util.HashMap;
 import java.util.Map;
 

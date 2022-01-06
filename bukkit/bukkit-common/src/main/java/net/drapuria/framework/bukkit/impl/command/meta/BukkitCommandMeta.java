@@ -43,6 +43,12 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
 
         this.fetchCommands();
         this.subCommandMeta = this.fetchSubCommands();
+        this.parent.setAliases(Arrays.asList(this.commandAliases));
+        for (String commandAlias : commandAliases) {
+            System.out.println(commandAlias);
+        }
+        this.parent.setDescription(this.commandDescription);
+       // this.parent.setPermission(this.commandPermission);
     }
 
     public void setCommandPermission(String commandPermission) {

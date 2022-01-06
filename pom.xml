@@ -11,7 +11,7 @@
     <modules>
         <module>core</module>
         <module>bukkit</module>
-        <module>bungee</module>
+        <module>mc-proxy</module>
     </modules>
 
     <distributionManagement>

@@ -17,6 +17,9 @@ import java.util.Map;
 @Service(name = "redisMessageService")
 public class MessageService {
 
+    @Autowired
+    public static MessageService getService;
+
     private RedisPubSub<Object> redisPubSub;
     private String channel;
 

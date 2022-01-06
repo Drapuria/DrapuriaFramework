@@ -106,8 +106,9 @@ public class LegacyPojoInfo implements PojoInfo {
             property.setField(field);
 
             CustomSerializer serializerAnnotation = field.getAnnotation(CustomSerializer.class);
-            if (serializerAnnotation != null)
+            if (serializerAnnotation != null) {
                 property.setSerializer(serializerAnnotation.value().newInstance());
+            }
 
             if (SqlService.getService != null) {
                 ObjectSerializer<?, ?> serializer = property.getSerializer();

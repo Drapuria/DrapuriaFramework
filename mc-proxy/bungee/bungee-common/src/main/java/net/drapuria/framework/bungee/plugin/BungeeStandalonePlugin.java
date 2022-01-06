@@ -19,4 +19,9 @@ public class BungeeStandalonePlugin extends Plugin {
         Drapuria.init(this);
         Thread.currentThread().setContextClassLoader(originalContextClassLoader);
     }
+
+    @Override
+    public void onDisable() {
+        Drapuria.shutdown();
+    }
 }

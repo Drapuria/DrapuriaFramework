@@ -32,7 +32,8 @@ public class CommandService {
 
     @PostDestroy
     public void shutdown() {
-        commandProvider.shutdown();
+        if (commandProvider != null)
+            commandProvider.shutdown();
     }
 
     public void registerCommandProvider(CommandProvider<?, ?> commandProvider) {
@@ -44,7 +45,7 @@ public class CommandService {
     }
 
 
-    public void setSubCommandAnnotation(Class<? extends Annotation>  subCommandAnnotation) {
+    public void setSubCommandAnnotation(Class<? extends Annotation> subCommandAnnotation) {
         this.subCommandAnnotation = subCommandAnnotation;
     }
 

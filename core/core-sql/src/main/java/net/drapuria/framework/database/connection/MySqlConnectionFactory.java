@@ -11,6 +11,13 @@ public class MySqlConnectionFactory extends HikariConnectionFactory {
         hikariConfig.setMaximumPoolSize(10);
       //  hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
         hikariConfig.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        try {
+            Class.forName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
+        } catch (Exception ignored) {
+            hikariConfig.setDataSourceClassName(null);
+            hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
+            hikariConfig.setJdbcUrl("jdbc:mysql://" + hostname + ":" + port + "/" + databaseName);
+        }
         hikariConfig.addDataSourceProperty("serverName", hostname);
         hikariConfig.addDataSourceProperty("port", port);
         hikariConfig.addDataSourceProperty("databaseName", databaseName);

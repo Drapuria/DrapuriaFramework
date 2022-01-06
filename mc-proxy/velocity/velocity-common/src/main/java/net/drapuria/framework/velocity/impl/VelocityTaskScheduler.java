@@ -7,10 +7,10 @@ import net.drapuria.framework.velocity.plugin.VelocityPlugin;
 import java.util.concurrent.TimeUnit;
 
 public class VelocityTaskScheduler implements ITaskScheduler {
-    private final VelocityPlugin plugin;
+    private final Object plugin;
     private final ProxyServer server;
 
-    public VelocityTaskScheduler(VelocityPlugin plugin, ProxyServer server) {
+    public VelocityTaskScheduler(Object plugin, ProxyServer server) {
         this.plugin = plugin;
         this.server = server;
     }

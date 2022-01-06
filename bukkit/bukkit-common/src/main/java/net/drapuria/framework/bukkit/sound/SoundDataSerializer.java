@@ -1,7 +1,7 @@
 package net.drapuria.framework.bukkit.sound;
 
 import net.drapuria.framework.ObjectSerializer;
-import net.drapuria.framework.services.Component;
+import net.drapuria.framework.beans.annotation.Component;
 import org.bukkit.Sound;
 
 @Component

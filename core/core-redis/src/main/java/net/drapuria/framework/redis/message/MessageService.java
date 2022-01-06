@@ -4,7 +4,12 @@ import net.drapuria.framework.redis.RedisService;
 import net.drapuria.framework.redis.message.annotation.Message;
 import net.drapuria.framework.redis.message.annotation.MessageHandler;
 import net.drapuria.framework.redis.message.subscription.RedisPubSub;
-import net.drapuria.framework.services.*;
+import net.drapuria.framework.beans.annotation.Autowired;
+import net.drapuria.framework.beans.annotation.PostInitialize;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.Service;
+import net.drapuria.framework.beans.component.ComponentHolder;
+import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.drapuria.framework.util.AccessUtil;
 
 import java.lang.reflect.Method;

@@ -1,7 +1,7 @@
 package net.drapuria.framework.velocity.impl;
 
 import com.velocitypowered.api.proxy.ProxyServer;
-import net.drapuria.framework.services.ComponentHolder;
+import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.velocity.Drapuria;
 import net.drapuria.framework.velocity.listener.Listener;
 

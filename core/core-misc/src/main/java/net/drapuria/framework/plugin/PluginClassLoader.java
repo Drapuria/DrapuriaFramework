@@ -16,6 +16,7 @@ public class PluginClassLoader {
 
     private static final Logger LOGGER = LogManager.getLogger(PluginClassLoader.class);
     private final URLClassLoader classLoader;
+    private ClassPathAppender classPathAppender;
 
     @SuppressWarnings("Guava") // we can't use java.util.Function because old Guava versions are used at runtime
     private final Supplier<Method> addUrlMethod;
@@ -26,6 +27,7 @@ public class PluginClassLoader {
         } else {
             throw new IllegalStateException("ClassLoader is not instance of URLClassLoader");
         }
+        classPathAppender = null;
 
         this.addUrlMethod = Suppliers.memoize(() -> {
             if (isJava9OrNewer()) {
@@ -45,7 +47,17 @@ public class PluginClassLoader {
         });
     }
 
+    public PluginClassLoader(ClassLoader classLoader, ClassPathAppender appender) {
+        this(classLoader);
+        this.classPathAppender = appender;
+    }
+
+
     public void addJarToClasspath(Path file) {
+        if (this.classPathAppender != null) {
+            this.classPathAppender.addJarToClassPath(file);
+            return;
+        }
         try {
             this.addUrlMethod.get().invoke(this.classLoader, file.toUri().toURL());
         } catch (IllegalAccessException | InvocationTargetException | MalformedURLException e) {

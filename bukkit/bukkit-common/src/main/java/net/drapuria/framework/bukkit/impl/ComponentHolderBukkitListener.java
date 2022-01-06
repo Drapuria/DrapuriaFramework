@@ -2,7 +2,7 @@ package net.drapuria.framework.bukkit.impl;
 
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.listener.FilteredListener;
-import net.drapuria.framework.services.ComponentHolder;
+import net.drapuria.framework.beans.component.ComponentHolder;
 import org.bukkit.event.Listener;
 
 public class ComponentHolderBukkitListener extends ComponentHolder {

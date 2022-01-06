@@ -1,8 +1,8 @@
 package net.drapuria.framework.bungee.impl;
 
+import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.bungee.Drapuria;
 import net.drapuria.framework.bungee.plugin.PluginProvider;
-import net.drapuria.framework.services.ComponentHolder;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;

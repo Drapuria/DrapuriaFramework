@@ -3,10 +3,10 @@ package net.drapuria.framework.command.service;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.command.provider.CommandProvider;
-import net.drapuria.framework.services.PostDestroy;
-import net.drapuria.framework.services.PostInitialize;
-import net.drapuria.framework.services.PreInitialize;
-import net.drapuria.framework.services.Service;
+import net.drapuria.framework.beans.annotation.PostDestroy;
+import net.drapuria.framework.beans.annotation.PostInitialize;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.Service;
 
 import java.lang.annotation.Annotation;
 

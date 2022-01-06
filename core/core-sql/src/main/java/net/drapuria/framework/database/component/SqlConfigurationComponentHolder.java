@@ -5,7 +5,7 @@ import lombok.SneakyThrows;
 import net.drapuria.framework.database.SqlService;
 import net.drapuria.framework.database.configuration.AbstractSqlConfiguration;
 import net.drapuria.framework.database.connection.AbstractConnectionFactory;
-import net.drapuria.framework.services.ComponentHolder;
+import net.drapuria.framework.beans.component.ComponentHolder;
 
 @RequiredArgsConstructor
 public class SqlConfigurationComponentHolder extends ComponentHolder {

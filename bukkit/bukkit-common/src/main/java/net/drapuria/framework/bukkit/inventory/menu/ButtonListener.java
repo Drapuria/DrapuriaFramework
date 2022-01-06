@@ -1,7 +1,7 @@
 package net.drapuria.framework.bukkit.inventory.menu;
 
 import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.services.Component;
+import net.drapuria.framework.beans.annotation.Component;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

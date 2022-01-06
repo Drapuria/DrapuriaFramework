@@ -2,7 +2,8 @@ package net.drapuria.framework.redis;
 
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
-import net.drapuria.framework.services.*;
+import net.drapuria.framework.beans.*;
+import net.drapuria.framework.beans.annotation.*;
 import org.redisson.Redisson;
 import org.redisson.api.RMap;
 import org.redisson.api.RReadWriteLock;

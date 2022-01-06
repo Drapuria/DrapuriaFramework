@@ -1,8 +1,8 @@
 package net.drapuria.framework.repository;
 
-import net.drapuria.framework.services.DisallowAnnotation;
-import net.drapuria.framework.services.PreInitialize;
-import net.drapuria.framework.services.ServiceDependency;
+import net.drapuria.framework.beans.annotation.DisallowAnnotation;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.ServiceDependency;
 
 import java.io.Serializable;
 import java.util.List;

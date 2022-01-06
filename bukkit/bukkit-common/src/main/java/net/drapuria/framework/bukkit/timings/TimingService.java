@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-import net.drapuria.framework.services.PreInitialize;
-import net.drapuria.framework.services.Service;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.Service;
 import org.bukkit.plugin.Plugin;
 
 @Service(name = "Timings")

@@ -18,7 +18,7 @@ import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.plugin.AbstractPlugin;
 import net.drapuria.framework.plugin.PluginListenerAdapter;
 import net.drapuria.framework.plugin.PluginManager;
-import net.drapuria.framework.services.ComponentRegistry;
+import net.drapuria.framework.beans.component.ComponentRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;

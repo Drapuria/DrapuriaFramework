@@ -2,7 +2,6 @@ package net.drapuria.framework.velocity.impl;
 
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.drapuria.framework.task.ITaskScheduler;
-import net.drapuria.framework.velocity.plugin.VelocityPlugin;
 
 import java.util.concurrent.TimeUnit;
 

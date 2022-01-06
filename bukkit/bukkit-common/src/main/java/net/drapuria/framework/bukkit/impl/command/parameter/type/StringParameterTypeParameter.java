@@ -1,6 +1,6 @@
 package net.drapuria.framework.bukkit.impl.command.parameter.type;
 
-import net.drapuria.framework.services.Component;
+import net.drapuria.framework.beans.annotation.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

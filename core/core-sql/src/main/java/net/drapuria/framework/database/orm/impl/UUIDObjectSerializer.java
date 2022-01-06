@@ -1,7 +1,7 @@
 package net.drapuria.framework.database.orm.impl;
 
 import net.drapuria.framework.ObjectSerializer;
-import net.drapuria.framework.services.Component;
+import net.drapuria.framework.beans.annotation.Component;
 
 import java.util.UUID;
 

@@ -1,7 +1,7 @@
 package net.drapuria.framework.bukkit.impl.command.parameter.type;
 
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
-import net.drapuria.framework.services.ComponentHolder;
+import net.drapuria.framework.beans.component.ComponentHolder;
 
 public class CommandTypeParameterComponentHolder extends ComponentHolder {
 

@@ -8,7 +8,11 @@ import net.drapuria.framework.database.connection.AbstractConnectionFactory;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.ObjectSerializer;
 import net.drapuria.framework.libraries.Library;
-import net.drapuria.framework.services.*;
+import net.drapuria.framework.beans.*;
+import net.drapuria.framework.beans.annotation.Autowired;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.Service;
+import net.drapuria.framework.beans.component.ComponentRegistry;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Connection;

@@ -6,8 +6,8 @@ import net.drapuria.framework.database.SqlService;
 import net.drapuria.framework.database.connection.AbstractConnectionFactory;
 import net.drapuria.framework.database.orm.Session;
 import net.drapuria.framework.database.orm.Transaction;
-import net.drapuria.framework.services.PostInitialize;
-import net.drapuria.framework.services.PreDestroy;
+import net.drapuria.framework.beans.annotation.PostInitialize;
+import net.drapuria.framework.beans.annotation.PreDestroy;
 
 import java.io.Serializable;
 import java.util.List;

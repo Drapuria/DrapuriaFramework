@@ -5,7 +5,7 @@ import net.drapuria.framework.bukkit.impl.annotations.ProviderTestImpl;
 import net.drapuria.framework.bukkit.impl.annotations.ServerImpl;
 import net.drapuria.framework.bukkit.impl.test.ImplementationFactory;
 import net.drapuria.framework.bukkit.util.BlockPosition;
-import net.drapuria.framework.services.BeanContext;
+import net.drapuria.framework.beans.BeanContext;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

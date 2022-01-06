@@ -9,7 +9,7 @@ import net.drapuria.framework.bungee.impl.ComponentHolderBungeeListener;
 import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
-import net.drapuria.framework.services.ComponentRegistry;
+import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.apache.logging.log4j.LogManager;

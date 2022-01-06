@@ -5,7 +5,7 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.plugin.PluginClassLoader;
-import net.drapuria.framework.services.BeanContext;
+import net.drapuria.framework.beans.BeanContext;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.spigotmc.RestartCommand;

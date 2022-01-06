@@ -3,7 +3,7 @@ package net.drapuria.framework.database.orm.impl;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.drapuria.framework.ObjectSerializer;
-import net.drapuria.framework.services.Component;
+import net.drapuria.framework.beans.annotation.Component;
 
 import java.lang.reflect.Type;
 import java.util.HashMap;

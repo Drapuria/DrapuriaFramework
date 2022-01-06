@@ -11,6 +11,7 @@
 
     <artifactId>bungee-common</artifactId>
 
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -65,7 +66,7 @@
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
-            <artifactId>core-services</artifactId>
+            <artifactId>core-beans</artifactId>
             <version>1.0-RELEASE</version>
             <scope>compile</scope>
         </dependency>

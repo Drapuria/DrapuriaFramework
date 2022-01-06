@@ -71,7 +71,7 @@
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
-            <artifactId>core-services</artifactId>
+            <artifactId>core-beans</artifactId>
             <version>1.0-RELEASE</version>
             <scope>compile</scope>
         </dependency>

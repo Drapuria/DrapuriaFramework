@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.timings.MCTiming;
 import net.drapuria.framework.bukkit.timings.TimingService;
-import net.drapuria.framework.services.Autowired;
+import net.drapuria.framework.beans.annotation.Autowired;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventException;
 import org.bukkit.event.Listener;

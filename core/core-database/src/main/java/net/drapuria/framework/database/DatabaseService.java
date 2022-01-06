@@ -1,8 +1,8 @@
 package net.drapuria.framework.database;
 
-import net.drapuria.framework.services.PostDestroy;
-import net.drapuria.framework.services.PreInitialize;
-import net.drapuria.framework.services.Service;
+import net.drapuria.framework.beans.annotation.PostDestroy;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.Service;
 
 import java.util.HashMap;
 import java.util.Map;

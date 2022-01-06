@@ -7,7 +7,7 @@ import net.drapuria.framework.events.IEventHandler;
 import net.drapuria.framework.libraries.Library;
 import net.drapuria.framework.libraries.LibraryHandler;
 import net.drapuria.framework.libraries.annotation.MavenDependency;
-import net.drapuria.framework.services.BeanContext;
+import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.task.ITaskScheduler;
 import net.drapuria.framework.util.ClasspathScanner;
 import net.drapuria.framework.util.TypeAnnotationScanner;

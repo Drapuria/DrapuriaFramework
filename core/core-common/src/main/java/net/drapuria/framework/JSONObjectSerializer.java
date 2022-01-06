@@ -1,6 +1,6 @@
 package net.drapuria.framework;
 
-import net.drapuria.framework.services.Component;
+import net.drapuria.framework.beans.annotation.Component;
 import org.json.JSONObject;
 
 @Component

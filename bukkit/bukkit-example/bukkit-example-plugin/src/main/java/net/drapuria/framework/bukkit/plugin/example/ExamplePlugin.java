@@ -1,14 +1,11 @@
 package net.drapuria.framework.bukkit.plugin.example;
 
 import net.drapuria.framework.DrapuriaCommon;
-import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
-import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.module.parent.BukkitPluginBasedParent;
 import net.drapuria.framework.bukkit.impl.module.repository.BukkitPluginModuleRepository;
 import net.drapuria.framework.bukkit.plugin.BukkitPlugin;
-import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.module.service.ModuleService;
-import net.drapuria.framework.services.ClasspathScan;
+import net.drapuria.framework.beans.annotation.ClasspathScan;
 
 import java.io.File;
 

@@ -4,7 +4,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import net.drapuria.framework.database.configuration.AbstractMongoConfiguration;
-import net.drapuria.framework.services.ComponentHolder;
+import net.drapuria.framework.beans.component.ComponentHolder;
 
 public class MongoComponentHolder extends ComponentHolder {
 

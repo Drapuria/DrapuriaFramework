@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Getter
 public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> {
@@ -48,7 +49,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
             System.out.println(commandAlias);
         }
         this.parent.setDescription(this.commandDescription);
-       // this.parent.setPermission(this.commandPermission);
+        // this.parent.setPermission(this.commandPermission);
     }
 
     public void setCommandPermission(String commandPermission) {
@@ -187,7 +188,11 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
 
             if (parameter.getClassType() == String.class && i + 1 >= this.parameterData.getParameterCount() && i + 1 < params.length) {
                 String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
-                objects[i + 1] = builder;
+                if (parameter.isWildcard()) {
+                    builder = IntStream.range(i, params.length).mapToObj(index -> " " + params[index]).collect(Collectors.joining("", builder, ""));
+                    objects[i + 1] = builder;
+                } else
+                    objects[i + 1] = builder;
             } else {
                 objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
             }

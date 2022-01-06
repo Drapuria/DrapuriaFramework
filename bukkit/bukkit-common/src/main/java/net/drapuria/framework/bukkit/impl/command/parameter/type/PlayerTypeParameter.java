@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
-public class PlayerParameterTypeParameter extends CommandTypeParameter<Player>{
+public class PlayerTypeParameter extends CommandTypeParameter<Player>{
     @Override
     public Player parseNonPlayer(CommandSender sender, String value) {
         return null;

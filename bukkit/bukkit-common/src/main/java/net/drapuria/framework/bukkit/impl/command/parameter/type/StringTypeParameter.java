@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class StringParameterTypeParameter extends CommandTypeParameter<String>{
+public class StringTypeParameter extends CommandTypeParameter<String>{
     @Override
     public String parseNonPlayer(CommandSender sender, String value) {
         return value;

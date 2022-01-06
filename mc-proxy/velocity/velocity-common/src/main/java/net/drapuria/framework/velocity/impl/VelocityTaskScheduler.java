@@ -23,51 +23,50 @@ public class VelocityTaskScheduler implements ITaskScheduler {
     @Override
     public int runAsyncScheduled(Runnable runnable, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .repeat(time, TimeUnit.MILLISECONDS)
+                .repeat(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 
     @Override
     public int runAsyncRepeated(Runnable runnable, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .repeat(time, TimeUnit.MILLISECONDS)
+                .repeat(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 
     @Override
     public int runAsyncRepeated(Runnable runnable, long delay, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .delay(delay, TimeUnit.MILLISECONDS)
-                .repeat(time, TimeUnit.MILLISECONDS)
+                .delay(delay / 20, TimeUnit.SECONDS)
+                .repeat(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 
     @Override
     public int runSync(Runnable runnable) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .delay(0, TimeUnit.MILLISECONDS)
                 .schedule().status().ordinal();
     }
 
     @Override
     public int runScheduled(Runnable runnable, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .delay(time, TimeUnit.MILLISECONDS)
+                .delay(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 
     @Override
     public int runRepeated(Runnable runnable, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .repeat(time, TimeUnit.MILLISECONDS)
+                .repeat(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 
     @Override
     public int runRepeated(Runnable runnable, long delay, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .delay(delay, TimeUnit.MILLISECONDS)
-                .repeat(time, TimeUnit.MILLISECONDS)
+                .delay(delay / 20, TimeUnit.SECONDS)
+                .repeat(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 

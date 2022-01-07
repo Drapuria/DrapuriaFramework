@@ -3,6 +3,9 @@ package net.drapuria.framework.bukkit.player;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
+/**
+ * @param <I> The ItemStack we work with (eg multi version support)
+ */
 public interface DrapuriaPlayer<I> extends Player {
 
     void showItemBar(String text);

@@ -23,7 +23,7 @@ public class VelocityTaskScheduler implements ITaskScheduler {
     @Override
     public int runAsyncScheduled(Runnable runnable, long time) {
         return server.getScheduler().buildTask(plugin, runnable)
-                .repeat(time / 20, TimeUnit.SECONDS)
+                .delay(time / 20, TimeUnit.SECONDS)
                 .schedule().status().ordinal();
     }
 

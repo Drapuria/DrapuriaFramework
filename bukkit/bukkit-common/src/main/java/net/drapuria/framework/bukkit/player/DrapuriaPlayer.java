@@ -4,7 +4,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 /**
- * @param <I> The ItemStack we work with (eg multi version support)
+ * @param <I> The ItemStack we work with (multi version support)
  */
 public interface DrapuriaPlayer<I> extends Player {
 

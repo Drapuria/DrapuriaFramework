@@ -17,7 +17,6 @@ public class VelocityClassPathAppender implements ClassPathAppender {
 
     @Override
     public void addJarToClassPath(Path path) {
-        System.out.println("add to velocity class path");
         this.server.getPluginManager().addToClasspath(this.plugin, path);
     }
 }

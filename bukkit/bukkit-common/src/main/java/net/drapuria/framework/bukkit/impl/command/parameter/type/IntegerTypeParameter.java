@@ -22,7 +22,6 @@ public class IntegerTypeParameter extends CommandTypeParameter<Integer> {
 
     @Override
     public Integer parse(Player sender, String source) {
-        sender.sendMessage("§aparsing integer parameter " + source);
         try {
             return Integer.parseInt(source);
         } catch (Exception ignored) {

@@ -134,7 +134,6 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 String[] annotationParameterTypes = StringUtils.substringsBetween(subCommand.parameters(), "{", "}");
 
                 if (parameterTypes.length == 0) continue;
-
                 BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
                 for (int i = 1; i < parameterTypes.length; i++) {
                     Class<?> parameter = method.getParameterTypes()[i];
@@ -154,7 +153,6 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 new String[]{});
                     }
                 }
-
                 BukkitParameterData parameterData = new BukkitParameterData(parameters);
                 BukkitSubCommandMeta meta = new BukkitSubCommandMeta(subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class);
 

@@ -21,7 +21,6 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final DrapuriaPlayer<ItemStack> drapuriaPlayer = new DrapuriaPlayer1_8(player);
         playerRepository.save(drapuriaPlayer);
-
     }
 
 

@@ -4,10 +4,13 @@ import de.vantrex.hardcorespigot.modules.Module;
 import de.vantrex.hardcorespigot.profiles.potion.PotionProfile;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
@@ -39,7 +42,8 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer<ItemStack> {
 
     @Override
     public void showItemBar(String text) {
-
+        ((CraftPlayer) player).getHandle().playerConnection
+                .sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + text.trim() + "\"}"), (byte) 2));
     }
 
     @Override

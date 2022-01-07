@@ -41,5 +41,4 @@ public interface DrapuriaPlayer<I> extends Player {
         getInventory().setHeldItemSlot(0);
         updateInventory();
     }
-
 }

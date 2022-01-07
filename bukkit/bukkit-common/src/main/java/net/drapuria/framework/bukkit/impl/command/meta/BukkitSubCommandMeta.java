@@ -33,7 +33,7 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
     @Override
     public boolean execute(Player player, String[] params) {
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
-        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(player.getUniqueId()) : player;
+        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(player.getUniqueId()).get() : player;
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
             Parameter parameter = this.parameterData.getParameters()[i];
             if (i == params.length) {

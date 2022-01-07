@@ -32,6 +32,7 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
                 .orElse(null);
         if (keyField != null)
             keyField.setAccessible(true);
+        init();
     }
 
     @Override

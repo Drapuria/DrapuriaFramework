@@ -93,7 +93,25 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                         useDrapuriaPlayer = true;
                     }
                     BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
-                    extractParameters(parameters, parameterTypes, annotationParameterTypes);
+                    for (int i = 1; i < parameterTypes.length; i++) {
+                        Class<?> parameter = method.getParameterTypes()[i];
+                        if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
+                            CommandParameter parameterInfo = method.getParameters()[i]
+                                    .getAnnotation(CommandParameter.class);
+                            parameters[i - 1] = new BukkitParameter(parameter,
+                                    annotationParameterTypes[i - 1],
+                                    parameterInfo.defaultValue(),
+                                    parameterInfo.wildcard(),
+                                    parameterInfo.tabCompleteFlags());
+
+                        } else {
+                            parameters[i - 1] = new BukkitParameter(parameter,
+                                    annotationParameterTypes[i - 1],
+                                    "",
+                                    false,
+                                    new String[]{});
+                        }
+                    }
                     this.parameterData = new BukkitParameterData(parameters);
                     this.method = method;
                     return;
@@ -102,28 +120,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
         }
     }
 
-    private void extractParameters(BukkitParameter[] parameters, Class<?>[] parameterTypes, String[] annotationParameterTypes) {
-        for (int i = 1; i < parameterTypes.length; i++) {
-            Class<?> parameter = method.getParameterTypes()[i];
-            if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
-                CommandParameter parameterInfo = method.getParameters()[i]
-                        .getAnnotation(CommandParameter.class);
-                parameters[i - 1] = new BukkitParameter(parameter,
-                        annotationParameterTypes[i - 1],
-                        parameterInfo.defaultValue(),
-                        parameterInfo.wildcard(),
-                        parameterInfo.tabCompleteFlags());
 
-            } else {
-                parameters[i - 1] = new BukkitParameter(parameter,
-                        annotationParameterTypes[i - 1],
-                        "",
-                        false,
-                        new String[]{});
-            }
-        }
-    }
-
+    @SuppressWarnings("DuplicatedCode")
     private Map<String, BukkitSubCommandMeta> fetchSubCommands() {
         Map<String, BukkitSubCommandMeta> tmpHashMap = new HashMap<>();
         Method[] methods = this.parent.getClass().getDeclaredMethods();
@@ -136,8 +134,27 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 String[] annotationParameterTypes = StringUtils.substringsBetween(subCommand.parameters(), "{", "}");
 
                 if (parameterTypes.length == 0) continue;
+
                 BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
-                extractParameters(parameters, parameterTypes, annotationParameterTypes);
+                for (int i = 1; i < parameterTypes.length; i++) {
+                    Class<?> parameter = method.getParameterTypes()[i];
+                    if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
+                        CommandParameter parameterInfo = method.getParameters()[i].getAnnotation(CommandParameter.class);
+                        parameters[i - 1] = new BukkitParameter(parameter,
+                                annotationParameterTypes[i - 1],
+                                parameterInfo.defaultValue(),
+                                parameterInfo.wildcard(),
+                                parameterInfo.tabCompleteFlags());
+
+                    } else {
+                        parameters[i - 1] = new BukkitParameter(parameter,
+                                annotationParameterTypes[i - 1],
+                                "",
+                                false,
+                                new String[]{});
+                    }
+                }
+
                 BukkitParameterData parameterData = new BukkitParameterData(parameters);
                 BukkitSubCommandMeta meta = new BukkitSubCommandMeta(subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class);
 

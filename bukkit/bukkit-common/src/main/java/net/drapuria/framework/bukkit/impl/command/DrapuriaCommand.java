@@ -5,6 +5,7 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.command.FrameworkCommand;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
@@ -37,7 +38,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             }
             return;
         }
-        final String cmdLine = Strings.join(arguments, " ").toLowerCase();
+        final String cmdLine = Strings.join(arguments, " ");
         final StringBuilder actualCommand = new StringBuilder();
         Map<BukkitSubCommandMeta, String[]> objects = new HashMap<>();
         for (final String argument : arguments) {
@@ -52,7 +53,6 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 objects.put(subCommandMeta, array);
             }
         }
-
         if (objects.isEmpty()) {
             if (this.commandMeta.isUseUnlySubCommands())
                 player.sendMessage(generateDefaultUsage(null, ""));
@@ -64,6 +64,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 }
             }
         } else {
+
             objects.entrySet().stream()
                     .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
                     .ifPresent(entry -> {

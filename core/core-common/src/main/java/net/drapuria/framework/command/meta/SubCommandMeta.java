@@ -24,6 +24,8 @@ public abstract class SubCommandMeta<E, T extends ParameterData<?>> {
         this.instance = instance;
         this.method = method;
         this.defaultAlias = aliases.length == 0 ? "" : aliases[0];
+        for (int i = 0; i < aliases.length; i++)
+            aliases[i] = aliases[i].toLowerCase();
         this.parameterString = parameterString;
     }
 

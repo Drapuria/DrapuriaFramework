@@ -5,10 +5,7 @@ import net.drapuria.framework.util.TypeResolver;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -20,6 +17,7 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     private final Map<String, Field> fieldCache = new HashMap<>();
 
     private final Map<ID, T> storage = new HashMap<>();
+    private final Field keyField;
 
     private final Class<T> daoType;
     private final Class<ID> key;
@@ -29,6 +27,11 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
         Class<?>[] types = findIdType();
         daoType = (Class<T>) types[0];
         key = (Class<ID>) types[1];
+        keyField = Arrays.stream(daoType.getDeclaredFields()).filter(field -> field.getType() == key)
+                .findFirst()
+                .orElse(null);
+        if (keyField != null)
+            keyField.setAccessible(true);
     }
 
     @Override
@@ -105,12 +108,16 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     @SuppressWarnings("unchecked")
     public <S extends T> S save(S pojo) {
         ID id = null;
-        for (Field field : pojo.getClass().getDeclaredFields()) {
-            if (field.getType() == key) {
-                field.setAccessible(true);
-                id = (ID) field.get(pojo);
-                break;
+        if (keyField == null) {
+            for (Field field : pojo.getClass().getDeclaredFields()) {
+                if (field.getType() == key) {
+                    field.setAccessible(true);
+                    id = (ID) field.get(pojo);
+                    break;
+                }
             }
+        } else {
+            id = (ID) keyField.get(pojo);
         }
         if (id == null)
             return null;

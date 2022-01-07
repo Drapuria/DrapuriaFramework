@@ -4,10 +4,10 @@ import lombok.Getter;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameter;
+import net.drapuria.framework.bukkit.player.PlayerRepository;
 import net.drapuria.framework.command.annotations.SubCommand;
 import net.drapuria.framework.command.meta.SubCommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -20,9 +20,11 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
 
     private final String commandPermission;
     private final SubCommand subCommand;
-    public BukkitSubCommandMeta(SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method) {
+    private final boolean useDrapuriaPlayer;
+    public BukkitSubCommandMeta(SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer) {
         super(parameterData, subCommand.names(), instance, method, subCommand.parameters());
         this.subCommand = subCommand;
+        this.useDrapuriaPlayer = useDrapuriaPlayer;
         this.commandPermission = this.subCommand.permission();
     }
 
@@ -30,7 +32,7 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
     @Override
     public boolean execute(Player player, String[] params) {
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
-        objects[0] = player;
+        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(player.getUniqueId()) : player;
 
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
             if (i == params.length) return false;

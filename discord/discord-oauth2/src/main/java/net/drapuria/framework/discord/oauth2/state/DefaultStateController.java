@@ -10,7 +10,7 @@ public class DefaultStateController implements StateController {
 
     private static final Random RANDOM = new Random();
 
-    private static final String CHARSTRING = "ABCDEFGHIJKLMNQPURSTUVWXYZabcdefghijklmnqppurstuvwxyz0123456789";
+    private static final String CHAR_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     private final Map<String, String> states = new HashMap<>();
 
@@ -18,7 +18,7 @@ public class DefaultStateController implements StateController {
     public String generateNewState(String redirectUri) {
         final String state = generateRandomState();
         this.states.put(state, redirectUri);
-        return null;
+        return state;
     }
 
     @Override
@@ -26,8 +26,14 @@ public class DefaultStateController implements StateController {
         return states.remove(state);
     }
 
-    private static String generateRandomState() {
-        return IntStream.range(0, 10).mapToObj(i -> String.valueOf(CHARSTRING.charAt(RANDOM.nextInt(CHARSTRING.length())))).collect(Collectors.joining());
+    private String generateRandomState() {
+        String state;
+        do {
+            state = IntStream.range(0, 10)
+                    .mapToObj(i -> String.valueOf(CHAR_STRING.charAt(RANDOM.nextInt(CHAR_STRING.length()))))
+                    .collect(Collectors.joining());
+        } while (states.containsKey(state));
+        return state;
     }
 
 }

@@ -1,5 +1,6 @@
 package net.drapuria.framework.discord.oauth2;
 
+import net.drapuria.framework.discord.oauth2.entity.OAuth2Connection;
 import net.drapuria.framework.discord.oauth2.entity.OAuth2Guild;
 import net.drapuria.framework.discord.oauth2.entity.OAuth2User;
 import net.drapuria.framework.discord.oauth2.entity.impl.OAuth2ClientImpl;
@@ -41,6 +42,8 @@ public interface OAuth2Client {
     OAuth2Action<OAuth2User> getUser(Session session);
 
     OAuth2Action<List<OAuth2Guild>> getGuilds(Session session) throws MissingScopeException;
+
+    OAuth2Action<List<OAuth2Connection>> getConnections(Session session) throws MissingScopeException;
 
     long getId();
 

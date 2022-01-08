@@ -19,7 +19,7 @@ public interface OAuth2Guild {
 
     String getIconUrl();
 
-    int getPermissionsRaw();
+    long getPermissionsRaw();
 
     EnumSet<Permission> getPermissions();
 

@@ -3,6 +3,7 @@ package net.drapuria.framework.discord.oauth2.entity.impl;
 import lombok.Getter;
 import net.drapuria.framework.discord.oauth2.OAuth2Client;
 import net.drapuria.framework.discord.oauth2.Scope;
+import net.drapuria.framework.discord.oauth2.entity.OAuth2Connection;
 import net.drapuria.framework.discord.oauth2.entity.OAuth2Guild;
 import net.drapuria.framework.discord.oauth2.entity.OAuth2User;
 import net.drapuria.framework.discord.oauth2.exception.InvalidStateException;
@@ -120,7 +121,7 @@ public class OAuth2ClientImpl implements OAuth2Client {
     @Override
     public OAuth2Action<List<OAuth2Guild>> getGuilds(Session session) throws MissingScopeException {
         if (!Scope.contains(session.getScopes(), Scope.GUILDS))
-            throw new MissingScopeException("get guilds for a Session", Scope.GUILDS);
+            throw new MissingScopeException("Missing scope for session", Scope.GUILDS);
         return new OAuth2Action<List<OAuth2Guild>>(this, RequestMethod.GET, OAuth2URL.CURRENT_USER_GUILDS.compile()) {
             @Override
             protected Headers getHeaders() {
@@ -134,12 +135,47 @@ public class OAuth2ClientImpl implements OAuth2Client {
 
                 JSONArray body = new JSONArray(new JSONTokener(OAuth2ClientImpl.getBody(response)));
                 List<OAuth2Guild> list = new LinkedList<>();
-                JSONObject obj;
+                JSONObject object;
                 for (int i = 0; i < body.length(); i++) {
-                    obj = body.getJSONObject(i);
-                    list.add(new OAuth2GuildImpl(OAuth2ClientImpl.this, obj.getLong("id"),
-                            obj.getString("name"), obj.optString("icon", null), obj.getBoolean("owner"),
-                            obj.getInt("permissions")));
+                    object = body.getJSONObject(i);
+                    list.add(new OAuth2GuildImpl(OAuth2ClientImpl.this,
+                            object.getLong("id"),
+                            object.getString("name"),
+                            object.optString("icon", null),
+                            object.getBoolean("owner"),
+                            object.getLong("permissions")));
+                }
+                return list;
+            }
+        };
+    }
+
+    @Override
+    public OAuth2Action<List<OAuth2Connection>> getConnections(Session session) throws MissingScopeException {
+        if (!Scope.contains(session.getScopes(), Scope.CONNECTIONS))
+            throw new MissingScopeException("Missing scope for session", Scope.CONNECTIONS);
+        return new OAuth2Action<List<OAuth2Connection>>(this, RequestMethod.GET, OAuth2URL.CURRENT_USER_CONNECTIONS.compile()) {
+            @Override
+            protected Headers getHeaders() {
+                return Headers.of("Authorization", generateAuthorizationHeader(session));
+            }
+
+            @Override
+            protected List<OAuth2Connection> handle(Response response) throws IOException {
+                if (!response.isSuccessful())
+                    throw failure(response);
+                JSONArray body = new JSONArray(new JSONTokener(OAuth2ClientImpl.getBody(response)));
+                List<OAuth2Connection> list = new LinkedList<>();
+                JSONObject object;
+                for (int i = 0; i < body.length(); i++) {
+                    object = body.getJSONObject(i);
+                    list.add(new OAuth2ConnectionImpl(OAuth2ClientImpl.this,
+                            object.getString("id"),
+                            object.getString("name"),
+                            object.getString("type"),
+                            object.getBoolean("verified"),
+                            object.getBoolean("friend_sync"),
+                            object.getInt("visibility")));
                 }
                 return list;
             }
@@ -190,7 +226,6 @@ public class OAuth2ClientImpl implements OAuth2Client {
 
         byte[] var4;
         try {
-            boolean var3 = false;
 
             while (true) {
                 int readAmount;

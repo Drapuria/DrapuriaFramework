@@ -172,7 +172,7 @@ public final class DrapuriaCommon {
 
     public Builder builder() {
         if (DrapuriaCommon.BRIDGE_INITIALIZED) {
-            throw new IllegalStateException("Already build!");
+            throw new IllegalStateException("Already builded!");
         }
 
         DrapuriaCommon.BRIDGE_INITIALIZED = true;

@@ -4,6 +4,8 @@ import net.drapuria.framework.discord.oauth2.OAuth2Client;
 import net.drapuria.framework.discord.oauth2.exception.MissingScopeException;
 import net.drapuria.framework.discord.oauth2.session.Session;
 
+import java.util.Locale;
+
 public interface OAuth2User {
 
     OAuth2Client getClient();
@@ -33,13 +35,24 @@ public interface OAuth2User {
 
     String getDefaultAvatarUrl();
 
+    String getBannerId();
+
+    String getBannerUrl();
+
     String getEffectiveAvatarUrl();
+
 
     default boolean isBot() {
         return false;
     }
 
     String getAsMention();
+
+    Integer getPremiumType();
+
+    Locale getLocale();
+
+    String getLocaleString();
 
 
 }

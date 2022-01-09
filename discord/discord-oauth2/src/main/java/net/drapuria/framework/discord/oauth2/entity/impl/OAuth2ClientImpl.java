@@ -52,16 +52,17 @@ public class OAuth2ClientImpl implements OAuth2Client {
     }
 
     @Override
-    public String generateAuthorizationUrl(String redirectUri, Scope... scopes) {
-        return OAuth2URL.AUTHORIZE.compile(clientId, EncodingUtil.encodeUTF8(redirectUri),
-                Scope.join(scopes), stateController.generateNewState(redirectUri));
+    public String[] generateAuthorizationUrl(String redirectUri, Scope... scopes) {
+        String state = stateController.generateNewState(redirectUri);
+        return new String[] {OAuth2URL.AUTHORIZE.compile(clientId, EncodingUtil.encodeUTF8(redirectUri),
+                Scope.join(scopes), state), state};
     }
 
     @Override
     public OAuth2Action<Session> startSession(String code, String state, String identifier, Scope... scopes) throws InvalidStateException {
 
 
-        String redirectUri = stateController.consumeState(state);
+       final  String redirectUri = stateController.consumeState(state);
         if (redirectUri == null)
             throw new InvalidStateException(String.format("No state '%s' exists!", state));
 
@@ -110,10 +111,14 @@ public class OAuth2ClientImpl implements OAuth2Client {
                 if (!response.isSuccessful())
                     throw failure(response);
                 JSONObject body = new JSONObject(new JSONTokener(OAuth2ClientImpl.getBody(response)));
+                System.out.println("USER RETURN:");
+                System.out.println(body);
                 return new OAuth2UserImpl(OAuth2ClientImpl.this, session, body.getLong("id"),
                         body.getString("username"), body.getString("discriminator"),
                         body.optString("avatar", null), body.optString("email", null),
-                        body.optBoolean("verified", false), body.getBoolean("mfa_enabled"));
+                        body.optBoolean("verified", false), body.getBoolean("mfa_enabled"),
+                        body.optString("banner", null), body.optString("locale"),
+                        body.optInt("premium_type"));
             }
         };
     }
@@ -138,6 +143,9 @@ public class OAuth2ClientImpl implements OAuth2Client {
                 JSONObject object;
                 for (int i = 0; i < body.length(); i++) {
                     object = body.getJSONObject(i);
+                    if (i < 1) {
+                        System.out.println(object);
+                    }
                     list.add(new OAuth2GuildImpl(OAuth2ClientImpl.this,
                             object.getLong("id"),
                             object.getString("name"),

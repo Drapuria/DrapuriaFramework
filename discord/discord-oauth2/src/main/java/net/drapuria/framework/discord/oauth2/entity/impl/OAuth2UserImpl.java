@@ -6,6 +6,7 @@ import net.drapuria.framework.discord.oauth2.entity.OAuth2User;
 import net.drapuria.framework.discord.oauth2.exception.MissingScopeException;
 import net.drapuria.framework.discord.oauth2.session.Session;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class OAuth2UserImpl implements OAuth2User {
@@ -21,11 +22,14 @@ public class OAuth2UserImpl implements OAuth2User {
     private final OAuth2Client client;
     private final Session session;
     private final long id;
-    private final String name, discriminator, avatar, email;
+    private final String name, discriminator, avatar, email, locale, banner;
     private final boolean verified, mfaEnabled;
+    private final int premiumType;
+
 
     public OAuth2UserImpl(OAuth2Client client, Session session, long id, String name, String discriminator,
-                          String avatar, String email, boolean verified, boolean mfaEnabled) {
+                          String avatar, String email, boolean verified, boolean mfaEnabled, String banner,
+                          String locale, int premiumType) {
         this.client = client;
         this.session = session;
         this.id = id;
@@ -35,6 +39,9 @@ public class OAuth2UserImpl implements OAuth2User {
         this.email = email;
         this.verified = verified;
         this.mfaEnabled = mfaEnabled;
+        this.banner = banner;
+        this.locale = locale;
+        this.premiumType = premiumType;
     }
 
     @Override
@@ -64,7 +71,7 @@ public class OAuth2UserImpl implements OAuth2User {
 
     @Override
     public String getEmail() throws MissingScopeException {
-        if (Scope.contains(getSession().getScopes(), Scope.EMAIL))
+        if (!Scope.contains(getSession().getScopes(), Scope.EMAIL))
             throw new MissingScopeException("get email for user", Scope.EMAIL);
         return this.email;
     }
@@ -106,6 +113,17 @@ public class OAuth2UserImpl implements OAuth2User {
     }
 
     @Override
+    public String getBannerId() {
+        return this.banner;
+    }
+
+    @Override
+    public String getBannerUrl() {
+        return getBannerId() == null ? null : "https://cdn.discordapp.com/banners/" + getId() + "/" + getBannerId()
+                + (getBannerId().startsWith("a_") ? ".gif" : ".png");
+    }
+
+    @Override
     public String getEffectiveAvatarUrl() {
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
@@ -113,6 +131,21 @@ public class OAuth2UserImpl implements OAuth2User {
     @Override
     public String getAsMention() {
         return "<@" + id + '>';
+    }
+
+    @Override
+    public Integer getPremiumType() {
+        return this.premiumType;
+    }
+
+    @Override
+    public Locale getLocale() {
+        return Locale.forLanguageTag(locale);
+    }
+
+    @Override
+    public String getLocaleString() {
+        return this.locale;
     }
 
     @Override

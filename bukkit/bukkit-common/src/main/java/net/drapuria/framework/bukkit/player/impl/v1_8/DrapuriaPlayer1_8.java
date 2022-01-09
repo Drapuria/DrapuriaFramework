@@ -1152,7 +1152,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer<ItemStack> {
 
     @Override
     public Block getTargetBlock(Set<Material> set, int i) {
-        return getTargetBlock(set, i);
+        return player.getTargetBlock(set, i);
     }
 
     /**
@@ -1162,12 +1162,12 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer<ItemStack> {
      */
     @Override
     public List<Block> getLastTwoTargetBlocks(HashSet<Byte> hashSet, int i) {
-        return getLastTwoTargetBlocks(hashSet, i);
+        return player.getLastTwoTargetBlocks(hashSet, i);
     }
 
     @Override
     public List<Block> getLastTwoTargetBlocks(Set<Material> set, int i) {
-        return getLastTwoTargetBlocks(set, i);
+        return player.getLastTwoTargetBlocks(set, i);
     }
 
     /**

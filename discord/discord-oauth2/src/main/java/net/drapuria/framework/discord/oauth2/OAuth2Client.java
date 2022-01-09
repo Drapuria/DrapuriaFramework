@@ -21,9 +21,9 @@ public interface OAuth2Client {
     /**
      * @param redirectUri Uri we redirect to
      * @param scopes used scopes
-     * @return generated auth url
+     * @return generated state & auth url
      */
-    String generateAuthorizationUrl(String redirectUri, Scope... scopes);
+    String[] generateAuthorizationUrl(String redirectUri, Scope... scopes);
 
     /**
      * @param code

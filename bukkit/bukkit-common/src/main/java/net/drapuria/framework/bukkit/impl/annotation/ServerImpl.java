@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.impl.annotations;
+package net.drapuria.framework.bukkit.impl.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

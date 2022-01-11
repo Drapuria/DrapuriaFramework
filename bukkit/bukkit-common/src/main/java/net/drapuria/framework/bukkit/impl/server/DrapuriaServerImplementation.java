@@ -1,6 +1,6 @@
 package net.drapuria.framework.bukkit.impl.server;
 
-import net.drapuria.framework.bukkit.impl.annotations.ServerImpl;
+import net.drapuria.framework.bukkit.impl.annotation.ServerImpl;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import org.bukkit.Location;
 import org.bukkit.World;

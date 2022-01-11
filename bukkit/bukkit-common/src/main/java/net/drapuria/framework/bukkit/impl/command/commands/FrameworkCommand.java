@@ -1,7 +1,7 @@
 package net.drapuria.framework.bukkit.impl.command.commands;
 
 import net.drapuria.framework.annotations.NewInstance;
-import net.drapuria.framework.bukkit.impl.annotations.UseFrameworkPlugin;
+import net.drapuria.framework.bukkit.impl.annotation.UseFrameworkPlugin;
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
 import net.drapuria.framework.command.annotations.Command;
 import net.drapuria.framework.command.annotations.SubCommand;

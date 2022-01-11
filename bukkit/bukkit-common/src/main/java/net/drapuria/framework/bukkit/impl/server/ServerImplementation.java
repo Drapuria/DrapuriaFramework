@@ -1,8 +1,8 @@
 package net.drapuria.framework.bukkit.impl.server;
 
 import lombok.SneakyThrows;
-import net.drapuria.framework.bukkit.impl.annotations.ProviderTestImpl;
-import net.drapuria.framework.bukkit.impl.annotations.ServerImpl;
+import net.drapuria.framework.bukkit.impl.annotation.ProviderTestImpl;
+import net.drapuria.framework.bukkit.impl.annotation.ServerImpl;
 import net.drapuria.framework.bukkit.impl.test.ImplementationFactory;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.beans.BeanContext;

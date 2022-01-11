@@ -5,7 +5,7 @@ import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.DrapuriaInstanceFactory;
 import net.drapuria.framework.annotations.NewInstance;
 import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.bukkit.impl.annotations.UseFrameworkPlugin;
+import net.drapuria.framework.bukkit.impl.annotation.UseFrameworkPlugin;
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommandMap;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.*;

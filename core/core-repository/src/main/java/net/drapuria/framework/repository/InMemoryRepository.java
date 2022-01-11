@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
  * @param <T> Object to cache
  * @param <ID> ID of the object - has to be the first object in the list
  */
-public abstract class InMemoryRepository<T, ID extends Serializable> implements Repository<T, ID> {
+public abstract class InMemoryRepository<T, ID extends Serializable> implements CrudRepository<T, ID> {
 
     private final Map<String, Field> fieldCache = new HashMap<>();
 
-    private final Map<ID, T> storage = new HashMap<>();
+    protected final Map<ID, T> storage = new HashMap<>();
     private final Field keyField;
 
     private final Class<T> daoType;

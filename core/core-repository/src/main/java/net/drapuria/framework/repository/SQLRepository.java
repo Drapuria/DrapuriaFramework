@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SuppressWarnings("unchecked")
-public abstract class SQLRepository<T, ID extends Serializable> implements Repository<T, ID> {
+public abstract class SQLRepository<T, ID extends Serializable> implements CrudRepository<T, ID> {
 
     private RepositoryType type;
     private UpdatePolicy updatePolicy;

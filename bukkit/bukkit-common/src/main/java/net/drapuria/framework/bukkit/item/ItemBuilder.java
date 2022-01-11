@@ -173,5 +173,20 @@ public class ItemBuilder {
         return this.itemStack;
     }
 
+    public static ItemBuilder of(Material material) {
+        return new ItemBuilder(material);
+    }
+
+    public static ItemBuilder of(Material material, short data) {
+        return new ItemBuilder(material, data);
+    }
+
+    public static ItemBuilder of(Material material, int data) {
+        return new ItemBuilder(material, (short) data);
+    }
+
+    public static ItemBuilder of(ItemStack itemStack) {
+        return new ItemBuilder(itemStack);
+    }
 
 }

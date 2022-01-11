@@ -5,7 +5,7 @@ import java.util.List;
 
 public class CompletionStateImpl implements CompletionState {
 
-    private boolean ready;
+    private boolean ready = false;
 
     private final List<Runnable> readyExecutors = new ArrayList<>();
 

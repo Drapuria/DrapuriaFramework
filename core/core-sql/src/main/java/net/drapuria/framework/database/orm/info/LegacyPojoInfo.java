@@ -4,10 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.ObjectSerializer;
 import net.drapuria.framework.database.SqlService;
-import net.drapuria.framework.database.orm.ColumnOrder;
-import net.drapuria.framework.database.orm.CustomSerializer;
-import net.drapuria.framework.database.orm.Property;
-import net.drapuria.framework.database.orm.SqlDatabaseException;
+import net.drapuria.framework.database.orm.*;
+import net.drapuria.framework.database.orm.impl.LegacyColumnTransformer;
 import net.drapuria.framework.util.AccessUtil;
 
 import javax.persistence.*;
@@ -109,6 +107,9 @@ public class LegacyPojoInfo implements PojoInfo {
             if (serializerAnnotation != null) {
                 property.setSerializer(serializerAnnotation.value().newInstance());
             }
+            ColumnTransformer transformer = field.getAnnotation(ColumnTransformer.class);
+            if (transformer != null)
+                property.setColumnTransformer(new LegacyColumnTransformer(transformer.read().isEmpty() ? null : transformer.read(), transformer.write().isEmpty() ? null : transformer.write()));
 
             if (SqlService.getService != null) {
                 ObjectSerializer<?, ?> serializer = property.getSerializer();
@@ -174,6 +175,9 @@ public class LegacyPojoInfo implements PojoInfo {
                 property.setSerializer(serializer);
             }
         }
+        ColumnTransformer transformer = annotatedElement.getAnnotation(ColumnTransformer.class);
+        if (transformer != null)
+            property.setColumnTransformer(new LegacyColumnTransformer(transformer.read().isEmpty() ? null : transformer.read(), transformer.write().isEmpty() ? null : transformer.write()));
     }
 
     @Override
@@ -296,6 +300,9 @@ public class LegacyPojoInfo implements PojoInfo {
             } else {
                 value = value.toString();
             }
+        }
+        if (property.getColumnTransformer() != null) {
+            value = property.getColumnTransformer().getWriteString().replace("?", "'" + value + "'");
         }
 
         return value;

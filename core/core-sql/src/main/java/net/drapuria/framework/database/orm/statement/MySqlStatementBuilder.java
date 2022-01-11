@@ -1,6 +1,7 @@
 package net.drapuria.framework.database.orm.statement;
 
 import net.drapuria.framework.database.orm.Query;
+import net.drapuria.framework.database.orm.SqlColumnTransformer;
 import net.drapuria.framework.database.orm.info.LegacyPojoInfo;
 
 public class MySqlStatementBuilder extends LegacySqlStatementBuilder {
@@ -47,7 +48,8 @@ public class MySqlStatementBuilder extends LegacySqlStatementBuilder {
                 buf.append(',');
             }
             buf.append(colName);
-            buf.append("=?");
+           final SqlColumnTransformer transformer = pojoInfo.getProperty(colName).getColumnTransformer();
+            buf.append("=" + (transformer == null ? "?" : transformer.getWriteString()));
         }
 
         pojoInfo.setUpsertSql(buf.toString());

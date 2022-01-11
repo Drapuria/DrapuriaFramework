@@ -1,9 +1,6 @@
 package net.drapuria.framework.database.orm.statement;
 
-import net.drapuria.framework.database.orm.Property;
-import net.drapuria.framework.database.orm.Query;
-import net.drapuria.framework.database.orm.SqlDatabaseException;
-import net.drapuria.framework.database.orm.Where;
+import net.drapuria.framework.database.orm.*;
 import net.drapuria.framework.database.orm.info.LegacyPojoInfo;
 import net.drapuria.framework.database.orm.utils.SQLUtil;
 import org.apache.logging.log4j.LogManager;
@@ -12,7 +9,9 @@ import org.apache.logging.log4j.Logger;
 import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -105,9 +104,12 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
             if (i > 0) {
                 buf.append(',');
             }
-            buf.append(cols.get(i) + "=?");
+            final SqlColumnTransformer transformer = pojoInfo.getProperty(cols.get(i)).getColumnTransformer();
+            buf.append(cols.get(i) + "=" + (transformer == null ? "?" : transformer.getWriteString() + "(?)"));
         }
-        buf.append(" where " + pojoInfo.getPrimaryKeyName() + "=?");
+        final SqlColumnTransformer transformer = pojoInfo.getProperty(pojoInfo.getPrimaryKeyName()).getColumnTransformer();
+
+        buf.append(" where " + pojoInfo.getPrimaryKeyName() + "=" + (transformer == null ? "?" : transformer.getWriteString()));
 
         pojoInfo.setUpdateSql(buf.toString());
     }
@@ -115,13 +117,13 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
 
     public void makeInsertSql(LegacyPojoInfo pojoInfo) {
         ArrayList<String> cols = new ArrayList<String>();
-        for (Property prop : pojoInfo.getProperties().values()) {
+        for (Property prop: pojoInfo.getProperties().values()) {
             if (prop.isGenerated()) {
                 continue;
             }
             cols.add(prop.getName());
         }
-        pojoInfo.setInsertColumnNames(cols.toArray(new String[cols.size()]));
+        pojoInfo.setInsertColumnNames(cols.toArray(new String [cols.size()]));
         pojoInfo.setInsertSqlArgumentsCount(pojoInfo.getInsertColumnNames().length);
 
         StringBuilder buf = new StringBuilder();
@@ -146,7 +148,9 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
         } else {
             ArrayList<String> cols = new ArrayList<String>();
             for (Property prop : pojoInfo.getProperties().values()) {
-                cols.add(prop.getName());
+                final SqlColumnTransformer transformer = pojoInfo.getProperty(prop.getName()).getColumnTransformer();
+
+                cols.add(transformer == null ? prop.getName() : transformer.getReadString());
             }
             pojoInfo.setSelectColumns(SQLUtil.join(cols));
         }
@@ -180,7 +184,7 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
                         value = whereObj.getValue().toString();
                     }
 
-                    where += whereObj.getProperty() + "=\'" + value.toString() + "\'";
+                    where += whereObj.getProperty() + (value.toString().startsWith("UNHEX") ? "=" + value.toString() : "=\'" + value.toString() + "\'");
                     if (iterator.hasNext()) {
                         where += ",";
                     }
@@ -242,11 +246,10 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
                 }
 
             } else {
-                if (columnAnnot.columnDefinition() == null) {
+                if (!columnAnnot.columnDefinition().isEmpty()) {
 
                     // let the column def override everything
                     buf.append(columnAnnot.columnDefinition());
-
                 } else {
 
                     buf.append(prop.getName());
@@ -327,8 +330,8 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
         }
 
         String primaryKeyName = pojoInfo.getPrimaryKeyName();
-
-        return "delete from " + table + " where " + primaryKeyName + "=?";
+        final SqlColumnTransformer transformer = pojoInfo.getProperty(primaryKeyName).getColumnTransformer();
+        return "delete from " + table + " where " + primaryKeyName + "=" + (transformer == null ? "?" : transformer.getWriteString());
     }
 
 

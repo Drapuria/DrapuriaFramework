@@ -31,4 +31,6 @@ public class Property {
 
     private ObjectSerializer serializer;
 
+    private SqlColumnTransformer columnTransformer;
+
 }

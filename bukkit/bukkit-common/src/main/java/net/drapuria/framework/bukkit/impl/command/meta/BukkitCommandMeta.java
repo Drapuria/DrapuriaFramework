@@ -194,7 +194,9 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 if (parameter.isWildcard()) {
                     StringBuilder stringBuilder = new StringBuilder(builder);
                     for (int index = i; index < params.length; index++) {
-                        stringBuilder.append(" ").append(params[index]);
+                        if (stringBuilder.length() > 0)
+                            stringBuilder.append(" ");
+                        stringBuilder.append(params[index]);
                     }
                     objects[i + 1] = stringBuilder.toString();
                 } else

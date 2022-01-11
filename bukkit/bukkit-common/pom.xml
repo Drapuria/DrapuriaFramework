@@ -118,6 +118,13 @@
             <version>1.0-RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <!-- HDB API -->
+        <dependency>
+            <groupId>com.github.shynixn.headdatabase</groupId>
+            <artifactId>hdb-api</artifactId>
+            <version>1.0</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-database</artifactId>

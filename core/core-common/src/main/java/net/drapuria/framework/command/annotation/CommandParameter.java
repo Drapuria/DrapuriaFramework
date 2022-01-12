@@ -1,4 +1,4 @@
-package net.drapuria.framework.command.annotations;
+package net.drapuria.framework.command.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

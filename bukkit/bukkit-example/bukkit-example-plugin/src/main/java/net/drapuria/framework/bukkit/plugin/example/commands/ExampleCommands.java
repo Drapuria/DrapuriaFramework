@@ -1,8 +1,8 @@
 package net.drapuria.framework.bukkit.plugin.example.commands;
 
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
-import net.drapuria.framework.command.annotations.Command;
-import net.drapuria.framework.command.annotations.SubCommand;
+import net.drapuria.framework.command.annotation.Command;
+import net.drapuria.framework.command.annotation.SubCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 

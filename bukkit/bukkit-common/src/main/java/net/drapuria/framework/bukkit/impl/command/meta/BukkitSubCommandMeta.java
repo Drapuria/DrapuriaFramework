@@ -5,10 +5,9 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameter;
 import net.drapuria.framework.bukkit.player.PlayerRepository;
-import net.drapuria.framework.command.annotations.SubCommand;
+import net.drapuria.framework.command.annotation.SubCommand;
 import net.drapuria.framework.command.meta.SubCommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;

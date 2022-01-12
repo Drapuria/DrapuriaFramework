@@ -1,4 +1,4 @@
-package net.drapuria.framework.command.annotations;
+package net.drapuria.framework.command.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,9 +7,13 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface DefaultCommand {
+public @interface SubCommand {
 
-    String parameters() default "";
+    String[] names();
+
+    String parameters();
+
+    String permission() default "";
 
     boolean async() default false;
 

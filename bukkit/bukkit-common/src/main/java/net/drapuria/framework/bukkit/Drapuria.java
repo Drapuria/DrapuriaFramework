@@ -181,5 +181,4 @@ public class Drapuria {
     public static void callEvent(Event event) {
         PLUGIN.getServer().getPluginManager().callEvent(event);
     }
-
 }

@@ -3,6 +3,7 @@ package net.drapuria.framework.scheduler.factory;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.drapuria.framework.scheduler.Scheduler;
+import net.drapuria.framework.scheduler.TickTime;
 import net.drapuria.framework.scheduler.Timestamp;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
 import net.drapuria.framework.scheduler.helper.SchedulerHelper;
@@ -25,6 +26,14 @@ public abstract class AbstractSchedulerFactory<T, S extends Scheduler<T>> {
     protected long period;
     protected long iterations = -2;
     protected Supplier<T> supplier;
+
+    public AbstractSchedulerFactory<T, S> delay(long delay, TickTime tickTime) {
+        return delay(tickTime.getTicks() * delay);
+    }
+
+    public AbstractSchedulerFactory<T, S> period(long period, TickTime tickTime) {
+        return period(tickTime.getTicks() * period);
+    }
 
     public AbstractSchedulerFactory<T, S> repeated(RepeatedAction<T> repeatedAction) {
         this.repeatedActions.add(repeatedAction);

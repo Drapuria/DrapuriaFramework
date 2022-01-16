@@ -137,6 +137,7 @@ public class Drapuria {
                     Bukkit.broadcastMessage("§aASYNC: " + i.incrementAndGet());
                 }))
                 .build();
+        // TODO: iterator -1 für "infinity" scheduler
     }
 
     @SneakyThrows

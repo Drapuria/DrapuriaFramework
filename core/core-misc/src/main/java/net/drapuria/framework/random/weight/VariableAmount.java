@@ -1,7 +1,6 @@
 package net.drapuria.framework.random.weight;
 
 import com.flowpowered.math.GenericMath;
-import net.drapuria.framework.libraries.annotation.MavenDependency;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;

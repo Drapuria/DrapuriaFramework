@@ -126,6 +126,11 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     }
 
     @SuppressWarnings("unchecked")
+    public <S extends T> S save(S pojo, ID id) {
+        return (S) storage.put(id, pojo);
+    }
+
+    @SuppressWarnings("unchecked")
     private Class<?>[] findIdType() {
         TypeResolver.enableCache();
         return  TypeResolver.resolveRawArguments(InMemoryRepository.class, getClass());

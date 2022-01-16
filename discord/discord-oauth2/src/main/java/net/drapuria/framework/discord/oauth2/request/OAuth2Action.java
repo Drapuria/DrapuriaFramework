@@ -38,6 +38,9 @@ public abstract class OAuth2Action<T> {
             case POST:
                 builder.post(getBody());
                 break;
+            case PUT:
+                builder.put(getBody());
+                break;
         }
         return builder
                 .url(url)
@@ -64,6 +67,7 @@ public abstract class OAuth2Action<T> {
     }
     public T complete() throws IOException
     {
+        System.out.println("completing..");
         return client.getRequester().submitSync(this);
     }
 

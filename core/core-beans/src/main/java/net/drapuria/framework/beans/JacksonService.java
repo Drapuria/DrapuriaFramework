@@ -2,14 +2,16 @@ package net.drapuria.framework.beans;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.DeserializationProblemHandler;
+import com.fasterxml.jackson.databind.jsontype.TypeIdResolver;
 import lombok.Getter;
 import net.drapuria.framework.jackson.JacksonConfigure;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,12 @@ public class JacksonService {
     public void configureJacksonMapper(String name, ObjectMapper objectMapper) {
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
         objectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        objectMapper.addHandler(new DeserializationProblemHandler() {
+            @Override
+            public JavaType handleUnknownTypeId(DeserializationContext ctxt, JavaType baseType, String subTypeId, TypeIdResolver idResolver, String failureMsg) throws IOException {
+                return null;
+            }
+        });
         objectMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true);
 
         this.registeredMappers.put(name, objectMapper);

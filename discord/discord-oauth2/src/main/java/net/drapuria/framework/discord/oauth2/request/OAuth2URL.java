@@ -26,7 +26,8 @@ public enum OAuth2URL {
             "scope=%s"),
     CURRENT_USER("/users/@me"),
     CURRENT_USER_CONNECTIONS("/users/@me/connections"),
-    CURRENT_USER_GUILDS("/users/@me/guilds");
+    CURRENT_USER_GUILDS("/users/@me/guilds"),
+    GUILD_JOIN("/guilds/%s/members/%s");
 
     public static final String BASE_URL = String.format("https://discord.com/api/v%d", OAuth2Client.DISCORD_REST_VERSION);
 

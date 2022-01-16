@@ -14,10 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.material.MaterialData;
 import org.imanity.framework.reflect.ReflectLookup;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 
 public interface ServerImplementation {
@@ -57,13 +54,10 @@ public interface ServerImplementation {
     Entity getEntity(World world, int id);
 
     default Entity getEntity(int id) {
-        for (World world : Bukkit.getWorlds()) {
-            Entity entity = this.getEntity(world, id);
-            if (entity != null) {
-                return entity;
-            }
-        }
-        return null;
+        return Bukkit.getWorlds().stream()
+                .map(world -> this.getEntity(world, id)).filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
     }
 
     Object toBlockNMS(MaterialData materialData);

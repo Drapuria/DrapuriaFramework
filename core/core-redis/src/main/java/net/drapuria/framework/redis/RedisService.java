@@ -34,7 +34,6 @@ public class RedisService {
     @SneakyThrows
     @PreInitialize
     public void initClient() {
-
         this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml"))
                 .setCodec(new JsonJacksonCodec(JacksonService.INSTANCE.getMainMapper())));
     }

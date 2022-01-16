@@ -11,6 +11,7 @@ import net.drapuria.framework.discord.oauth2.session.Session;
 import net.drapuria.framework.discord.oauth2.session.SessionController;
 import net.drapuria.framework.discord.oauth2.state.StateController;
 import okhttp3.OkHttpClient;
+import org.json.JSONArray;
 
 import java.util.List;
 
@@ -44,6 +45,8 @@ public interface OAuth2Client {
     OAuth2Action<List<OAuth2Guild>> getGuilds(Session session) throws MissingScopeException;
 
     OAuth2Action<List<OAuth2Connection>> getConnections(Session session) throws MissingScopeException;
+
+    OAuth2Action<Boolean> joinGuild(String botToken, Session session, long guildId, OAuth2User user, String nick, JSONArray roles);
 
     long getId();
 

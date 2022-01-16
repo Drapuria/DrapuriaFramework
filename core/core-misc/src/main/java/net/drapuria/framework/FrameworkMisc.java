@@ -1,7 +1,7 @@
 package net.drapuria.framework;
 
 import net.drapuria.framework.events.IEventHandler;
-import net.drapuria.framework.libraries.LibraryHandler;
+import net.drapuria.framework.jackson.libraries.LibraryHandler;
 import net.drapuria.framework.task.ITaskScheduler;
 
 public class FrameworkMisc {

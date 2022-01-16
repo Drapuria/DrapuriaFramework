@@ -7,7 +7,7 @@ import net.drapuria.framework.database.configuration.AbstractSqlConfiguration;
 import net.drapuria.framework.database.connection.AbstractConnectionFactory;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.ObjectSerializer;
-import net.drapuria.framework.libraries.Library;
+import net.drapuria.framework.jackson.libraries.Library;
 import net.drapuria.framework.beans.*;
 import net.drapuria.framework.beans.annotation.Autowired;
 import net.drapuria.framework.beans.annotation.PreInitialize;

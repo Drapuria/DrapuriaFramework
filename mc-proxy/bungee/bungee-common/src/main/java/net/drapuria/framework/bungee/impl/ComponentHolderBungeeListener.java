@@ -40,7 +40,11 @@ public class ComponentHolderBungeeListener extends ComponentHolder {
             }
             throw new RuntimeException("Could not find valid constructor for " + type.getSimpleName());
         }
-        Drapuria.getProxy().getPluginManager().registerListener(plugin, listener);
+        try {
+            Drapuria.getProxy().getPluginManager().registerListener(plugin, listener);
+        } catch (Exception ignored) {
+
+        }
         return listener;
     }
 

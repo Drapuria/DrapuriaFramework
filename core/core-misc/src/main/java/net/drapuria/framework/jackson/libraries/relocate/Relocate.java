@@ -1,4 +1,4 @@
-package net.drapuria.framework.libraries.relocate;
+package net.drapuria.framework.jackson.libraries.relocate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

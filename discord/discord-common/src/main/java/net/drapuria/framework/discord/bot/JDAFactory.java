@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.discord.configuration.AbstractDiscordBotConfiguration;
 import net.drapuria.framework.discord.message.impl.CachedJDAMessage;
-import net.drapuria.framework.libraries.Library;
+import net.drapuria.framework.jackson.libraries.Library;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 

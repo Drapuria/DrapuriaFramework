@@ -8,10 +8,8 @@ import com.mojang.authlib.properties.Property;
 
 import lombok.Setter;
 import lombok.SneakyThrows;
-import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.FrameworkMisc;
-import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.libraries.annotation.MavenDependency;
+import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

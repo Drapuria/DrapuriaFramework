@@ -1,7 +1,7 @@
-package net.drapuria.framework.libraries;
+package net.drapuria.framework.jackson.libraries;
 
 import lombok.Getter;
-import net.drapuria.framework.libraries.relocate.Relocate;
+import net.drapuria.framework.jackson.libraries.relocate.Relocate;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

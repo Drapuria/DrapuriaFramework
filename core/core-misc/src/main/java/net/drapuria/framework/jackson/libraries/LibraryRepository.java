@@ -1,7 +1,6 @@
-package net.drapuria.framework.libraries;
+package net.drapuria.framework.jackson.libraries;
 
 import com.google.common.io.ByteStreams;
-import sun.net.www.http.HttpClient;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +9,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Base64;
 
 public enum LibraryRepository {

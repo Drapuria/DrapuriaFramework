@@ -1,6 +1,6 @@
 package net.drapuria.framework.database;
 
-import net.drapuria.framework.beans.annotation.PostDestroy;
+import net.drapuria.framework.beans.annotation.PreDestroy;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
 
@@ -10,7 +10,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Service(name = "FrameworkDatabaseService")
+@Service(name = "FrameworkDatabaseService", dependencies = {"mongodb", "sql"})
 public class DatabaseService {
 
     public static DatabaseService getDatabaseService;
@@ -58,7 +58,7 @@ public class DatabaseService {
         return Optional.ofNullable(this.handlerGroups.get(name));
     }
 
-    @PostDestroy
+    @PreDestroy
     public void stopAll() {
         handlerGroups.values().forEach(HandlerGroup::stopThead);
         executor.shutdown();

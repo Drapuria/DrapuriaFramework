@@ -1,4 +1,4 @@
-package net.drapuria.framework.libraries.annotation;
+package net.drapuria.framework.jackson.libraries.annotation;
 
 import java.lang.annotation.*;
 

@@ -6,7 +6,7 @@ import net.drapuria.framework.bungee.impl.BungeeDrapuriaPlatform;
 import net.drapuria.framework.bungee.impl.BungeeEventHandler;
 import net.drapuria.framework.bungee.impl.BungeeTaskScheduler;
 import net.drapuria.framework.bungee.impl.ComponentHolderBungeeListener;
-import net.drapuria.framework.libraries.annotation.MavenDependency;
+import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.beans.component.ComponentRegistry;

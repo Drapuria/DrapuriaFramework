@@ -1,4 +1,4 @@
-package net.drapuria.framework.libraries;
+package net.drapuria.framework.jackson.libraries;
 
 public class LibraryDownloadException extends Exception {
 

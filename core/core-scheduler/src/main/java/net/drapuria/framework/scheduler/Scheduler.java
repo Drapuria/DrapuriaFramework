@@ -3,21 +3,17 @@ package net.drapuria.framework.scheduler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
-import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.scheduler.action.ActionPriority;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
 import net.drapuria.framework.scheduler.action.ScheduledAction;
 import net.drapuria.framework.scheduler.helper.SchedulerHelper;
 import net.drapuria.framework.scheduler.pool.SchedulerPool;
 import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
-import net.drapuria.framework.task.TaskAlreadyStartedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -36,6 +32,8 @@ public class Scheduler<T> {
     private long delay;
     private long period;
     protected long iterations;
+
+    private long currentIteration;
 
     private long startTime = System.currentTimeMillis();
     private long duration;
@@ -71,19 +69,22 @@ public class Scheduler<T> {
         if (iterations != -1)
             iterations--;
         final long expiredTime = System.currentTimeMillis() - getStartTime();
+        currentIteration++;
         try {
             repeatedActions.forEach(repeatedAction -> {
                 if (repeatedAction.isAlways()) {
                     if (!repeatedAction.isLastTick() && iterations == 0) return;
+                    if (!repeatedAction.isFirstTick() && currentIteration == 1) return;
                     repeatedAction.getAction().accept(expiredTime, getSupplier().get());
                 } else if (iterations % repeatedAction.getDivision() == repeatedAction.getRemainder())
                     repeatedAction.getAction().accept(expiredTime, getSupplier().get());
             });
-            ScheduledAction<T> scheduledAction = parseAction(iterations);
+            ScheduledAction<T> scheduledAction = parseAction(currentIteration);
             if (scheduledAction != null)
                 scheduledAction.accept(supplier.get());
         } catch (Exception ignored) {
         }
+
         return iterations == 0;
     }
 
@@ -114,12 +115,21 @@ public class Scheduler<T> {
         if (cancelled)
             return;
         this.cancelled = true;
-        final long currentTime = System.currentTimeMillis();
+        final long currentTime = iterations;
 
-        this.timedActions.values().forEach(scheduledAction -> {
-            if (scheduledAction.getPriority() == ActionPriority.HIGH && (iterations == -1 || endTime >= currentTime)) {
+        this.timedActions.forEach((key, scheduledAction) -> {
+            if (scheduledAction.getPriority() == ActionPriority.HIGH && (iterations == -1 || currentIteration < key)) {
                 try {
                     scheduledAction.accept(supplier.get());
+                } catch (Exception ignored) {
+                }
+            }
+        });
+
+        this.repeatedActions.forEach(scheduledAction -> {
+            if (scheduledAction.getPriority() == ActionPriority.HIGH) {
+                try {
+                    scheduledAction.getAction().accept(-1L, supplier.get());
                 } catch (Exception ignored) {
                 }
             }

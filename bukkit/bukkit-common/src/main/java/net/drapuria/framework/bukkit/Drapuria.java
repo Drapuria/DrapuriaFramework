@@ -20,13 +20,14 @@ import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.random.FastRandom;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
+import net.drapuria.framework.scheduler.action.ScheduledAction;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
+import net.drapuria.framework.scheduler.provider.ThreadedSchedulerProvider;
 import org.apache.http.util.Asserts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -104,16 +105,22 @@ public class Drapuria {
         new BukkitRunnable() {
             @Override
             public void run() {
+                long start = System.currentTimeMillis();
+                AtomicInteger iteration = new AtomicInteger();
                 new SchedulerFactory<Server>()
-                        .delay(50)
+                        .delay(20)
                         .iterations(-1)
                         .period(20)
-                        .provider(BukkitSchedulerProvider.class)
+                        .provider(ThreadedSchedulerProvider.class)
                         .supplier(Bukkit::getServer)
                         .repeated(new RepeatedAction<>(true, true, true, 0, 0,
                                 (aLong, server) -> {
-                                    server.broadcastMessage("Hallo");
+                                    if (iteration.get() < 10) {
+                                        server.broadcastMessage("Hallo");
+                                    }
+                                    iteration.getAndIncrement();
                                 }))
+                        .at(5, new ScheduledAction<>(server -> server.broadcastMessage("ms: " + (System.currentTimeMillis() - start) + " iteration: " + iteration.get())))
                         .build();
             }
         }.runTaskLater(PLUGIN, 20 * 5);

@@ -26,11 +26,11 @@ public class SchedulerHelper {
     public long convertTimestampToIteration(Timestamp timestamp, long iterations) {
         switch (timestamp) {
             case END:
-                return 0;
+                return iterations;
             case MID:
                 return iterations / 2;
             case BEGINNING:
-                return iterations - 1;
+                return 1;
         }
         return -1;
     }

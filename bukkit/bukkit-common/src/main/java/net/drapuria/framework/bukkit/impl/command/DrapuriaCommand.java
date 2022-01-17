@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitCommandMeta> {
     private BukkitCommandMeta commandMeta;
 
-    protected DrapuriaCommand(String name) {
-        super(name);
+    protected DrapuriaCommand() {
+        super("name");
         this.commandMeta = new BukkitCommandMeta(this);
     }
 

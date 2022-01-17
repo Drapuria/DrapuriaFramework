@@ -1,15 +1,15 @@
 package net.drapuria.framework.bukkit;
 
 
-import com.sun.jna.platform.win32.Sspi;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.beans.annotation.Autowired;
+import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.drapuria.framework.bukkit.impl.*;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
-import net.drapuria.framework.bukkit.impl.scheduler.factory.BukkitSchedulerFactory;
 import net.drapuria.framework.bukkit.impl.scheduler.provider.BukkitSchedulerProvider;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
 import net.drapuria.framework.bukkit.messaging.BungeeMessaging;
@@ -19,17 +19,13 @@ import net.drapuria.framework.module.service.ModuleService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.random.FastRandom;
-import net.drapuria.framework.beans.annotation.Autowired;
-import net.drapuria.framework.beans.component.ComponentRegistry;
-import net.drapuria.framework.scheduler.Timestamp;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
-import net.drapuria.framework.scheduler.factory.AbstractSchedulerFactory;
-import net.drapuria.framework.scheduler.provider.ScheduledExecutorSchedulerProvider;
-import net.drapuria.framework.scheduler.provider.ThreadedSchedulerProvider;
+import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import org.apache.http.util.Asserts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -39,8 +35,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static javax.sound.midi.ShortMessage.START;
 
 /**
  * The Bukkit Framework Main class
@@ -105,58 +99,24 @@ public class Drapuria {
 */
 
 
-
         AtomicInteger i = new AtomicInteger(0);
 
         new BukkitRunnable() {
             @Override
             public void run() {
-
-                final long start = System.currentTimeMillis();
-
-                new BukkitSchedulerFactory<Player>()
-                        .provider(ScheduledExecutorSchedulerProvider.class)
-                        .delay(100)
-                        .period(10)
-                        .supplier(() -> Bukkit.getPlayer("marinus1111"))
-                        .iterations(5000)
-                        .at(Timestamp.BEGINNING, player -> player.sendMessage("ms: " +(System.currentTimeMillis() - start) ))
-                        .at(Timestamp.END, player -> player.sendMessage("ENDED ASYNC"))
-                        .repeated(new RepeatedAction<>(true, true, -1, -1, (aLong, player) -> {
-                            Bukkit.broadcastMessage("§aASYNC: " + i.incrementAndGet());
-                        }))
-                        .build();
-
-                new BukkitSchedulerFactory<Player>()
-                        .provider(ThreadedSchedulerProvider.class)
-                        .delay(100)
-                        .period(10)
-                        .supplier(() -> Bukkit.getPlayer("marinus1111"))
-                        .iterations(5000)
-                        .at(Timestamp.BEGINNING, player -> player.sendMessage("ms: " +(System.currentTimeMillis() - start) ))
-                        .at(Timestamp.END, player -> player.sendMessage("ENDED ASYNC"))
-                        .repeated(new RepeatedAction<>(true, true, -1, -1, (aLong, player) -> {
-                            Bukkit.broadcastMessage("§bASYNC ");
-                        }))
-                        .build();
-
-
-                AbstractSchedulerFactory<Player, ?> factory = new BukkitSchedulerFactory<Player>()
-                        .delay(100)
-                        .period(10)
+                new SchedulerFactory<Server>()
+                        .delay(50)
+                        .iterations(-1)
+                        .period(20)
                         .provider(BukkitSchedulerProvider.class)
-                        .at(Timestamp.BEGINNING, player -> player.sendMessage("ms: " + (System.currentTimeMillis() - start) ))
-                        .supplier(() -> Bukkit.getPlayer("marinus1111"))
-                        .iterations(5000)
-                        .at(Timestamp.END, player -> player.sendMessage("ENDE"))
-                        .repeated(new RepeatedAction<>(false, true, -1, -1, (aLong, player) -> {
-                            Bukkit.broadcastMessage("§4ASYNC: " + !Bukkit.isPrimaryThread());
-                        }));
-                factory.build();
+                        .supplier(Bukkit::getServer)
+                        .repeated(new RepeatedAction<>(true, true, true, 0, 0,
+                                (aLong, server) -> {
+                                    server.broadcastMessage("Hallo");
+                                }))
+                        .build();
             }
         }.runTaskLater(PLUGIN, 20 * 5);
-
-        // TODO: iterator -1 für "infinity" scheduler
     }
 
     @SneakyThrows

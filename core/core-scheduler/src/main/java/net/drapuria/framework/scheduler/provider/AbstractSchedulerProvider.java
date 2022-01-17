@@ -26,12 +26,10 @@ public abstract class AbstractSchedulerProvider {
         scheduledSchedulers.entrySet().removeIf(entry -> {
             long delay = entry.getValue();
             if (--delay == 0) {
-                System.out.println("creating pool");
                 entry.getKey().tick();
                 addOrCreatePool(entry.getKey());
                 return true;
             }
-            System.out.println(delay);
             entry.setValue(delay);
             return false;
         });

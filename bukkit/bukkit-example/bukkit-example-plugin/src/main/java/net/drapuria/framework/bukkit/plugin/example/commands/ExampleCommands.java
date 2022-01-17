@@ -12,7 +12,7 @@ public class ExampleCommands extends DrapuriaCommand {
     private final Plugin plugin;
 
     public ExampleCommands(Plugin plugin) {
-        super("example");
+        super();
         this.plugin = plugin;
     }
 

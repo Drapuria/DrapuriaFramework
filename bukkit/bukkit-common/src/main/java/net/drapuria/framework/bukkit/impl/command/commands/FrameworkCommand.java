@@ -21,7 +21,7 @@ public class FrameworkCommand extends DrapuriaCommand {
     @NewInstance
     @UseFrameworkPlugin
     public FrameworkCommand(Plugin plugin, ModuleService moduleService) {
-        super("drapuria");
+        super();
         this.plugin = plugin;
         this.moduleService = moduleService;
     }

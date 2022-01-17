@@ -28,7 +28,6 @@ public class SchedulerService implements ISchedulerService {
             FrameworkMisc.PLATFORM.getLogger().error("Provider " + provider.getSimpleName() + " already initialized");
             return null;
         }
-        System.out.println("registering new instance for " + provider);
         T schedulerProvider = (T) provider.newInstance();
         this.providers.put(provider, schedulerProvider);
         return schedulerProvider;

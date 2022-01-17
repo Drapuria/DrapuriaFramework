@@ -8,7 +8,6 @@ import net.drapuria.framework.task.TaskThread;
 public class ScheduledExecutorSchedulerProvider extends AbstractSchedulerProvider {
     @Override
     protected void initPool() throws TaskAlreadyStartedException {
-        System.out.println("threaded scheduler provider init pool");
         (super.delayTask = new ScheduledExecutorTask()).start(0, 50, this::tickPool);
     }
 

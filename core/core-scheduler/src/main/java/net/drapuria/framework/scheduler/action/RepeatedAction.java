@@ -7,9 +7,10 @@ import java.util.function.BiConsumer;
 
 @Data
 @RequiredArgsConstructor
-public class RepeatedAction<T> {
+public final class RepeatedAction<T> {
 
     private final boolean lastTick;
+    private final boolean firstTick;
     private final boolean always;
     private final int division;
     private final long remainder;

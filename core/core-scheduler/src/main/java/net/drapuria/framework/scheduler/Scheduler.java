@@ -17,7 +17,7 @@ import java.util.function.Supplier;
  * @param <T> The scheduled object
  */
 @Getter
-public abstract class Scheduler<T> {
+public class Scheduler<T> {
 
     protected final Map<Long, Consumer<T>> timedActions = new HashMap<>();
     protected final List<RepeatedAction<T>> repeatedActions = new ArrayList<>();
@@ -35,15 +35,15 @@ public abstract class Scheduler<T> {
     @Setter(AccessLevel.PUBLIC)
     private Supplier<T> supplier;
 
-    protected Scheduler(long delay) {
+    public Scheduler(long delay) {
         this(delay, 0, 0);
     }
 
-    protected Scheduler(long delay, long period) {
+    public Scheduler(long delay, long period) {
         this(delay, period, -1);
     }
 
-    protected Scheduler(long delay, long period, long iterations) {
+    public Scheduler(long delay, long period, long iterations) {
         this.delay = delay;
         this.period = period;
         this.iterations = iterations;
@@ -55,7 +55,8 @@ public abstract class Scheduler<T> {
     }
 
     public boolean tick() {
-        iterations--;
+        if (iterations != -1)
+            iterations--;
         long expiredTime = System.currentTimeMillis() - getStartTime();
         try {
             repeatedActions.forEach(repeatedAction -> {
@@ -68,7 +69,8 @@ public abstract class Scheduler<T> {
             Consumer<T> consumer = parseAction(iterations);
             if (consumer != null)
                 consumer.accept(supplier.get());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return iterations == 0;
     }
 

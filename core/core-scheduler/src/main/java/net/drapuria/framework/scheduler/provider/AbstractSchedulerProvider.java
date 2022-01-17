@@ -1,8 +1,5 @@
 package net.drapuria.framework.scheduler.provider;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import net.drapuria.framework.scheduler.Scheduler;
 import net.drapuria.framework.scheduler.pool.SchedulerPool;
@@ -12,31 +9,29 @@ import net.drapuria.framework.task.TaskAlreadyStartedException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class SchedulerProvider {
-
-    @Getter
-    private static SchedulerProvider pool;
+public abstract class AbstractSchedulerProvider {
 
     protected final Map<Long, SchedulerPool<? extends ITask>> schedulerPools = new HashMap<>();
-    protected final Map<Scheduler<?>, Long> scheduledSchedulers = new HashMap<>();
-
+    protected final Map<Scheduler<?>, Long> scheduledSchedulers = new ConcurrentHashMap<>();
     protected ITask delayTask;
 
     @SneakyThrows
-    public SchedulerProvider() {
+    public AbstractSchedulerProvider() {
         initPool();
-        pool = this;
     }
 
     public void tickPool() {
         scheduledSchedulers.entrySet().removeIf(entry -> {
             long delay = entry.getValue();
             if (--delay == 0) {
+                System.out.println("creating pool");
                 entry.getKey().tick();
                 addOrCreatePool(entry.getKey());
                 return true;
             }
+            System.out.println(delay);
             entry.setValue(delay);
             return false;
         });
@@ -65,15 +60,15 @@ public abstract class SchedulerProvider {
         this.scheduledSchedulers.put(scheduler, scheduler.getDelay());
     }
 
-    protected void addOrCreatePool(final Scheduler<?> scheduler) {
+    public void addOrCreatePool(final Scheduler<?> scheduler) {
         if (!this.schedulerPools.containsKey(scheduler.getPeriod()))
             createSchedulerPool(scheduler.getPeriod());
         this.schedulerPools.get(scheduler.getPeriod()).addScheduler(scheduler);
     }
 
-    public <T extends ITask> void removePool(SchedulerPool<T> group) {
-        this.schedulerPools.remove(group.getPeriod());
-        group.shutdown();
+    public <T extends ITask> void removePool(SchedulerPool<T> pool) {
+        this.schedulerPools.remove(pool.getPeriod());
+        pool.shutdown();
     }
 
     protected abstract void initPool() throws TaskAlreadyStartedException;

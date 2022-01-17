@@ -6,19 +6,13 @@ import net.drapuria.framework.bukkit.impl.task.DrapuriaAsyncBukkitTask;
 import net.drapuria.framework.scheduler.ISchedulerService;
 import net.drapuria.framework.scheduler.Scheduler;
 import net.drapuria.framework.scheduler.SchedulerService;
-import net.drapuria.framework.scheduler.provider.SchedulerProvider;
+import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
 
 
 public class BukkitAsyncSchedulerPool extends BukkitSchedulerPool {
 
-    private static final ISchedulerService service;
-
-    static {
-        service = SchedulerService.getService;
-    }
-
-    public BukkitAsyncSchedulerPool(long period) {
-        super(period);
+    public BukkitAsyncSchedulerPool(long period, AbstractSchedulerProvider provider) {
+        super(period, provider);
     }
 
     @SneakyThrows
@@ -47,7 +41,7 @@ public class BukkitAsyncSchedulerPool extends BukkitSchedulerPool {
         this.schedulers.removeIf(Scheduler::tick);
         if (this.schedulers.isEmpty()) {
             FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
-                SchedulerProvider.getPool().removePool(BukkitAsyncSchedulerPool.this);
+                provider.removePool(this);
             });
         }
     }

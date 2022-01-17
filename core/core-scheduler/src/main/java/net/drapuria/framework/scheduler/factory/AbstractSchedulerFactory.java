@@ -7,6 +7,8 @@ import net.drapuria.framework.scheduler.TickTime;
 import net.drapuria.framework.scheduler.Timestamp;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
 import net.drapuria.framework.scheduler.helper.SchedulerHelper;
+import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
+import net.drapuria.framework.scheduler.provider.ThreadedSchedulerProvider;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,17 +17,23 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import static lombok.AccessLevel.NONE;
+
 @Accessors(fluent = true, chain = true)
 @Setter
 public abstract class AbstractSchedulerFactory<T, S extends Scheduler<T>> {
 
+    @Setter(NONE)
     protected final List<RepeatedAction<T>> repeatedActions = new ArrayList<>();
+    @Setter(NONE)
     protected final Map<Long, Consumer<T>> scheduledEvents = new HashMap<>();
+    @Setter(NONE)
     private final Map<Timestamp, Consumer<T>> timedEvents = new HashMap<>();
     protected long delay;
     protected long period;
     protected long iterations = -2;
     protected Supplier<T> supplier;
+    protected Class<? extends AbstractSchedulerProvider> provider = ThreadedSchedulerProvider.class;
 
     public AbstractSchedulerFactory<T, S> delay(long delay, TickTime tickTime) {
         return delay(tickTime.getTicks() * delay);

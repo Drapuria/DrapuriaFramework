@@ -6,10 +6,8 @@ import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider
 import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.beans.BeanContext;
-import net.drapuria.framework.scheduler.Scheduler;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.spigotmc.RestartCommand;
 
 import java.io.File;

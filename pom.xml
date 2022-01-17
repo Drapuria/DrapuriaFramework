@@ -19,12 +19,12 @@
         <repository>
             <id>vantrex-nexus</id>
             <name>DrapuriaFramework</name>
-            <url>http://maven.vantrex.de/repository/maven-releases/</url>
+            <url>https://maven.vantrex.de/repository/maven-releases/</url>
         </repository>
         <snapshotRepository>
             <id>vantrex-nexus</id>
             <name>DrapuriaFramework</name>
-            <url>http://maven.vantrex.de/repository/maven-snapshots/</url>
+            <url>https://maven.vantrex.de/repository/maven-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 
@@ -32,7 +32,7 @@
         <repository>
             <id>vantrex-nexus</id>
             <name>vantrex-nexus</name>
-            <url>http://maven.vantrex.de/repository/</url>
+            <url>https://maven.vantrex.de/repository/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

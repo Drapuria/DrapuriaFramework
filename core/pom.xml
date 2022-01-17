@@ -23,6 +23,7 @@
         <module>core-mongo</module>
         <module>core-yaml</module>
         <module>core-config</module>
+        <module>core-scheduler</module>
     </modules>
 
     <properties>
@@ -37,7 +38,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.0</version>
+            <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
         <!-- JACKSON -->

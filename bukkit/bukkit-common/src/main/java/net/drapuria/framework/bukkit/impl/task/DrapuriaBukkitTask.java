@@ -22,7 +22,7 @@ public class DrapuriaBukkitTask implements ITask {
     @Override
     public void start(long delay, long period, Runnable runnable) throws TaskAlreadyStartedException {
         if (this.task != null) {
-            throw new TaskAlreadyStartedException("Task already started with id" + task.getTaskId());
+            throw new TaskAlreadyStartedException("Task already started with id " + task.getTaskId());
         }
         this.task = new BukkitRunnable() {
             @Override

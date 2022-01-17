@@ -44,7 +44,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
             final String inputString = cmdLine.toLowerCase();
             final String[] input = cmdLine.split(" ");
             final String mainCommand = input[0] + " ";
-            final String subCommands = cmdLine.replaceFirst(mainCommand, "");
+            String subCommands = cmdLine.replaceFirst(mainCommand, "");
             final int index = input.length; //run integer to get current location of our string
             final int spaceIndex = cmdLine.indexOf(" ");
             // loop through every command
@@ -112,7 +112,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                             subCommandAlias = subCommandAlias.toLowerCase();
                             String[] argumentSplit = subCommandAlias.split(" ");
                             final BukkitParameterData parameterData = subCommand.getParameterData();
-                            // check if command has entered the command
+                            // check if sender has entered the command
                             if (StringUtils.startsWithIgnoreCase(subCommandAlias, subCommands)
                                     || StringUtils.startsWithIgnoreCase(subCommands, subCommandAlias)) {
                                 // check if there is paramter left to complete
@@ -148,7 +148,11 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                                     }
                                     continue subCommandMeta;
                                 }
-                                // get missing  aliases
+                                int finalIndex = index - 1;
+                                if (--finalIndex > parameterData.getParameterCount()) {
+                                    continue subCommandMeta;
+                                }
+                                // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");
                                 // split missing string into parts
                                 final String[] missingParts = missing.split(" ");
@@ -157,6 +161,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
                                 // get the missing parts
                                 final String toComplete = missingParts[0];
                                 // get the realarguments
+                                if (toComplete.isEmpty())
+                                    continue subCommandMeta;
                                 for (String m : realArguments) {
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {

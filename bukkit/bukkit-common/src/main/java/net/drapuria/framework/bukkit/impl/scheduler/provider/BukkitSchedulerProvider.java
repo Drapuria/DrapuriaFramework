@@ -2,10 +2,10 @@ package net.drapuria.framework.bukkit.impl.scheduler.provider;
 
 import net.drapuria.framework.bukkit.impl.scheduler.pool.BukkitSchedulerPool;
 import net.drapuria.framework.bukkit.impl.task.DrapuriaBukkitTask;
-import net.drapuria.framework.scheduler.provider.SchedulerProvider;
+import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
 import net.drapuria.framework.task.TaskAlreadyStartedException;
 
-public class BukkitSchedulerProvider extends SchedulerProvider {
+public class BukkitSchedulerProvider extends AbstractSchedulerProvider {
 
     @Override
     protected void initPool() throws TaskAlreadyStartedException {
@@ -14,6 +14,6 @@ public class BukkitSchedulerProvider extends SchedulerProvider {
 
     @Override
     protected void createSchedulerPool(long period) {
-        super.schedulerPools.put(period, new BukkitSchedulerPool(period));
+        super.schedulerPools.put(period, new BukkitSchedulerPool(period, this));
     }
 }

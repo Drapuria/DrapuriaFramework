@@ -3,14 +3,18 @@ package net.drapuria.framework.scheduler.provider;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.scheduler.Scheduler;
 
-public abstract class AsyncSchedulerProvider extends SchedulerProvider {
+public abstract class AsyncAbstractSchedulerProvider extends AbstractSchedulerProvider {
 
 
     @Override
-    protected void addOrCreatePool(Scheduler<?> scheduler) {
+    public void addOrCreatePool(Scheduler<?> scheduler) {
         FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
             super.addOrCreatePool(scheduler);
         });
+    }
+
+    public void addToSuper(Scheduler<?> scheduler) {
+        super.addOrCreatePool(scheduler);
     }
 
 }

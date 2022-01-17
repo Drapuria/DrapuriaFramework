@@ -13,10 +13,10 @@ public enum TickTime {
     TICK(1),
     SECONDS(20),
     MINUTE(20 * 60),
-    HOUR(20 * 60 * 60),
-    DAY(20 * 60 * 60 * 24),
-    WEEK(20 * 60 * 60 * 24 * 7)
+    HOUR(72000),
+    DAY(1728000),
+    WEEK(12096000)
     ;
 
-    private final int ticks;
+    private final long ticks;
 }

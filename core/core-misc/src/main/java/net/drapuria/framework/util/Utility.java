@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings({"unchecked", "rawtypes", "unused", "ConstantConditions"})
 public class Utility {
 
     public static <T> Constructor<T> getConstructor(Class<T> parentClass, Class<?>... parameterTypes) {
@@ -100,7 +101,7 @@ public class Utility {
          * Convert the given object into a string
          *
          * @param object
-         * @return
+         * @return String
          */
         String toString(T object);
     }
@@ -140,8 +141,8 @@ public class Utility {
      * Returns the name of the class, as the JVM would output it. For instance, for an int, "I" is returned, for an
      * array of Objects, "[Ljava/lang/Object;" is returned. If the input is null, null is returned.
      *
-     * @param clazz
-     * @return
+     * @param clazz Java Class
+     * @return JVM Name as {@link String}
      */
     public static String getJVMName(Class clazz) {
         if(clazz == null) {

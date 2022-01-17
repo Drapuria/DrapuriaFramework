@@ -17,10 +17,10 @@ public class SchedulerHelper {
     }
 
     public long getDurationFromTicks(long ticks, boolean millis) {
-        long seconds = ticks / 20;
-        if (millis)
-            return seconds * 1000;
-        return seconds;
+        long milliseconds = ticks * 50;
+        if (!millis)
+            return milliseconds / 1000;
+        return milliseconds;
     }
 
     public long convertTimestampToIteration(Timestamp timestamp, long iterations) {
@@ -30,7 +30,7 @@ public class SchedulerHelper {
             case MID:
                 return iterations / 2;
             case BEGINNING:
-                return iterations;
+                return iterations - 1;
         }
         return -1;
     }

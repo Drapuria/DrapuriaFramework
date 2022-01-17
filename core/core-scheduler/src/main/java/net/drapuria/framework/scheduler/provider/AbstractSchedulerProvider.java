@@ -38,11 +38,12 @@ public abstract class AbstractSchedulerProvider {
     @SneakyThrows
     public void shutdown() {
         this.delayTask.shutdown();
+        this.scheduledSchedulers.keySet().forEach(Scheduler::cancel);
         this.scheduledSchedulers.clear();
         this.schedulerPools.values().forEach(SchedulerPool::shutdown);
     }
 
-    public void addSchedulerToPool(final Scheduler<?> scheduler) {
+    public void addSchedulerToProvider(final Scheduler<?> scheduler) {
         if (scheduler.getDelay() <= 0) {
             scheduler.tick();
             if (!this.schedulerPools.containsKey(scheduler.getPeriod())) {
@@ -52,8 +53,8 @@ public abstract class AbstractSchedulerProvider {
             }
         }
         if (this.schedulerPools.containsKey(scheduler.getPeriod())) {
-            SchedulerPool<?> group = this.schedulerPools.get(scheduler.getPeriod());
-            scheduler.setDelay(SchedulerHelper.getTicksFromDuration(System.currentTimeMillis() - group.getLastTickTime(), true));
+            SchedulerPool<?> pool = this.schedulerPools.get(scheduler.getPeriod());
+            scheduler.setDelay(SchedulerHelper.getTicksFromDuration(System.currentTimeMillis() - pool.getLastTickTime(), true));
         }
         this.scheduledSchedulers.put(scheduler, scheduler.getDelay());
     }

@@ -37,10 +37,12 @@ public abstract class SchedulerPool<T extends ITask> {
     @SneakyThrows
     public void shutdown() {
         task.shutdown();
+        new ArrayList<>(this.schedulers).forEach(Scheduler::cancel);
     }
 
     public void addScheduler(Scheduler<?> scheduler) {
         this.schedulers.add(scheduler);
+        scheduler.setPool(this);
     }
 
     public void removeScheduler(Scheduler<?> scheduler) {

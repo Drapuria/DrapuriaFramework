@@ -6,7 +6,9 @@ import net.drapuria.framework.scheduler.Scheduler;
 import net.drapuria.framework.scheduler.SchedulerService;
 import net.drapuria.framework.scheduler.TickTime;
 import net.drapuria.framework.scheduler.Timestamp;
+import net.drapuria.framework.scheduler.action.ActionPriority;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
+import net.drapuria.framework.scheduler.action.ScheduledAction;
 import net.drapuria.framework.scheduler.helper.SchedulerHelper;
 import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
 import net.drapuria.framework.scheduler.provider.ThreadedSchedulerProvider;
@@ -34,9 +36,9 @@ public class SchedulerFactory<T> {
     @Setter(NONE)
     private final List<RepeatedAction<T>> repeatedActions = new ArrayList<>();
     @Setter(NONE)
-    private final Map<Long, Consumer<T>> scheduledEvents = new HashMap<>();
+    private final Map<Long, ScheduledAction<T>> scheduledActions = new HashMap<>();
     @Setter(NONE)
-    private final Map<Timestamp, Consumer<T>> timedEvents = new HashMap<>();
+    private final Map<Timestamp, ScheduledAction<T>> timedEvents = new HashMap<>();
 
     /**
      * The initial delay of the scheduler in {@link TickTime} (1 Tick equals 50ms)
@@ -120,6 +122,17 @@ public class SchedulerFactory<T> {
      * @return {@link SchedulerFactory<T>}
      */
     public SchedulerFactory<T> at(Timestamp timestamp, Consumer<T> action) {
+        return at(timestamp, new ScheduledAction<>(action, ActionPriority.NORMAL));
+    }
+
+    /**
+     * Adds a {@link ScheduledAction<T>} for {@link Scheduler<T>}
+     *
+     * @param timestamp The time at which the action should be executed
+     * @param action The performed action
+     * @return {@link SchedulerFactory<T>}
+     */
+    public SchedulerFactory<T> at(Timestamp timestamp, ScheduledAction<T> action) {
         if (this.iterations == -2) {
             this.timedEvents.put(timestamp, action);
             return this;
@@ -134,7 +147,18 @@ public class SchedulerFactory<T> {
      * @return {@link SchedulerFactory<T>}
      */
     public SchedulerFactory<T> at(long iteration, Consumer<T> action) {
-        this.scheduledEvents.put(iteration, action);
+        return at(iteration, new ScheduledAction<>(action, ActionPriority.NORMAL));
+    }
+
+    /**
+     * Adds a {@link ScheduledAction<T>} for {@link Scheduler<T>}
+     *
+     * @param iteration The time at which the action should be exected
+     * @param action The performed action
+     * @return {@link SchedulerFactory<T>}
+     */
+    public SchedulerFactory<T> at(long iteration, ScheduledAction<T> action) {
+        this.scheduledActions.put(iteration, action);
         return this;
     }
 
@@ -143,7 +167,7 @@ public class SchedulerFactory<T> {
      */
     private void buildInternal() {
         this.timedEvents.forEach((timestamp, consumer) -> {
-            this.scheduledEvents.put(SchedulerHelper.convertTimestampToIteration(timestamp, this.iterations), consumer);
+            this.scheduledActions.put(SchedulerHelper.convertTimestampToIteration(timestamp, this.iterations), consumer);
         });
     }
 
@@ -155,11 +179,12 @@ public class SchedulerFactory<T> {
     public Scheduler<?> build() {
         buildInternal();
         Scheduler<T> scheduler = new Scheduler<>(delay, period, iterations);
-        scheduler.getTimedActions().putAll(scheduledEvents);
+        scheduler.getTimedActions().putAll(scheduledActions);
         scheduler.getRepeatedActions().addAll(repeatedActions);
         scheduler.setSupplier(supplier);
         final AbstractSchedulerProvider provider = SchedulerService.getService.getProvider(this.provider);
-        provider.addSchedulerToPool(scheduler);
+        provider.addSchedulerToProvider(scheduler);
+        scheduler.setProvider(provider);
         return scheduler;
     }
 }

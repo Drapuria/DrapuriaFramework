@@ -3,8 +3,15 @@ package net.drapuria.framework.scheduler;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import net.drapuria.framework.FrameworkMisc;
+import net.drapuria.framework.scheduler.action.ActionPriority;
 import net.drapuria.framework.scheduler.action.RepeatedAction;
+import net.drapuria.framework.scheduler.action.ScheduledAction;
 import net.drapuria.framework.scheduler.helper.SchedulerHelper;
+import net.drapuria.framework.scheduler.pool.SchedulerPool;
+import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
+import net.drapuria.framework.task.TaskAlreadyStartedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,13 +26,15 @@ import java.util.function.Supplier;
 @Getter
 public class Scheduler<T> {
 
-    protected final Map<Long, Consumer<T>> timedActions = new HashMap<>();
+    protected final Map<Long, ScheduledAction<T>> timedActions = new HashMap<>();
     protected final List<RepeatedAction<T>> repeatedActions = new ArrayList<>();
+
+    private AbstractSchedulerProvider provider;
+    private SchedulerPool<?> pool;
 
     @Setter
     private long delay;
     private long period;
-    @Getter
     protected long iterations;
 
     private long startTime = System.currentTimeMillis();
@@ -43,6 +52,8 @@ public class Scheduler<T> {
         this(delay, period, -1);
     }
 
+    private boolean cancelled = false;
+
     public Scheduler(long delay, long period, long iterations) {
         this.delay = delay;
         this.period = period;
@@ -55,9 +66,11 @@ public class Scheduler<T> {
     }
 
     public boolean tick() {
+        if (cancelled)
+            return true;
         if (iterations != -1)
             iterations--;
-        long expiredTime = System.currentTimeMillis() - getStartTime();
+        final long expiredTime = System.currentTimeMillis() - getStartTime();
         try {
             repeatedActions.forEach(repeatedAction -> {
                 if (repeatedAction.isAlways()) {
@@ -66,19 +79,53 @@ public class Scheduler<T> {
                 } else if (iterations % repeatedAction.getDivision() == repeatedAction.getRemainder())
                     repeatedAction.getAction().accept(expiredTime, getSupplier().get());
             });
-            Consumer<T> consumer = parseAction(iterations);
-            if (consumer != null)
-                consumer.accept(supplier.get());
+            ScheduledAction<T> scheduledAction = parseAction(iterations);
+            if (scheduledAction != null)
+                scheduledAction.accept(supplier.get());
         } catch (Exception ignored) {
         }
         return iterations == 0;
     }
 
-    public Consumer<T> parseAction(long time) {
+    public ScheduledAction<T> parseAction(long time) {
         return timedActions.get(time);
     }
 
-    public Consumer<T> parseAction(Timestamp timestamp) {
+    public ScheduledAction<T> parseAction(Timestamp timestamp) {
         return parseAction(SchedulerHelper.convertTimestampToIteration(timestamp, this.iterations));
+    }
+
+    public void setProvider(AbstractSchedulerProvider provider) {
+        if (this.provider != null)
+            return;
+        this.provider = provider;
+    }
+
+    public void setPool(SchedulerPool<?> pool) {
+        if (this.pool != null)
+            return;
+        this.pool = pool;
+    }
+
+    /**
+     * Cancels the {@link Scheduler<T>}
+     */
+    public void cancel() {
+        if (cancelled)
+            return;
+        this.cancelled = true;
+        final long currentTime = System.currentTimeMillis();
+
+        this.timedActions.values().forEach(scheduledAction -> {
+            if (scheduledAction.getPriority() == ActionPriority.HIGH && (iterations == -1 || endTime >= currentTime)) {
+                try {
+                    scheduledAction.accept(supplier.get());
+                } catch (Exception ignored) {
+                }
+            }
+        });
+        if (pool != null) {
+            pool.removeScheduler(this);
+        }
     }
 }

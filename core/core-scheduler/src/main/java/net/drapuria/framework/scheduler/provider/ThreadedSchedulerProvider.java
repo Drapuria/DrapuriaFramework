@@ -8,7 +8,6 @@ public class ThreadedSchedulerProvider extends AbstractSchedulerProvider {
 
     @Override
     protected void initPool() throws TaskAlreadyStartedException {
-        System.out.println("threaded scheduler provider init pool");
         (super.delayTask = new TaskThread("SchedulerProvider")).start(0, 50, this::tickPool);
     }
 

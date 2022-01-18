@@ -208,7 +208,6 @@ public class OAuth2ClientImpl implements OAuth2Client {
             protected Boolean handle(Response response) throws IOException, Exception {
                 if (!response.isSuccessful())
                     throw failure(response);
-                System.out.println("response: " + OAuth2ClientImpl.getBody(response));
                 JSONObject body = new JSONObject(new JSONTokener(OAuth2ClientImpl.getBody(response)));
                 System.out.println(body);
                 return true;

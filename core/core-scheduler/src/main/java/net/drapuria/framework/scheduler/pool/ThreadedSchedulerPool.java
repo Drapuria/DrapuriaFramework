@@ -20,7 +20,6 @@ public class ThreadedSchedulerPool extends SchedulerPool<TaskThread> {
     @Override
     public void start() {
         final long periodInMillis = SchedulerHelper.getDurationFromTicks(period, true);
-        System.out.println("ticks: " + period + " millis: " + periodInMillis);
         (super.task = new TaskThread(threadGroup, "ThreadedSchedulerPool-" + this.period))
                 .start(periodInMillis, periodInMillis, this::handle);
     }

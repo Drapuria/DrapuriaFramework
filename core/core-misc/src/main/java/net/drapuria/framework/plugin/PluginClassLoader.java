@@ -59,14 +59,16 @@ public class PluginClassLoader {
             return;
         }
         try {
-            this.addUrlMethod.get().invoke(this.classLoader, file.toUri().toURL());
+            Method addUrlMethod = this.addUrlMethod.get();
+            addUrlMethod.setAccessible(true);
+            addUrlMethod.invoke(this.classLoader, file.toUri().toURL());
         } catch (IllegalAccessException | InvocationTargetException | MalformedURLException e) {
             throw new RuntimeException(e);
         }
     }
 
     @SuppressWarnings("JavaReflectionMemberAccess")
-    private static boolean isJava9OrNewer() {
+    public static boolean isJava9OrNewer() {
         try {
             // method was added in the Java 9 release
             Runtime.class.getMethod("version");

@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import net.drapuria.framework.plugin.PluginClassLoader;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -16,18 +17,21 @@ public class TitleUpdater {
     private static Constructor<?> chatMessageConstructor, packetPlayOutOpenWindowConstructor;
 
     static {
-        try {
-            getHandle = getObcClass("entity.CraftPlayer").getMethod("getHandle");
-            chatMessageConstructor = getNmsClass("ChatMessage").getConstructor(String.class, Object[].class);
-            Class<?> nmsPlayer = getNmsClass("EntityPlayer");
-            activeContainerField = nmsPlayer.getField("activeContainer");
-            windowIdField = getNmsClass("Container").getField("windowId");
-            playerConnectionField = nmsPlayer.getField("playerConnection");
-            packetPlayOutOpenWindowConstructor = getNmsClass("PacketPlayOutOpenWindow").getConstructor(Integer.TYPE, String.class, getNmsClass("IChatBaseComponent"), Integer.TYPE);
-            sendPacket = getNmsClass("PlayerConnection").getMethod("sendPacket", getNmsClass("Packet"));
-            // SeverSpecs.getNmsClass(nmsClassName) can be replaced with Class.forName("net.minecraft.server." + VERSION + "." + nmsClassName)
-        } catch (NoSuchMethodException | SecurityException | NoSuchFieldException | ClassNotFoundException e) {
-            e.printStackTrace();
+        if (!PluginClassLoader.isJava9OrNewer()) {
+
+            try {
+                getHandle = getObcClass("entity.CraftPlayer").getMethod("getHandle");
+                chatMessageConstructor = getNmsClass("ChatMessage").getConstructor(String.class, Object[].class);
+                Class<?> nmsPlayer = getNmsClass("EntityPlayer");
+                activeContainerField = nmsPlayer.getField("activeContainer");
+                windowIdField = getNmsClass("Container").getField("windowId");
+                playerConnectionField = nmsPlayer.getField("playerConnection");
+                packetPlayOutOpenWindowConstructor = getNmsClass("PacketPlayOutOpenWindow").getConstructor(Integer.TYPE, String.class, getNmsClass("IChatBaseComponent"), Integer.TYPE);
+                sendPacket = getNmsClass("PlayerConnection").getMethod("sendPacket", getNmsClass("Packet"));
+                // SeverSpecs.getNmsClass(nmsClassName) can be replaced with Class.forName("net.minecraft.server." + VERSION + "." + nmsClassName)
+            } catch (NoSuchMethodException | SecurityException | NoSuchFieldException | ClassNotFoundException e) {
+                //   e.printStackTrace();
+            }
         }
     }
 

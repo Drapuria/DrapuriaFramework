@@ -11,9 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public abstract class Button {
 
-    private final static SoundData failSound = SoundData.of(Sound.NOTE_BASS);
-    private final static SoundData successSound = SoundData.of(Sound.NOTE_PLING);
-    private final static SoundData neutralSound = SoundData.of(Sound.CLICK);
 
     public static Button placeholder(final Material material, final byte data, String... title) {
         return new Button() {
@@ -41,15 +38,15 @@ public abstract class Button {
     }
 
     public static void playFail(Player player) {
-        failSound.play(player);
+
     }
 
     public static void playSuccess(Player player) {
-        successSound.play(player);
+
     }
 
     public static void playNeutral(Player player) {
-        neutralSound.play(player);
+
     }
 
 }

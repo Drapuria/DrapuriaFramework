@@ -1,22 +1,23 @@
 package net.drapuria.framework.bukkit.impl.command;
 
+import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
-import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.Server;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
-
-public class DrapuriaCommandMap extends SimpleCommandMap {
+@CommandMapImpl
+public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
 
     private final BukkitCommandProvider commandProvider;
 
@@ -26,6 +27,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
     public DrapuriaCommandMap(Server server, BukkitCommandProvider commandProvider) {
         super(server);
         this.commandProvider = commandProvider;
+
     }
 
     @Override
@@ -194,5 +196,10 @@ public class DrapuriaCommandMap extends SimpleCommandMap {
         return !commandProvider.getCommandTypeParameterParser().containsKey(transformTo)
                 ? (new ArrayList<>()) : commandProvider.getTypeParameter(transformTo)
                 .tabComplete(sender, ImmutableSet.copyOf(tabCompleteFlags), parameter.toLowerCase());
+    }
+
+    @Override
+    public void unregisterDrapuriaCommand(Command command) {
+        command.unregister(this);
     }
 }

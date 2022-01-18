@@ -1,14 +1,18 @@
 package net.drapuria.framework.bukkit.player;
 
+import com.google.common.base.Preconditions;
 import de.vantrex.hardcorespigot.modules.Module;
 import de.vantrex.hardcorespigot.profiles.potion.PotionProfile;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R3.WorldServer;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -34,6 +38,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
     private final Player player;
     private final UUID uniqueId;
+
     public DrapuriaPlayer1_8(Player player) {
         this.player = player;
         this.uniqueId = player.getUniqueId();
@@ -76,6 +81,18 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
         } else {
             getInventory().addItem(item);
         }
+    }
+
+    public void teleportAsync(Location location) {
+        teleportAsync(location, PlayerTeleportEvent.TeleportCause.PLUGIN);
+    }
+
+    public void teleportAsync(Location location, PlayerTeleportEvent.TeleportCause cause) {
+        Preconditions.checkArgument(location != null, "location");
+        final Location locationClone = location.clone(); // clone so we don't need to worry about mutations after this call.
+        ((CraftWorld) locationClone.getWorld()).getChunkAtAsync(location, chunk -> {
+            MinecraftServer.getServer().postToMainThread(() -> teleport(location, cause));
+        });
     }
 
     @Override

@@ -9,19 +9,24 @@ public class ComponentHolderBukkitListener extends ComponentHolder {
 
     @Override
     public Object newInstance(Class<?> type) {
-        Object object = super.newInstance(type);
-
-        if (FilteredListener.class.isAssignableFrom(type)) {
+        try {
+            Object object =  this.newInstance(this.constructorDetails(type));
+            if (FilteredListener.class.isAssignableFrom(type)) {
+                return object;
+            } else if (Listener.class.isAssignableFrom(type)) {
+                Drapuria.registerEvents((Listener) object);
+            } else {
+                Drapuria.LOGGER.error("The Class " + type.getSimpleName() + " wasn't implement Listener or FunctionListener!");
+                return null;
+            }
             return object;
-        } else if (Listener.class.isAssignableFrom(type)) {
-            Drapuria.registerEvents((Listener) object);
-        } else {
-            Drapuria.LOGGER.error("The Class " + type.getSimpleName() + " wasn't implement Listener or FunctionListener!");
+
+        } catch (Exception ignored) {
             return null;
         }
-
-        return object;
     }
+
+
 
     @Override
     public Class<?>[] type() {

@@ -36,7 +36,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             }
             return;
         }
-        final String cmdLine = Strings.join(arguments, " ");
+        final String cmdLine = String.join(" ", arguments);
         final StringBuilder actualCommand = new StringBuilder();
         Map<BukkitSubCommandMeta, String[]> objects = new HashMap<>();
         for (final String argument : arguments) {

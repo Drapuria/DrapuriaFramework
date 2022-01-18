@@ -2,8 +2,9 @@ package net.drapuria.framework.bukkit.impl.command.provider;
 
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.annotation.UseFrameworkPlugin;
+import net.drapuria.framework.bukkit.impl.command.CommandMapImpl;
 import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
-import net.drapuria.framework.bukkit.impl.command.DrapuriaCommandMap;
+import net.drapuria.framework.bukkit.impl.command.ICommandMap;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameterComponentHolder;
 import net.drapuria.framework.bukkit.impl.command.repository.BukkitCommandRepository;
@@ -17,10 +18,13 @@ import net.drapuria.framework.command.annotation.SubCommand;
 import net.drapuria.framework.command.provider.CommandProvider;
 import net.drapuria.framework.command.service.CommandService;
 import net.drapuria.framework.plugin.AbstractPlugin;
+import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginListenerAdapter;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.beans.component.ComponentRegistry;
+import net.drapuria.framework.util.TypeAnnotationScanner;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
@@ -33,7 +37,7 @@ import java.util.stream.Collectors;
 public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, CommandTypeParameter<?>> {
 
     private final CommandService commandService;
-    private CommandMap drapuriaCommandMap;
+    private ICommandMap drapuriaCommandMap;
     private Object oldCommandMap;
 
     public BukkitCommandProvider(CommandService commandService) {
@@ -82,25 +86,42 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
 
     @SneakyThrows
     private void registerCommandMap() {
-        Field commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-        commandMapField.setAccessible(true);
-        this.drapuriaCommandMap = new DrapuriaCommandMap(Bukkit.getServer(), this);
-        oldCommandMap = commandMapField.get(Bukkit.getServer());
 
-        Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
-        knownCommandsField.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(knownCommandsField, knownCommandsField.getModifiers() & ~Modifier.FINAL);
-        knownCommandsField.set(drapuriaCommandMap, knownCommandsField.get(oldCommandMap));
-        commandMapField.set(Bukkit.getServer(), drapuriaCommandMap);
+        TypeAnnotationScanner scanner = new TypeAnnotationScanner(CommandMapImpl.class);
+        scanner.getResult().stream().findFirst().ifPresent(aClass -> {
+            Object o = null;
+            Field commandMapField = null;
+            try {
+                commandMapField = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+                commandMapField.setAccessible(true);
+
+                this.drapuriaCommandMap = (ICommandMap) aClass.getDeclaredConstructor(Server.class, BukkitCommandProvider.class)
+                        .newInstance(Bukkit.getServer(), BukkitCommandProvider.this);
+                oldCommandMap = commandMapField.get(Bukkit.getServer());
+                Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+                knownCommandsField.setAccessible(true);
+                if (PluginClassLoader.isJava9OrNewer()) {
+                    Class<?> fieldHelper = Class.forName("net.drapuria.framework.bukkit.java.FieldHelper");
+                    fieldHelper.getMethod("makeNonFinal", Field.class).invoke(null, knownCommandsField);
+                } else {
+                    Field modifiersField = Field.class.getDeclaredField("modifiers");
+                    modifiersField.setAccessible(true);
+                    modifiersField.setInt(knownCommandsField, knownCommandsField.getModifiers() & ~Modifier.FINAL);
+                }
+                knownCommandsField.set(drapuriaCommandMap, knownCommandsField.get(oldCommandMap));
+                commandMapField.set(Bukkit.getServer(), drapuriaCommandMap);
+            } catch (ClassNotFoundException | NoSuchFieldException | InstantiationException
+                    | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public Object getOldCommandMap() {
         return oldCommandMap;
     }
 
-    public CommandMap getDrapuriaCommandMap() {
+    public ICommandMap getDrapuriaCommandMap() {
         return drapuriaCommandMap;
     }
 

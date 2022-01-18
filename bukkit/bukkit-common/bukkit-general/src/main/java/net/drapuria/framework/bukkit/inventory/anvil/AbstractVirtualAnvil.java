@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 
-public abstract class  AbstractVirtualAnvil {
+public abstract class AbstractVirtualAnvil {
 
     private ConfirmAction confirmAction = null;
 

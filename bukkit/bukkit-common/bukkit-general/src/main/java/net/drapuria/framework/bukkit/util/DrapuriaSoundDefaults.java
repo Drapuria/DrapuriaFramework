@@ -5,6 +5,6 @@ import org.bukkit.Sound;
 
 public class DrapuriaSoundDefaults {
 
-    public static final SoundData STICK_SOUND = SoundData.of(Sound.NOTE_STICKS);
+    public static SoundData STICK_SOUND;
 
 }

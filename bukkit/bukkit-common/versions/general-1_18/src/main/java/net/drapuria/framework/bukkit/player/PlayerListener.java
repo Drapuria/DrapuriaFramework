@@ -6,15 +6,12 @@ import net.drapuria.framework.bukkit.inventory.menu.AbstractButton;
 import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.bukkit.inventory.menu.SharedMenu;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,8 +19,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class PlayerListener implements Listener {
@@ -33,12 +28,11 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_8(player);
+        final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_18(player);
         playerRepository.save(drapuriaPlayer);
         new BukkitRunnable() {
             @Override
             public void run() {
-                /*
                 new SharedMenu() {
                     @Override
                     public Map<Integer, IButton> getButtons() {
@@ -46,7 +40,7 @@ public class PlayerListener implements Listener {
                         buttons.put(1, new AbstractButton() {
                             @Override
                             public ItemStack getIcon() {
-                                return ItemBuilder.of(Material.NETHER_STAR).setDisplayName("TEST")
+                                return ItemBuilder.of(Material.NETHER_STAR).setDisplayName("§a§lTEST")
                                         .build();
                             }
 
@@ -81,10 +75,8 @@ public class PlayerListener implements Listener {
                         return true;
                     }
                 }.openMenu(player);
-                 */
-           //     drapuriaPlayer.teleportAsync(new Location(player.getWorld(), -30000, 15, -3000));
             }
-        }.runTaskLaterAsynchronously(Drapuria.PLUGIN, 20 * 10);
+        }.runTaskLater(Drapuria.PLUGIN, 20 * 5);
     }
 
 

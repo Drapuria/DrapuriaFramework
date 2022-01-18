@@ -57,8 +57,7 @@ public class BukkitCommandRepository implements CommandRepository<DrapuriaComman
         knownCommandsField.setAccessible(true);
         @SuppressWarnings("unchecked")
         Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandProvider.getDrapuriaCommandMap());
-
-        command.unregister(commandProvider.getDrapuriaCommandMap());
+        commandProvider.getDrapuriaCommandMap().unregisterDrapuriaCommand(command);
         knownCommands.remove(command.getName());
     }
 

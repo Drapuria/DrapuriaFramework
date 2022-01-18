@@ -15,26 +15,13 @@ import java.util.Map;
 
 public class HeaderMenuFactory<H> {
 
-    private final static ItemStack RED_PANE;
-    private final static Button RED_PANE_BUTTON;
-    private final static ItemStack LIME_PANE;
-    private final static Button LIME_PANE_BUTTON;
+    private static ItemStack RED_PANE;
+    private static Button RED_PANE_BUTTON;
+    private static ItemStack LIME_PANE;
+    private static Button LIME_PANE_BUTTON;
 
     static {
-        RED_PANE = new ItemBuilder(Material.STAINED_GLASS_PANE).setDurability(14).setDisplayName("§a").build();
-        RED_PANE_BUTTON = new Button() {
-            @Override
-            public ItemStack getButtonItem(Player player) {
-                return RED_PANE;
-            }
-        };
-        LIME_PANE = new ItemBuilder(Material.STAINED_GLASS_PANE).setDurability(5).setDisplayName("§a").build();
-        LIME_PANE_BUTTON = new Button() {
-            @Override
-            public ItemStack getButtonItem(Player player) {
-                return LIME_PANE;
-            }
-        };
+
     }
 
     private final List<BukkitHeaderIcon<H>> icons = new ArrayList<>();

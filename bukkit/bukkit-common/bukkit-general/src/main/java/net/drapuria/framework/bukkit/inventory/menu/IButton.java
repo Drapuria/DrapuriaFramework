@@ -35,9 +35,9 @@ public interface IButton {
     }
 
     static class Sounds {
-        private final static SoundData failSound = SoundData.of(Sound.NOTE_BASS);
-        private final static SoundData successSound = SoundData.of(Sound.NOTE_PLING);
-        private final static SoundData neutralSound = SoundData.of(Sound.CLICK);
+        private static SoundData failSound;
+        private static SoundData successSound;
+        private static SoundData neutralSound;
     }
 
 }

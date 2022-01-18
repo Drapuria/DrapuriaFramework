@@ -2,11 +2,13 @@ package net.drapuria.framework.bukkit.item.skull.impl;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.arcaniax.hdb.api.HeadDatabaseAPI;
+import lombok.SneakyThrows;
 import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.bukkit.item.skull.SkullRepository;
 import org.bukkit.inventory.ItemStack;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,14 +16,16 @@ import java.util.Optional;
 @Service(name = "hdbRepository")
 public class HDBRepository extends SkullRepository {
 
-    private static HeadDatabaseAPI api;
+    private static Object apiInstance;
+    public static Method apiGetHeadMethod;
 
     static {
         try {
-            Class.forName("me.arcaniax.hdb.api.HeadDatabaseAPI");
-            api = new HeadDatabaseAPI();
+            Class<?> apiClass = Class.forName("me.arcaniax.hdb.api.HeadDatabaseAPI");
+            apiInstance = apiClass.newInstance();
+            apiGetHeadMethod = apiClass.getDeclaredMethod("getItemHead", String.class);
         } catch (Exception ignored) {
-            api = null;
+            apiGetHeadMethod = null;
         }
     }
 
@@ -37,6 +41,7 @@ public class HDBRepository extends SkullRepository {
      * @param id head id
      * @return skull item
      */
+    @SneakyThrows
     @Override
     public Optional<ItemStack> findById(String id) {
         if (id == null)
@@ -45,13 +50,17 @@ public class HDBRepository extends SkullRepository {
         if (optional.isPresent())
             return optional;
         else {
-            ItemStack itemStack = api.getItemHead(id);
+            ItemStack itemStack = (ItemStack) apiGetHeadMethod.invoke(apiInstance, id);
             if (itemStack == null) {
                 if (!this.enabled)
                     queuedIds.add(id);
                 return Optional.empty();
             }
-            return Optional.ofNullable(api.getItemHead(id));
+            try {
+                return Optional.ofNullable((ItemStack) apiGetHeadMethod.invoke(apiInstance, id));
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                return Optional.empty();
+            }
         }
     }
 
@@ -62,9 +71,15 @@ public class HDBRepository extends SkullRepository {
 
     public void processQueuedIds() {
         queuedIds.forEach(s -> {
-            final ItemStack itemStack = api.getItemHead(s);
-            if (itemStack != null)
-                HDBRepository.super.storage.put(s, itemStack);
+            ItemStack itemStack;
+            try {
+                itemStack = (ItemStack) apiGetHeadMethod.invoke(apiInstance, s);
+                if (itemStack != null)
+                    HDBRepository.super.storage.put(s, itemStack);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+
         });
     }
 

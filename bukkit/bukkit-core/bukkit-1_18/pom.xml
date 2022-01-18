@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
-            <artifactId>general-1_8</artifactId>
+            <artifactId>general-1_18</artifactId>
             <version>1.0-RELEASE</version>
             <scope>compile</scope>
         </dependency>

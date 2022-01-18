@@ -1,28 +1,24 @@
 package net.drapuria.framework.bukkit.impl.server;
 
 import net.drapuria.framework.FrameworkMisc;
-import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.annotation.ServerImpl;
 import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
 import net.drapuria.framework.bukkit.inventory.anvil.ConfirmAction;
 import net.drapuria.framework.bukkit.inventory.anvil.VirtualAnvil;
 import net.drapuria.framework.bukkit.util.BlockPosition;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 @ServerImpl
 public class ServerImplementation1_8 implements ServerImplementation {
@@ -63,7 +59,7 @@ public class ServerImplementation1_8 implements ServerImplementation {
 
     @Override
     public boolean isServerThread() {
-        return false;
+        return Bukkit.isPrimaryThread();
     }
 
     @Override

@@ -5,11 +5,8 @@ import com.mojang.authlib.properties.Property;
 import net.drapuria.framework.bukkit.item.meta.enchant.EnchantGlow;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;
 import net.drapuria.framework.bukkit.util.Skin;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -134,39 +131,6 @@ public class ItemBuilder {
         return this;
     }
 
-
-    public ItemBuilder addGlow() {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(this.itemStack);
-        NBTTagCompound tag = null;
-        if (!nmsStack.hasTag()) {
-            tag = new NBTTagCompound();
-            nmsStack.setTag(tag);
-        }
-
-        if (tag == null) {
-            tag = nmsStack.getTag();
-        }
-
-        NBTTagList ench = new NBTTagList();
-        tag.set("ench", ench);
-        nmsStack.setTag(tag);
-        this.itemStack = CraftItemStack.asCraftMirror(nmsStack);
-        return this;
-    }
-
-    public boolean hasGlow() {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(this.itemStack);
-        NBTTagCompound tag = null;
-        if (!nmsStack.hasTag()) {
-            tag = new NBTTagCompound();
-            nmsStack.setTag(tag);
-        }
-
-        if (tag == null) {
-            tag = nmsStack.getTag();
-        }
-        return tag.hasKey("ench");
-    }
 
     public ItemStack build() {
         this.itemStack.setItemMeta(this.itemMeta);

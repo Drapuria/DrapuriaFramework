@@ -23,6 +23,12 @@
             <version>1.0-RELEASE</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>general-1_8</artifactId>
+            <version>1.0-RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

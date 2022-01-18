@@ -1,9 +1,9 @@
-package net.drapuria.framework.bukkit.inventory.menu.buttons;
+package net.drapuria.framework.bukkit.inventory.deprecatedmenu.buttons;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.drapuria.framework.bukkit.inventory.menu.Button;
-import net.drapuria.framework.bukkit.inventory.menu.Menu;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Menu;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;

@@ -1,7 +1,7 @@
 package net.drapuria.framework.bukkit.inventory.header;
 
-import net.drapuria.framework.bukkit.inventory.menu.header.HeaderButton;
-import net.drapuria.framework.bukkit.inventory.menu.Button;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.header.HeaderButton;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
 import net.drapuria.framework.header.controller.HeaderController;
 import org.bukkit.Material;

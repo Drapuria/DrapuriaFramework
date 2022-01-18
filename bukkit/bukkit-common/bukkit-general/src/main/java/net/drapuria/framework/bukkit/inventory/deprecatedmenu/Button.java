@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.inventory.menu;
+package net.drapuria.framework.bukkit.inventory.deprecatedmenu;
 
 import net.drapuria.framework.bukkit.sound.SoundData;
 import org.apache.commons.lang.StringUtils;
@@ -42,7 +42,6 @@ public abstract class Button {
 
     public static void playFail(Player player) {
         failSound.play(player);
-
     }
 
     public static void playSuccess(Player player) {

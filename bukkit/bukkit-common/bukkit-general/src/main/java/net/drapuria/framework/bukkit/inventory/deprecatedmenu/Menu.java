@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.inventory.menu;
+package net.drapuria.framework.bukkit.inventory.deprecatedmenu;
 
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.util.SpigotUtil;

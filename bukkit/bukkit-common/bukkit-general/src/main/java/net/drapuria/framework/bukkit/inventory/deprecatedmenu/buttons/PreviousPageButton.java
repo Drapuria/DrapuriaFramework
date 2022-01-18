@@ -1,7 +1,7 @@
-package net.drapuria.framework.bukkit.inventory.menu.buttons;
+package net.drapuria.framework.bukkit.inventory.deprecatedmenu.buttons;
 
 import net.drapuria.framework.bukkit.item.ItemBuilder;
-import net.drapuria.framework.bukkit.inventory.menu.Button;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;

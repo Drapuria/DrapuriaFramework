@@ -1,6 +1,6 @@
-package net.drapuria.framework.bukkit.inventory.menu.pageable;
+package net.drapuria.framework.bukkit.inventory.deprecatedmenu.pageable;
 
-import net.drapuria.framework.bukkit.inventory.menu.Button;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 

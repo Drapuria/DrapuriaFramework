@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
-            <artifactId>bukkit-core</artifactId>
+            <artifactId>bukkit-general</artifactId>
             <version>1.0-RELEASE</version>
             <scope>compile</scope>
         </dependency>

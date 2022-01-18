@@ -1,8 +1,8 @@
-package net.drapuria.framework.bukkit.inventory.menu.header;
+package net.drapuria.framework.bukkit.inventory.deprecatedmenu.header;
 
 
 import net.drapuria.framework.bukkit.inventory.header.BukkitHeaderIcon;
-import net.drapuria.framework.bukkit.inventory.menu.Button;
+import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;
 import net.drapuria.framework.bukkit.util.DrapuriaSoundDefaults;
 import net.drapuria.framework.header.controller.HeaderController;
 import org.bukkit.entity.Player;

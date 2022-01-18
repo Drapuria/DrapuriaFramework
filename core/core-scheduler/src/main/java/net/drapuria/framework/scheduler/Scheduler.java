@@ -9,6 +9,7 @@ import net.drapuria.framework.scheduler.action.ScheduledAction;
 import net.drapuria.framework.scheduler.helper.SchedulerHelper;
 import net.drapuria.framework.scheduler.pool.SchedulerPool;
 import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
+import net.drapuria.framework.util.Stacktrace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -75,14 +76,27 @@ public class Scheduler<T> {
                 if (repeatedAction.isAlways()) {
                     if (!repeatedAction.isLastTick() && iterations == 0) return;
                     if (!repeatedAction.isFirstTick() && currentIteration == 1) return;
-                    repeatedAction.getAction().accept(expiredTime, getSupplier().get());
+                    try {
+                        repeatedAction.getAction().accept(expiredTime, getSupplier().get());
+                    } catch (Exception e) {
+                        Stacktrace.print(e);
+                    }
                 } else if (iterations % repeatedAction.getDivision() == repeatedAction.getRemainder())
-                    repeatedAction.getAction().accept(expiredTime, getSupplier().get());
+                    try {
+                        repeatedAction.getAction().accept(expiredTime, getSupplier().get());
+                    } catch (Exception e) {
+                        Stacktrace.print(e);
+                    }
             });
             ScheduledAction<T> scheduledAction = parseAction(currentIteration);
             if (scheduledAction != null)
-                scheduledAction.accept(supplier.get());
-        } catch (Exception ignored) {
+                 try {
+                     scheduledAction.accept(supplier.get());
+                 } catch (Exception e) {
+                     Stacktrace.print(e);
+                 }
+        } catch (Exception e) {
+            Stacktrace.print(e);
         }
 
         return iterations == 0;

@@ -2,11 +2,12 @@ package net.drapuria.framework.bukkit.player;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * @param <I> The ItemStack we work with (multi version support)
  */
-public interface DrapuriaPlayer<I> extends Player {
+public interface DrapuriaPlayer extends Player {
 
     void showItemBar(String text);
 
@@ -18,7 +19,7 @@ public interface DrapuriaPlayer<I> extends Player {
 
     boolean hasEmptyInventory();
 
-    void giveItem(final I item);
+    void giveItem(final ItemStack item);
 
     default void clearPotionEffects() {
         getActivePotionEffects().forEach(potionEffect -> removePotionEffect(potionEffect.getType()));

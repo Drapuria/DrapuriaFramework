@@ -79,54 +79,7 @@ public class Drapuria {
         moduleService.registerScanner(PluginDependenciesScanner.class);
         // load internal modules (modules managed by the framework)
         DrapuriaCommon.TASK_SCHEDULER.runSync(moduleService::loadInternalModules);
-        /*
-        new BukkitRunnable() {
-            int i = 0;
-            long lastTick1 = 0;
-            long lastTick2 = 0;
-            @Override
-            public void run() {
-                AbstractSchedulerFactory<Player, ?> factory = (BukkitSchedulerFactory<Player>) new BukkitSchedulerFactory<Player>()
-                        .delay(200)
-                        .period(20)
-                        .supplier(() -> Bukkit.getPlayer("marinus1111"))
-                        .iterations(50)
-                        .at(Timestamp.END, player -> player.sendMessage("ENDE"))
-                        .repeated(new RepeatedAction<>(false, true, -1, -1, (aLong, player) -> {
-                            Bukkit.broadcastMessage(String.valueOf(System.currentTimeMillis() - lastTick1));
-                            lastTick1 = System.currentTimeMillis();
-                        }));
-                factory.build();
-            }
-        }.runTaskLater(PLUGIN, 20 * 5);
 
-*/
-
-
-        AtomicInteger i = new AtomicInteger(0);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                long start = System.currentTimeMillis();
-                AtomicInteger iteration = new AtomicInteger();
-                new SchedulerFactory<Server>()
-                        .delay(20)
-                        .iterations(-1)
-                        .period(20)
-                        .provider(ThreadedSchedulerProvider.class)
-                        .supplier(Bukkit::getServer)
-                        .repeated(new RepeatedAction<>(true, true, true, 0, 0,
-                                (aLong, server) -> {
-                                    if (iteration.get() < 10) {
-                                        server.broadcastMessage("Hallo");
-                                    }
-                                    iteration.getAndIncrement();
-                                }))
-                        .at(5, new ScheduledAction<>(server -> server.broadcastMessage("ms: " + (System.currentTimeMillis() - start) + " iteration: " + iteration.get())))
-                        .build();
-            }
-        }.runTaskLater(PLUGIN, 20 * 5);
     }
 
     @SneakyThrows

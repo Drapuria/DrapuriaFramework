@@ -30,7 +30,7 @@ import org.github.paperspigot.Title;
 import java.net.InetSocketAddress;
 import java.util.*;
 
-public class DrapuriaPlayer1_8 implements DrapuriaPlayer<ItemStack> {
+public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
     private final Player player;
     private final UUID uniqueId;

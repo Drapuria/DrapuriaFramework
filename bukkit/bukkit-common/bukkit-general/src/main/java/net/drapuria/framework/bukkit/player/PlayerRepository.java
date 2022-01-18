@@ -6,7 +6,7 @@ import net.drapuria.framework.repository.InMemoryRepository;
 import java.util.UUID;
 
 @Service(name = "drapuriaPlayerRepository")
-public class PlayerRepository extends InMemoryRepository<DrapuriaPlayer<?>, UUID> {
+public class PlayerRepository extends InMemoryRepository<DrapuriaPlayer, UUID> {
 
     public static PlayerRepository getRepository;
 

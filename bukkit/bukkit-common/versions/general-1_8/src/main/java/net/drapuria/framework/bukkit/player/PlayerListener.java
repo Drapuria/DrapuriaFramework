@@ -1,8 +1,6 @@
 package net.drapuria.framework.bukkit.player;
 
 import net.drapuria.framework.beans.annotation.Component;
-import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
-import net.drapuria.framework.bukkit.player.PlayerRepository;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,6 +8,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class PlayerListener implements Listener {
@@ -19,7 +20,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final DrapuriaPlayer<ItemStack> drapuriaPlayer = new DrapuriaPlayer1_8(player);
+        final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_8(player);
         playerRepository.save(drapuriaPlayer);
     }
 

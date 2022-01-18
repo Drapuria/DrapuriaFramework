@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
-            <artifactId>bukkit-common</artifactId>
+            <artifactId>bukkit-general</artifactId>
             <version>1.0-RELEASE</version>
             <scope>provided</scope>
         </dependency>

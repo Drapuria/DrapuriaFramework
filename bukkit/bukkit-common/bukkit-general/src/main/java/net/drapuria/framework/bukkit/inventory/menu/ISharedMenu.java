@@ -17,6 +17,10 @@ public interface ISharedMenu extends IMenu {
         return this.getButtons();
     }
 
+    default Map<Integer, IButton> getCachedButtons(Player player) {
+        return this.getButtons();
+    }
+
     default Inventory getInventory(Player player) {
         return this.getInventory();
     }

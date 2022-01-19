@@ -9,6 +9,8 @@ import java.util.Map;
 
 public interface IMenu {
 
+    String getTitle(Player player);
+
     void openMenu(Player player);
 
     int getDefaultSize();
@@ -16,6 +18,10 @@ public interface IMenu {
     void setDefaultSize(int size);
 
     int getSize();
+
+    int getSize(Player player);
+
+    InventoryType getBukkitInventoryType(Player player);
 
     InventoryType getBukkitInventoryType();
 
@@ -50,6 +56,8 @@ public interface IMenu {
     Inventory getInventory(Player player);
 
     Map<Integer, IButton> getButtons(Player player);
+
+    Map<Integer, IButton> getCachedButtons(Player player);
 
     default int size(Map<Integer, IButton> buttons) {
         if (this.getSize() != -1) return getDefaultSize();

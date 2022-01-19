@@ -52,7 +52,7 @@ public class MenuListener implements Listener {
         if (clickedInventory.equals(menuInventory) && event.getCursor() != null && !currentMenu.isAcceptNewItems())
             event.setCancelled(true);
 
-        final Map<Integer, IButton> buttons = currentMenu.getButtons(player);
+        final Map<Integer, IButton> buttons = currentMenu.getCachedButtons(player);
         final IButton currentButton = buttons.get(slot);
         if (currentButton == null) return;
         if (!event.isCancelled() && currentButton.shouldCancel(player, slot, clickType))

@@ -24,7 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.HashMap;
 import java.util.Map;
 
-@AnvilImpl
 public abstract class VirtualAnvil extends AbstractVirtualAnvil {
 
     protected Player player;
@@ -52,6 +51,7 @@ public abstract class VirtualAnvil extends AbstractVirtualAnvil {
         ItemMeta meta = displayItem.getItemMeta();
         if (startText == null || startText.equals(""))
             startText = " ";
+        openAnvil();
         meta.setDisplayName(startText);
         displayItem.setItemMeta(meta);
         inv.setItem(0, displayItem);
@@ -69,7 +69,7 @@ public abstract class VirtualAnvil extends AbstractVirtualAnvil {
         openVirtualAnvil(player);
     }
 
-    @AnvilEnable
+    @AnvilImpl
     public static void onEnable() {
         Bukkit.getPluginManager().registerEvents(new AnvilEventHandler(), Drapuria.PLUGIN);
     }

@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -21,11 +22,7 @@ public abstract class Menu extends AbstractMenu {
     }
 
     public void setCachedButtons(Player player, Map<Integer, IButton> map) {
-         this.playerButtons.put(player, map);
-    }
-
-    public void removeCachedButtons(Player player) {
-        this.playerButtons.remove(player);
+        this.playerButtons.put(player, map);
     }
 
     @Override
@@ -36,7 +33,18 @@ public abstract class Menu extends AbstractMenu {
         final Inventory inventory = buildInventory(player, getBukkitInventoryType(player), size, title, buttons);
         setCachedButtons(player, buttons);
         this.inventories.put(player, inventory);
+        player.openInventory(inventory);
         MenuService.getService.addOpenedMenu(player.getName(), this);
+    }
+
+    @Override
+    public Inventory getInventory(Player player) {
+        return this.inventories.get(player);
+    }
+
+    @Override
+    public void removePlayerButtons(Player player) {
+        this.playerButtons.remove(player);
     }
 
     private Inventory buildInventory(final Player player, final InventoryType inventoryType, int size, final String title, final Map<Integer, IButton> buttons) {
@@ -54,9 +62,9 @@ public abstract class Menu extends AbstractMenu {
 
         if (inventory == null) {
             if (inventoryType != null)
-                inventory = Bukkit.createInventory(null, inventoryType, title);
+                inventory = Bukkit.createInventory(null, inventoryType, Component.text(title));
             else
-                inventory = Bukkit.createInventory(null, size, title);
+                inventory = Bukkit.createInventory(null, size, Component.text(title));
         }
         for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue().getIcon());

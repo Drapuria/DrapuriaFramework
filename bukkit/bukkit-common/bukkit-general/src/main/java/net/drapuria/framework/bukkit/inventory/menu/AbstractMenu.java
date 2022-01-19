@@ -2,6 +2,7 @@ package net.drapuria.framework.bukkit.inventory.menu;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 
 public abstract class AbstractMenu implements IMenu {
 
@@ -105,4 +106,9 @@ public abstract class AbstractMenu implements IMenu {
     public void onOpen(Player player) {
 
     }
+
+    public Inventory getCurrentInventory(final Player player) {
+        return player.getOpenInventory() == null ? null : player.getOpenInventory().getTopInventory();
+    }
+
 }

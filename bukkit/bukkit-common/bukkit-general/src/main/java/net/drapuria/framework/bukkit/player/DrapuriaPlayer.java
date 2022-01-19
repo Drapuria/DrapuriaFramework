@@ -1,9 +1,7 @@
 package net.drapuria.framework.bukkit.player;
 
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -11,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public interface DrapuriaPlayer extends Player {
 
-    void showItemBar(String text);
+    void sendActionBar(String text);
 
     void sendTitle(String text, int fadein, int showtime, int fadeout);
 

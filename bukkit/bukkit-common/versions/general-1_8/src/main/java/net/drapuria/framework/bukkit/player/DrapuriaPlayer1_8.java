@@ -45,7 +45,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     }
 
     @Override
-    public void showItemBar(String text) {
+    public void sendActionBar(String text) {
         ((CraftPlayer) player).getHandle().playerConnection
                 .sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + text.trim() + "\"}"), (byte) 2));
     }

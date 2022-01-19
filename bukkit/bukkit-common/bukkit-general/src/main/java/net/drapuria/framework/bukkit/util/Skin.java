@@ -9,6 +9,7 @@ import com.mojang.authlib.properties.Property;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.drapuria.framework.FrameworkMisc;
+import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.Bukkit;
@@ -67,15 +68,7 @@ public class Skin {
     private static Skin loadFromPlayerName(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
         if (player != null) {
-            EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-            GameProfile profile = entityPlayer.getProfile();
-            if (!profile.getProperties().get("textures").isEmpty()) {
-                Property property = profile.getProperties().get("textures").iterator().next();
-                String texture = property.getValue();
-                String signature = property.getSignature();
-                return new Skin(texture, signature);
-            }
-            return null;
+            return Drapuria.IMPLEMENTATION.getSkinFromPlayer(player);
         }
         return Skin.download(playerName);
     }

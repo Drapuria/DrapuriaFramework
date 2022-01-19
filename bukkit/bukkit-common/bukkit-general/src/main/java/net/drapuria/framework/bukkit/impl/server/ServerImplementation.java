@@ -9,6 +9,7 @@ import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
 import net.drapuria.framework.bukkit.inventory.anvil.ConfirmAction;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.beans.BeanContext;
+import net.drapuria.framework.bukkit.util.Skin;
 import net.drapuria.framework.util.MethodAnnotationScanner;
 import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
@@ -84,6 +85,8 @@ public interface ServerImplementation {
     boolean isServerThread();
 
     boolean callMoveEvent(Player player, Location from, Location to);
+
+    Skin getSkinFromPlayer(Player player);
 
     AbstractVirtualAnvil createVirtualAnvil(Player player, BiConsumer<Player, ConfirmAction> onCancel, BiFunction<Player, String, ConfirmAction> confirm);
 

@@ -5,7 +5,6 @@ import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.block.TargetBlockInfo;
 import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.destroystokyo.paper.profile.PlayerProfile;
-import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -53,8 +52,8 @@ import java.util.*;
 public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
 
     @Override
-    public void showItemBar(String text) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText("Test"));
+    public void sendActionBar(String text) {
+        player.sendActionBar(Component.text(text));
     }
 
     @Override
@@ -932,11 +931,6 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
     @Override
     public void sendMap(@NotNull MapView mapView) {
         player.sendMap(mapView);
-    }
-
-    @Override
-    public void sendActionBar(@NotNull String s) {
-        player.sendActionBar(s);
     }
 
     @Override

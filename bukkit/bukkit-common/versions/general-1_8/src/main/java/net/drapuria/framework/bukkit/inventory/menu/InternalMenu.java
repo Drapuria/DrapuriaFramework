@@ -14,12 +14,25 @@ public class InternalMenu extends Menu {
     private final Function<Player, Integer> sizeFunction;
     private final Function<Player, InventoryType> inventoryType;
 
-    public InternalMenu(Map<Integer, Function<Player, Button>> buttons, Function<Player, String> title, Function<Player, Integer> size, Function<Player, InventoryType> inventoryType) {
+    public InternalMenu(Map<Integer, Function<Player, Button>> buttons, Function<Player, String> title,
+                        Function<Player, Integer> size, Function<Player, InventoryType> inventoryType,
+                        boolean acceptNewItems, boolean acceptItemRemove,
+                        boolean allowOutsideRightOrLeftClick, boolean allowOwnInventoryClick) {
         this.buttons = buttons;
         this.title = title;
         this.sizeFunction = size;
         this.inventoryType = inventoryType;
+        setAcceptItemRemove(acceptItemRemove);
+        setAcceptNewItems(acceptNewItems);
+        setAllowOutsideRightOrLeftClick(allowOutsideRightOrLeftClick);
+        setAllowOwnInventoryClick(allowOwnInventoryClick);
     }
+
+    @Override
+    public boolean acceptItemRemove() {
+        return super.acceptItemRemove();
+    }
+
 
 
     @Override

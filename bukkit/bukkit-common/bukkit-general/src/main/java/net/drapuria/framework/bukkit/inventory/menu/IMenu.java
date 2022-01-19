@@ -72,7 +72,7 @@ public interface IMenu {
     }
 
 
-    default int getSlot(int x, int y) {
+    static int getSlot(int x, int y) {
         return ((9 * y) + x);
     }
 }

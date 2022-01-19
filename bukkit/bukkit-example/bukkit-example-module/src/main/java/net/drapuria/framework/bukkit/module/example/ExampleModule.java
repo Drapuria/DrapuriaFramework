@@ -28,5 +28,4 @@ public class ExampleModule extends BukkitModule {
         getModuleParent().getLogger().info("Example Module Disabled");
     }
 
-
 }

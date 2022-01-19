@@ -2,13 +2,13 @@ package net.drapuria.framework.bukkit.player;
 
 import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.bukkit.inventory.menu.AbstractButton;
-import net.drapuria.framework.bukkit.inventory.menu.IButton;
-import net.drapuria.framework.bukkit.inventory.menu.SharedMenu;
+import net.drapuria.framework.bukkit.inventory.menu.*;
+import net.drapuria.framework.bukkit.inventory.menu.factory.MenuFactory;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class PlayerListener implements Listener {
@@ -83,6 +84,41 @@ public class PlayerListener implements Listener {
                 }.openMenu(player);
                  */
            //     drapuriaPlayer.teleportAsync(new Location(player.getWorld(), -30000, 15, -3000));
+                final AtomicReference<IMenu> menu = new AtomicReference<>();
+                final AtomicReference<IMenu> test = new AtomicReference<>();
+                menu.set(new MenuFactory().inventoryType(player1 -> InventoryType.HOPPER)
+                        .button(0, player1 -> new Button() {
+                            @Override
+                            public ItemStack getIcon(Player player) {
+                                return ItemBuilder.of(Material.CHEST).setDisplayName("§aHey")
+                                        .build();
+                            }
+
+                            @Override
+                            public void onClick(Player player, int slot, ClickType clickType, int hotbarButton) {
+                                playNeutral(player);
+                                test.get().openMenu(player);
+                            }
+                        })
+                        .title(player1 -> "§a" + player1.getName())
+                        .buildMenu());
+                test.set(new MenuFactory().size(player1 -> 27)
+                        .title(HumanEntity::getName)
+                        .button(5, player1 -> new Button() {
+                            @Override
+                            public ItemStack getIcon(Player player) {
+                                return ItemBuilder.of(Material.ENDER_CHEST)
+                                        .setDisplayName("§bYOYO")
+                                        .build();
+                            }
+
+                            @Override
+                            public void onClick(Player player, int slot, ClickType clickType, int hotbarButton) {
+                                playSuccess(player);
+                                menu.get().openMenu(player);
+                            }
+                        }).buildMenu());
+                test.get().openMenu(player);
             }
         }.runTaskLaterAsynchronously(Drapuria.PLUGIN, 20 * 10);
     }

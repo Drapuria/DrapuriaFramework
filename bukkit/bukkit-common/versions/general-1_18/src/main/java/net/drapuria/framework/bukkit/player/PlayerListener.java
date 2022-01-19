@@ -1,21 +1,12 @@
 package net.drapuria.framework.bukkit.player;
 
 import net.drapuria.framework.beans.annotation.Component;
-import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.bukkit.inventory.menu.Button;
-import net.drapuria.framework.bukkit.inventory.menu.factory.MenuFactory;
-import net.drapuria.framework.bukkit.item.ItemBuilder;
-import org.bukkit.Material;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 @Component
 public class PlayerListener implements Listener {

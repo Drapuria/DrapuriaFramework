@@ -26,6 +26,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>core-common</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>de.vantrex.hardcorespigot</groupId>
             <artifactId>server</artifactId>
             <version>1.8.8-R0.2-RELEASE</version>

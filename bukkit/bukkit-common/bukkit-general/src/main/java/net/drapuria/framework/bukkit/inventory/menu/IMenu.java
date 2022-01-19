@@ -59,6 +59,10 @@ public interface IMenu {
 
     Map<Integer, IButton> getCachedButtons(Player player);
 
+    MenuUpdatePolicy getUpdatePolicy(Player player);
+
+    void updateMenu(Player player);
+
     default int size(Map<Integer, IButton> buttons) {
         if (this.getSize() != -1) return getDefaultSize();
         int highest = buttons.keySet().stream().mapToInt(buttonValue -> buttonValue).filter(buttonValue -> buttonValue >= 0)

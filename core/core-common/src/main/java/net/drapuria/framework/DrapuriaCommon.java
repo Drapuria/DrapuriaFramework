@@ -10,10 +10,13 @@ import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;
 import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.task.ITaskScheduler;
 import net.drapuria.framework.util.ClasspathScanner;
+import net.drapuria.framework.util.MethodAnnotationScanner;
+import net.drapuria.framework.util.Stacktrace;
 import net.drapuria.framework.util.TypeAnnotationScanner;
 import net.drapuria.framework.util.terminable.Terminable;
 import org.apache.logging.log4j.Logger;
 
+import java.lang.reflect.InvocationTargetException;
 import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -138,6 +141,7 @@ public final class DrapuriaCommon {
                 }
             }
         }
+        getLogger().info("scanned anotated maven dependencies");
     }
 
     public Logger getLogger() {
@@ -216,6 +220,7 @@ public final class DrapuriaCommon {
                 DrapuriaCommon.TASK_SCHEDULER = this.taskScheduler;
                 FrameworkMisc.TASK_SCHEDULER = this.taskScheduler;
             }
+            System.out.println("init..");
             DrapuriaCommon.init();
         }
     }

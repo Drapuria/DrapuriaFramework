@@ -63,6 +63,9 @@ public class MenuListener implements Listener {
                 event.setCancelled(true);
         }
         currentButton.onClick(player, slot, clickType, event.getHotbarButton());
+        final boolean shouldUpdate = currentButton.shouldUpdate(player, slot, clickType);
+        if (shouldUpdate)
+            currentMenu.updateMenu(player);
     }
 
     @EventHandler

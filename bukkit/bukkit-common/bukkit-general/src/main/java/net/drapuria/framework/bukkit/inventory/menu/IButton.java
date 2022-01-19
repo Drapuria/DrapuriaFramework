@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import net.drapuria.framework.bukkit.sound.SoundConstants;
 import net.drapuria.framework.bukkit.sound.SoundData;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -8,9 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 public interface IButton {
 
-    ItemStack getIcon();
-
-    ItemStack setIcon(ItemStack inventory);
+    ItemStack getIcon(Player player);
 
     void onClick(Player player, int slot, ClickType clickType, int hotbarButton);
 
@@ -23,21 +22,15 @@ public interface IButton {
     }
 
     default void playSuccess(Player player) {
-        Sounds.successSound.play(player);
+        SoundConstants.SUCCESS.play(player);
     }
 
     default void playNeutral(Player player) {
-        Sounds.neutralSound.play(player);
+        SoundConstants.NEUTRAL.play(player);
     }
 
     default void playFail(Player player) {
-        Sounds.failSound.play(player);
-    }
-
-    static class Sounds {
-        private static SoundData failSound;
-        private static SoundData successSound;
-        private static SoundData neutralSound;
+        SoundConstants.FAIL.play(player);
     }
 
 }

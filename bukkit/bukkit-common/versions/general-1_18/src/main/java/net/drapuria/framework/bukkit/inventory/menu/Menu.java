@@ -67,8 +67,23 @@ public abstract class Menu extends AbstractMenu {
                 inventory = Bukkit.createInventory(null, size, Component.text(title));
         }
         for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
-            inventory.setItem(entry.getKey(), entry.getValue().getIcon());
+            inventory.setItem(entry.getKey(), entry.getValue().getIcon(player));
         }
         return inventory;
+    }
+
+    @Override
+    protected void updateButtons(Player player) {
+        final Inventory inventory = this.getInventory(player);
+        if (inventory != null) {
+            inventory.setContents(new ItemStack[inventory.getSize()]);
+            Map<Integer, IButton> buttons = getButtons(player);
+            playerButtons.put(player, buttons);
+            for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
+                inventory.setItem(entry.getKey(), entry.getValue().getIcon(player));
+            }
+            player.updateInventory();
+        } else
+            openMenu(player);
     }
 }

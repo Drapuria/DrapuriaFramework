@@ -4,6 +4,7 @@ package net.drapuria.framework.bukkit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import net.drapuria.framework.BootstrapInvoke;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.beans.annotation.Autowired;
@@ -24,6 +25,8 @@ import net.drapuria.framework.scheduler.action.RepeatedAction;
 import net.drapuria.framework.scheduler.action.ScheduledAction;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import net.drapuria.framework.scheduler.provider.ThreadedSchedulerProvider;
+import net.drapuria.framework.util.MethodAnnotationScanner;
+import net.drapuria.framework.util.Stacktrace;
 import org.apache.http.util.Asserts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,6 +39,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -79,6 +84,14 @@ public class Drapuria {
         moduleService.registerScanner(PluginDependenciesScanner.class);
         // load internal modules (modules managed by the framework)
         DrapuriaCommon.TASK_SCHEDULER.runSync(moduleService::loadInternalModules);
+        MethodAnnotationScanner scanner = new MethodAnnotationScanner(BootstrapInvoke.class);
+        scanner.getResults().values().forEach(methods -> Arrays.stream(methods).forEach(method -> {
+            try {
+                method.invoke(null);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                Stacktrace.print(e);
+            }
+        }));
 
     }
 

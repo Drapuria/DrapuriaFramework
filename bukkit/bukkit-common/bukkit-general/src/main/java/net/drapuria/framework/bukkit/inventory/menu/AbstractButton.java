@@ -14,5 +14,6 @@ public abstract class AbstractButton implements IButton {
     }
 
     @Override
-    public void onClick(Player player, int slot, ClickType clickType, int hotbarButton) {}
+    public void onClick(Player player, int slot, ClickType clickType, int hotbarButton) {
+    }
 }

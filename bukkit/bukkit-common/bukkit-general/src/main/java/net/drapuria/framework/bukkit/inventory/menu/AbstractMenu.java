@@ -111,4 +111,19 @@ public abstract class AbstractMenu implements IMenu {
         return player.getOpenInventory() == null ? null : player.getOpenInventory().getTopInventory();
     }
 
+    @Override
+    public MenuUpdatePolicy getUpdatePolicy(Player player) {
+        return MenuUpdatePolicy.ALL;
+    }
+
+    @Override
+    public void updateMenu(Player player) {
+        if (getUpdatePolicy(player) == MenuUpdatePolicy.ALL)
+            openMenu(player);
+        else
+            updateButtons(player);
+    }
+
+    protected abstract void updateButtons(Player player);
+
 }

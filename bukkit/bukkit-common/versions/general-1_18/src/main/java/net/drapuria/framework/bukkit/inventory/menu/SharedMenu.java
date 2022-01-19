@@ -26,7 +26,7 @@ public abstract class SharedMenu extends AbstractSharedMenu {
             this.inventory = Bukkit.createInventory(null, this.getSize(), Component.text(this.getTitle()));
 
         for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
-            inventory.setItem(entry.getKey(), entry.getValue().getIcon());
+            inventory.setItem(entry.getKey(), entry.getValue().getIcon(null));
         }
     }
 }

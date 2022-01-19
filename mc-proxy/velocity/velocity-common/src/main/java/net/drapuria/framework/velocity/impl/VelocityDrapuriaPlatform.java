@@ -1,6 +1,7 @@
 package net.drapuria.framework.velocity.impl;
 
 import net.drapuria.framework.DrapuriaPlatform;
+import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.velocity.Drapuria;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,7 @@ public class VelocityDrapuriaPlatform implements DrapuriaPlatform {
 
                 try {
                     if (outFile.exists() && !replace) {
-                        System.out.println("Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
+                        FrameworkMisc.PLATFORM.getLogger().warn("Could not save " + outFile.getName() + " to " + outFile + " because " + outFile.getName() + " already exists.");
                     } else {
                         OutputStream out = new FileOutputStream(outFile);
                         byte[] buf = new byte[1024];
@@ -43,7 +44,7 @@ public class VelocityDrapuriaPlatform implements DrapuriaPlatform {
                         in.close();
                     }
                 } catch (IOException var10) {
-                    System.out.println("Could not save " + outFile.getName() + " to " + outFile);
+                    FrameworkMisc.PLATFORM.getLogger().error("Could not save " + outFile.getName() + " to " + outFile);
                 }
 
             }

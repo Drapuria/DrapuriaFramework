@@ -21,12 +21,6 @@ public class Library {
             "redisson-all", // Include all
             "3.13.6",
             "3YN36wajaTShvnJVRh7Q/SyH7HhsZhAIjqxm1vvqQYM="
-         //   new Relocate("io{}netty", DRAPURIA_LIB_PACKAGE + "redisson.netty"),
-         //   new Relocate("org{}jboss{}marshalling", DRAPURIA_LIB_PACKAGE + "redisson.marshalling"),
-        //    new Relocate("org{}xerial{}snappy", DRAPURIA_LIB_PACKAGE + "redisson.snappy"),
-       //     new Relocate("org{}yaml", DRAPURIA_LIB_PACKAGE + "redisson.yaml"),
-       //     new Relocate("net{}bytebuddy", DRAPURIA_LIB_PACKAGE + "redisson.bytebuddy"),
-       //     new Relocate("com{}fasterxml{}jackson", DRAPURIA_LIB_PACKAGE + "redisson.jackson")
     ),
             JACKSON_CORE = new Library(
                     "com.fasterxml.jackson.core",
@@ -109,14 +103,14 @@ public class Library {
                     "mariadb-java-client",
                     "2.7.0",
                     "ABURDun85Q01kf119r4yjDtl5ju9Fg9uV2nXyU3SEdw="
-                  //  new Relocate("org{}mariadb{}jdbc", DRAPURIA_LIB_PACKAGE + "mariadb")
+                    //  new Relocate("org{}mariadb{}jdbc", DRAPURIA_LIB_PACKAGE + "mariadb")
             ),
             MYSQL_DRIVER = new Library(
                     "mysql",
                     "mysql-connector-java",
                     "8.0.22",
                     "UBne+9EjFilel6bojyqbB/EYNFpOmCcQu6Iy5JmyL08="
-                 //   new Relocate("com{}mysql", DRAPURIA_LIB_PACKAGE + "mysql")
+                    //   new Relocate("com{}mysql", DRAPURIA_LIB_PACKAGE + "mysql")
             ),
             POSTGRESQL_DRIVER = new Library(
                     "org{}postgresql",
@@ -144,14 +138,18 @@ public class Library {
                     "5.3.2",
                     null
             ),
-
-
-    ASM = new Library(
-            "org.ow2.asm",
-            "asm",
-            "9.1",
-            "zaTeRV+rSP8Ly3xItGOUR9TehZp6/DCglKmG8JNr66I="
-    ),
+            FAST_CLASSPATH_SCANNER = new Library(
+                    "io.github.lukehutch",
+                    "fast-classpath-scanner",
+                    "4.0.0-beta-7",
+                    null
+            ),
+            ASM = new Library(
+                    "org.ow2.asm",
+                    "asm",
+                    "9.1",
+                    "zaTeRV+rSP8Ly3xItGOUR9TehZp6/DCglKmG8JNr66I="
+            ),
             ASM_COMMONS = new Library(
                     "org.ow2.asm",
                     "asm-commons",

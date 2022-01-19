@@ -2,6 +2,8 @@ package net.drapuria.framework.bukkit.player;
 
 import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,7 +25,7 @@ public class PlayerListener implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                Drapuria.IMPLEMENTATION.sendActionBar(player, "§a§lHALLO");
+                Drapuria.IMPLEMENTATION.sendActionBar(player, "§c§lVersion: " + Minecraft.MINECRAFT_VERSION.packageName());
             }
         }.runTaskLater(Drapuria.PLUGIN, 20 * 5);
     }

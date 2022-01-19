@@ -170,7 +170,7 @@ public class LibraryHandler {
         }
 
         try {
-            System.out.println("Remapping library " + library.getName() + "...");
+            LOGGER.info("Remapping library " + library.getName() + "...");
 
             this.relocateHandler.relocate(normalFile, remappedFile, library.getRelocations());
         } catch (Throwable throwable) {

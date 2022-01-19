@@ -1,6 +1,7 @@
 package net.drapuria.framework.util;
 
 import com.google.common.collect.ImmutableMap;
+import net.drapuria.framework.FrameworkMisc;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -235,7 +236,7 @@ public class Utility {
             Class.forName("net.drapuria.framework.util.AccessUtil");
            // Class.forName("org.springframework.expression.ExpressionParser");
         } catch (Throwable throwable) {
-            System.out.println("Something wrong while resolving LinkageError...");
+            FrameworkMisc.PLATFORM.getLogger().warn("Something wrong while resolving LinkageError...");
         }
     }
 

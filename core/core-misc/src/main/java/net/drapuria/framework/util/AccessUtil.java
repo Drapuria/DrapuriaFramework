@@ -10,6 +10,8 @@ import java.lang.reflect.Modifier;
  */
 public abstract class AccessUtil {
 
+    public static boolean VERBOSE = true;
+
     /**
      * Sets the field accessible and removes final modifiers
      *

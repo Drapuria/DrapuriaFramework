@@ -42,6 +42,9 @@ public final class DrapuriaCommon {
             Library.MONGO_DB_SYNC,
             Library.MONGO_DB_CORE,
 
+            // CLASSPATH SCANNER
+            Library.FAST_CLASSPATH_SCANNER,
+
             Library.BSON,
             Library.CAFFEINE,
             Library.GSON,
@@ -54,6 +57,7 @@ public final class DrapuriaCommon {
             Library.JACKSON_CORE,
             Library.JACKSON_DATABIND,
             Library.JACKSON_ANNOTATIONS
+
     );
 
     public DrapuriaPlatform PLATFORM;
@@ -220,7 +224,6 @@ public final class DrapuriaCommon {
                 DrapuriaCommon.TASK_SCHEDULER = this.taskScheduler;
                 FrameworkMisc.TASK_SCHEDULER = this.taskScheduler;
             }
-            System.out.println("init..");
             DrapuriaCommon.init();
         }
     }

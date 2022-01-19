@@ -5,6 +5,7 @@ import net.drapuria.framework.bukkit.item.ItemBuilder;
 import net.drapuria.framework.bukkit.item.ItemConstants;
 import net.drapuria.framework.bukkit.sound.SoundConstants;
 import net.drapuria.framework.bukkit.sound.SoundData;
+import net.drapuria.framework.bukkit.util.DrapuriaSoundDefaults;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 
@@ -20,6 +21,8 @@ public class ConstantHelper {
         SoundConstants.FAIL = SoundData.of(Sound.NOTE_BASS);
         SoundConstants.SUCCESS = SoundData.of(Sound.NOTE_PLING);
         SoundConstants.NEUTRAL = SoundData.of(Sound.CLICK);
+        DrapuriaSoundDefaults.STICK_SOUND = SoundData.of(Sound.NOTE_STICKS);
+
     }
 
 }

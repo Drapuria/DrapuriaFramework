@@ -12,6 +12,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class VelocityDrapuriaPlatform implements DrapuriaPlatform {
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     public void saveResources(String resourcePath, boolean replace) {
         File dataFolder = getDataFolder();
@@ -23,7 +25,7 @@ public class VelocityDrapuriaPlatform implements DrapuriaPlatform {
             } else {
                 File outFile = new File(dataFolder, resourcePath);
                 int lastIndex = resourcePath.lastIndexOf(47);
-                File outDir = new File(dataFolder, resourcePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
+                File outDir = new File(dataFolder, resourcePath.substring(0, Math.max(lastIndex, 0)));
                 if (!outDir.exists()) {
                     outDir.mkdirs();
                 }

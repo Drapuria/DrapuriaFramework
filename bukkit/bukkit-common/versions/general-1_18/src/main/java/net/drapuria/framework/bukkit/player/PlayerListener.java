@@ -27,29 +27,6 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_18(player);
         playerRepository.save(drapuriaPlayer);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                new MenuFactory()
-                        .title(HumanEntity::getName)
-                        .size(player1 -> 54)
-                        .button(5, player1 -> new Button() {
-                            @Override
-                            public ItemStack getIcon(Player player) {
-                                return ItemBuilder.of(Material.BLACKSTONE)
-                                        .setDisplayName("§a§lBLACKSTONE").build();
-                            }
-
-                            @Override
-                            public void onClick(Player player, int slot, ClickType clickType, int hotbarButton) {
-                                playSuccess(player);
-                                player.sendMessage("CLICK");
-                            }
-                        }).buildMenu().openMenu(player);
-
-            }
-        }.runTaskLater(Drapuria.PLUGIN, 20 * 5);
-
     }
 
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.impl.configuration;
 
 import net.drapuria.framework.configuration.yaml.configs.yaml.YamlConfiguration;

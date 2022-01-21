@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.redis.message;
 
 import lombok.AllArgsConstructor;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit;
 
 import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;

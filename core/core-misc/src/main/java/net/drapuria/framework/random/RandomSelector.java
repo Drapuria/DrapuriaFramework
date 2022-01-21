@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.random;
 
 import net.drapuria.framework.random.weight.Weigher;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.discord.message.impl;
 
 import net.drapuria.framework.discord.bot.JDAFactory;

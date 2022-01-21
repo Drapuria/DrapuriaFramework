@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.redis.message;
 
 import net.drapuria.framework.redis.RedisService;

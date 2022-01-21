@@ -1,7 +1,12 @@
-package net.drapuria.framework.bukkit.inventory.header;
+/*
+ * Copyright (c) 2022. Drapuria
+ */
 
+package net.drapuria.framework.bukkit.inventory.menu.header;
+
+import net.drapuria.framework.bukkit.inventory.header.BukkitHeaderIcon;
 import net.drapuria.framework.bukkit.inventory.menu.Button;
-import net.drapuria.framework.bukkit.inventory.menu.header.HeaderButton;
+import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.header.controller.HeaderController;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,12 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NewHeaderMenuFactory<H> {
+public class HeaderMenuFactory<H> {
 
-    private static ItemStack RED_PANE;
-    private static Button RED_PANE_BUTTON;
-    private static ItemStack LIME_PANE;
-    private static Button LIME_PANE_BUTTON;
+    public static ItemStack RED_PANE;
+    public static Button RED_PANE_BUTTON;
+    public static ItemStack LIME_PANE;
+    public static Button LIME_PANE_BUTTON;
 
     static {
 
@@ -24,8 +29,8 @@ public class NewHeaderMenuFactory<H> {
 
     private final List<BukkitHeaderIcon<H>> icons = new ArrayList<>();
 
-    public Map<Integer, Button> buildMenuButtons(final Player shownTo, final HeaderController<H> controller) {
-        Map<Integer, Button> buttons = new HashMap<>();
+    public Map<Integer, IButton> buildMenuButtons(final Player shownTo, final HeaderController<H> controller) {
+        Map<Integer, IButton> buttons = new HashMap<>();
         final List<BukkitHeaderIcon<H>> icons = new ArrayList<>();
 
         for (BukkitHeaderIcon<H> icon : this.icons) {

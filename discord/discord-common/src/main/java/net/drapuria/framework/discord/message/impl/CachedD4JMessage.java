@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.discord.message.impl;
 
 import discord4j.common.util.Snowflake;

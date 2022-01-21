@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.repository;
 
 import net.drapuria.framework.beans.annotation.DisallowAnnotation;

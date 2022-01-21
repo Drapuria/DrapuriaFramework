@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.impl.command.meta;
 
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;

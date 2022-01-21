@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.database.orm.impl;
 
 import lombok.AllArgsConstructor;

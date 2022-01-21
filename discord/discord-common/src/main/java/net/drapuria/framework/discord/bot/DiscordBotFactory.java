@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.discord.bot;
 
 public abstract class DiscordBotFactory<B> {

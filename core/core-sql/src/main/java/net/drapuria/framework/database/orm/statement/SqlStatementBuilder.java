@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.database.orm.statement;
 
 import net.drapuria.framework.database.orm.Query;

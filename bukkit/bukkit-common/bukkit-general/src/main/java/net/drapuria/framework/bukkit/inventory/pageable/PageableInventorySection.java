@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.inventory.pageable;
 
 import net.drapuria.framework.pageable.section.PageableGuiSection;

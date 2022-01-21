@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.util.terminable;
 
 import net.drapuria.framework.util.terminable.module.TerminableModule;

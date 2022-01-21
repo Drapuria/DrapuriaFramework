@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.discord.oauth2.entity;
 
 import net.drapuria.framework.discord.oauth2.OAuth2Client;

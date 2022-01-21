@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.pageable.section;
 
 import net.drapuria.framework.pageable.Pageable;

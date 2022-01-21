@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.impl.module.scanners;
 
 import net.drapuria.framework.bukkit.impl.module.annotation.PluginDependencies;

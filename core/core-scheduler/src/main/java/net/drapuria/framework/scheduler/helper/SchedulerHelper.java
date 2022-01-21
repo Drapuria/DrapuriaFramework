@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.scheduler.helper;
 
 import lombok.experimental.UtilityClass;

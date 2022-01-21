@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.impl.scheduler.pool;
 
 import net.drapuria.framework.bukkit.impl.task.DrapuriaAsyncBukkitTask;

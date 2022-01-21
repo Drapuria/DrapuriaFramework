@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.util.option.input;
 
 import net.drapuria.framework.bukkit.util.option.OptionContext;

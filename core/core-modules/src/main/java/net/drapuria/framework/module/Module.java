@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.module;
 
 import net.drapuria.framework.module.parent.ModuleParent;

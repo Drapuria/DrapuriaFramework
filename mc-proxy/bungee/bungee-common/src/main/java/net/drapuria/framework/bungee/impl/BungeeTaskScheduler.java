@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bungee.impl;
 
 import net.drapuria.framework.bungee.Drapuria;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.configuration.yaml.annotation;
 
 import net.drapuria.framework.configuration.yaml.SimpleYamlConfiguration;

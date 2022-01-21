@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.inventory.menu.listener;
 
 import net.drapuria.framework.beans.annotation.Component;

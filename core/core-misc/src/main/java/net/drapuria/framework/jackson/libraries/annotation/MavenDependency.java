@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.jackson.libraries.annotation;
 
 import java.lang.annotation.*;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.beans;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.player;
 
 import net.drapuria.framework.beans.annotation.Component;
@@ -22,12 +26,6 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_18(player);
         playerRepository.save(drapuriaPlayer);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Drapuria.IMPLEMENTATION.sendActionBar(player, "§c§lVersion: " + Minecraft.MINECRAFT_VERSION.packageName());
-            }
-        }.runTaskLater(Drapuria.PLUGIN, 20 * 5);
     }
 
 

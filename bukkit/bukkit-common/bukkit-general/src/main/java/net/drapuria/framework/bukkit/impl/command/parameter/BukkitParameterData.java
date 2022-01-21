@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.impl.command.parameter;
 
 import net.drapuria.framework.command.parameter.ParameterData;

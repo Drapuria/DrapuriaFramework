@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.discord.oauth2.session;
 
 public interface SessionController<S extends Session> {

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.discord;
 
 import net.drapuria.framework.beans.annotation.PostDestroy;

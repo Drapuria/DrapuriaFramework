@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

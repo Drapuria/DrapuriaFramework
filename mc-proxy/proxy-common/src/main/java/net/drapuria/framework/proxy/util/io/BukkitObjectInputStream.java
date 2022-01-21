@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.proxy.util.io;
 
 import net.drapuria.framework.proxy.util.configuration.serialization.ConfigurationSerialization;

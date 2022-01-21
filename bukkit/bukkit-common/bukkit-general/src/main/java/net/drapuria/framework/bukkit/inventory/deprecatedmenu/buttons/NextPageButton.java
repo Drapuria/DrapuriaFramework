@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.inventory.deprecatedmenu.buttons;
 
 import net.drapuria.framework.bukkit.item.ItemBuilder;

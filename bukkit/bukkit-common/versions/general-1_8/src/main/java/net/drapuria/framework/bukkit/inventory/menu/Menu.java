@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.inventory.menu;
 
 import org.bukkit.Bukkit;
@@ -5,9 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 
 public abstract class Menu extends AbstractMenu {
@@ -29,11 +35,14 @@ public abstract class Menu extends AbstractMenu {
         final Map<Integer, IButton> buttons = getButtons(player);
         final int size = getSize(player);
         final String title = getTitle(player);
-        final Inventory inventory = buildInventory(player, getBukkitInventoryType(player), size, title, buttons);
-        setCachedButtons(player, buttons);
-        this.inventories.put(player, inventory);
-        player.openInventory(inventory);
-        MenuService.getService.addOpenedMenu(player.getName(), this);
+        buildInventory(player, getBukkitInventoryType(player), size, title, buttons, (inventory, aBoolean) -> {
+            this.inventories.put(player, inventory);
+            if (!aBoolean)
+                player.openInventory(inventory);
+            setCachedButtons(player, buttons);
+            MenuService.getService.addOpenedMenu(player.getName(), this);
+        });
+
     }
 
     @Override
@@ -46,18 +55,42 @@ public abstract class Menu extends AbstractMenu {
         this.playerButtons.remove(player);
     }
 
-    private Inventory buildInventory(final Player player, final InventoryType inventoryType, int size, final String title, final Map<Integer, IButton> buttons) {
+    private void buildInventory(final Player player, final InventoryType inventoryType, int size, final String title,
+                                final Map<Integer, IButton> buttons, BiConsumer<Inventory, Boolean> consumer) {
         Inventory inventory = null;
         if (size == -1) {
             size = this.size(buttons);
         }
+        boolean update = false;
+
         if (inventories.containsKey(player)) {
             inventory = inventories.get(player);
             if (inventory.getSize() != size)
                 inventory = null;
-            else
+            else {
                 inventory.setContents(new ItemStack[inventory.getSize()]);
+                if (player.getOpenInventory().getTopInventory().equals(inventory))
+                    update = true;
+            }
+        }
 
+        IMenu previousMenu = MenuService.getService.getOpenedMenu(player.getName());
+        if (inventory == null) {
+            if (player.getOpenInventory() != null) {
+                if (previousMenu == null)
+                    player.closeInventory();
+                else if (previousMenu instanceof Menu) {
+                    final int previousSize = player.getOpenInventory().getTopInventory().getSize();
+                    if (previousSize == size) {
+                        inventory = player.getOpenInventory().getTopInventory();
+                        inventory.setContents(new ItemStack[inventory.getSize()]);
+                        update = true;
+                    } else {
+                        previousMenu.setClosedByMenu(true);
+                        MenuService.getService.removePlayer(player.getName());
+                    }
+                }
+            }
         }
 
         if (inventory == null) {
@@ -69,7 +102,7 @@ public abstract class Menu extends AbstractMenu {
         for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue().getIcon(player));
         }
-        return inventory;
+        consumer.accept(inventory, update);
     }
 
     @Override

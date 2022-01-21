@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.item.skull;
 
 import net.drapuria.framework.repository.InMemoryRepository;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.inventory.deprecatedmenu.pageable;
 
 import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;

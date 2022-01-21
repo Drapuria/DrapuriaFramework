@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
 package net.drapuria.framework.bukkit.inventory.anvil;
 
 import net.drapuria.framework.bukkit.Drapuria;
@@ -51,7 +55,7 @@ public abstract class VirtualAnvil extends AbstractVirtualAnvil {
         ItemMeta meta = displayItem.getItemMeta();
         if (startText == null || startText.equals(""))
             startText = " ";
-        openAnvil();
+      //  openAnvil();
         meta.setDisplayName(startText);
         displayItem.setItemMeta(meta);
         inv.setItem(0, displayItem);

@@ -4,7 +4,6 @@
 
 package net.drapuria.framework.bukkit.scoreboard.board.adapter.example;
 
-import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.scoreboard.board.adapter.DefaultAdapter;
 import net.drapuria.framework.bukkit.scoreboard.board.adapter.ScoreboardAdapter;
 import net.drapuria.framework.bukkit.text.SimpleAnimatedText;

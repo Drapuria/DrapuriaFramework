@@ -45,22 +45,12 @@ public abstract class ClasspathScanner {
         String relPath = packageName.replace('.', '/');
         String resPath = resource.getPath().replace("%20", " ");
         String jarPath = resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
-        JarFile jarFile;
-        try {
-            jarFile = new JarFile(jarPath);
-        } catch (IOException e) {
-            throw (new RuntimeException("Unexpected IOException reading JAR File '" + jarPath + "'", e));
-        }
+
         queryResult(new FastClasspathScanner()
                 .enableAllInfo()
                 .blacklistPackages(ignoredPaths.toArray(new String[0]))
              //   .whitelistPaths(this.packageName)
-                .scan().getAllClasses());
-        try {
-            jarFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                .scan(1000).getAllClasses());
                 /*
         Enumeration<JarEntry> entries = jarFile.entries();
         Collection<Class<?>> classes = new ArrayList<>();

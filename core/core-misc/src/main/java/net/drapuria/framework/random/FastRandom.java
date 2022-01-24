@@ -186,7 +186,7 @@ public class FastRandom extends java.util.Random {
     }
 
     /**
-     * Get a random number in the range [min, max) or [min, max] depending on rounding.
+     * Get a random number in the range [min, max] or [min, max] depending on rounding.
      *
      * @param min Low bound
      * @param max High bound
@@ -198,11 +198,11 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Triangular distribution.
-     * <p/>
+     * <p>
      * Continuous distribution bounded by given lower and upper limits,
      * and having a given mode value in-between.
      * http://en.wikipedia.org/wiki/Triangular_distribution
-     *
+     * </p>
      * @param low  Low bound
      * @param high High bound
      * @param mode Mode
@@ -223,9 +223,9 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Gaussian distribution, mean is 0 and standard deviation is 1.
-     * <p/>
+     * <p>
      * mu is the mean, and sigma is the standard deviation.
-     *
+     * </p>
      * @return A double in Gaussian distribution
      */
     public double gauss() {
@@ -234,9 +234,9 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Gaussian distribution, with user-specified mean and standard deviation.
-     * <p/>
+     * <p>
      * mu is the mean, and sigma is the standard deviation.
-     *
+     * </p>
      * @return A double in Gaussian distribution
      */
     public double gauss(double mu, double sigma) {
@@ -250,11 +250,11 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Log normal distribution.
-     * <p/>
+     * <p>
      * If you take the natural logarithm of this distribution, you'll get a
      * normal distribution with mean mu and standard deviation sigma.
      * mu can have any value, and sigma must be greater than zero.
-     *
+     * </p>
      * @param mu    Mean
      * @param sigma Standard deviation
      * @return A number from the log normal distribution specified
@@ -265,12 +265,12 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Exponential distribution.
-     * <p/>
+     * <p>
      * lambda is 1.0 divided by the desired mean.  It should be
      * nonzero. Returned values range from 0 to positive infinity
      * if lambda is positive, and from negative infinity to 0
      * if lambda is negative.
-     *
+     * </p>
      * @param lambda A non-zero value
      */
     public double exponential(double lambda) {
@@ -279,10 +279,10 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Circular data distribution.
-     * <p/>
+     * <p>
      * If kappa is equal to zero, this distribution reduces
      * to a uniform random angle over the range 0 to 2*pi.
-     *
+     * </p>
      * @param mu    the mean angle, expressed in radians between 0 and 2*pi.
      * @param kappa the concentration parameter, which must be greater than or
      *              equal to zero.
@@ -320,10 +320,11 @@ public class FastRandom extends java.util.Random {
 
     /**
      * Gamma distribution.  Not the gamma function!
-     * Conditions on the parameters are alpha > 0 and beta > 0.
-     * <p/>
+     * Conditions on the parameters are alpha greater than 0 and beta greater than 0.
+     * <p>
      * The probability distribution function is:
      * pdf(x) = (x ** (alpha - 1) * math.exp(-x / beta)) / (math.gamma(alpha) * beta ** alpha)
+     * </p>
      *
      * @param alpha Alpha
      * @param beta  Beta

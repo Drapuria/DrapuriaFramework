@@ -143,7 +143,6 @@ public class LibraryHandler {
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-
     }
 
 

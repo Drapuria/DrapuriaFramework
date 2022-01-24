@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.annotation;
 
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;

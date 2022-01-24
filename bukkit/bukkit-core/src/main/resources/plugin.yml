@@ -5,3 +5,4 @@ author: Drapuria Development Team
 load: STARTUP
 softdepend:
   - ProtocolLib
+  - HeadDatabase

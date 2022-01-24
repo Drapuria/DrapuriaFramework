@@ -28,7 +28,7 @@ import java.util.function.Supplier;
 import static lombok.AccessLevel.NONE;
 
 /**
- * Uses chained setters to create {@link Scheduler<T>}
+ * Uses chained setters to create {@link Scheduler}
  *
  *
  * @param <T> The Type that is used in the {@link Supplier}
@@ -56,20 +56,20 @@ public class SchedulerFactory<T> {
     private long period;
 
     /**
-     * The amount of iterations the {@link Scheduler<T>} should run.
+     * The amount of iterations the {@link Scheduler} should run.
      *
      *
-     * If set to {@code -1} the {@link Scheduler<T>} will run forever.
+     * If set to {@code -1} the {@link Scheduler} will run forever.
      */
     private long iterations = -2;
 
     /**
-     * The object supplied to the {@link Scheduler<T>}
+     * The object supplied to the {@link Scheduler}
      */
     private Supplier<T> supplier;
 
     /**
-     * The {@link AbstractSchedulerProvider} of the {@link Scheduler<T>}
+     * The {@link AbstractSchedulerProvider} of the {@link Scheduler}
      */
     private Class<? extends AbstractSchedulerProvider> provider = ThreadedSchedulerProvider.class;
 
@@ -78,7 +78,7 @@ public class SchedulerFactory<T> {
      *
      * @param delay the delay in units
      * @param tickTime The TickTime
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> delay(long delay, TickTime tickTime) {
         return delay(tickTime.getTicks() * delay);
@@ -90,7 +90,7 @@ public class SchedulerFactory<T> {
      *
      * @param period the delay in units
      * @param tickTime The TickTime
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> period(long period, TickTime tickTime) {
         return period(tickTime.getTicks() * period);
@@ -98,10 +98,10 @@ public class SchedulerFactory<T> {
 
 
     /**
-     * Adds a {@link RepeatedAction<T>} for {@link Scheduler<T>}
+     * Adds a {@link RepeatedAction} for {@link Scheduler}
      *
      * @param repeatedAction repeatedly performed action
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> repeated(RepeatedAction<T> repeatedAction) {
         this.repeatedActions.add(repeatedAction);
@@ -109,32 +109,32 @@ public class SchedulerFactory<T> {
     }
 
     /**
-     * Adds a always performing {@link RepeatedAction<T>} for {@link Scheduler<T>}
+     * Adds a always performing {@link RepeatedAction} for {@link Scheduler}
      *
      * @param repeatedAction repeatedly performed action
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> repeated(BiConsumer<Long, T> repeatedAction) {
         return repeated(new RepeatedAction<>(true, true, true, 0, 0, repeatedAction));
     }
 
     /**
-     * Adds a {@link ScheduledAction<T>} for {@link Scheduler<T>}
+     * Adds a {@link ScheduledAction} for {@link Scheduler}
      *
      * @param timestamp The time at which the action should be executed
      * @param action The performed action
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> at(Timestamp timestamp, Consumer<T> action) {
         return at(timestamp, new ScheduledAction<>(action, ActionPriority.NORMAL));
     }
 
     /**
-     * Adds a {@link ScheduledAction<T>} for {@link Scheduler<T>}
+     * Adds a {@link ScheduledAction} for {@link Scheduler}
      *
      * @param timestamp The time at which the action should be executed
      * @param action The performed action
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> at(Timestamp timestamp, ScheduledAction<T> action) {
         if (this.iterations == -2) {
@@ -144,22 +144,22 @@ public class SchedulerFactory<T> {
     }
 
     /**
-     * Adds a {@link ScheduledAction<T>} for {@link Scheduler<T>}
+     * Adds a {@link ScheduledAction} for {@link Scheduler}
      *
      * @param iteration The time at which the action should be exected
      * @param action The performed action
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> at(long iteration, Consumer<T> action) {
         return at(iteration, new ScheduledAction<>(action, ActionPriority.NORMAL));
     }
 
     /**
-     * Adds a {@link ScheduledAction<T>} for {@link Scheduler<T>}
+     * Adds a {@link ScheduledAction} for {@link Scheduler}
      *
      * @param iteration The time at which the action should be exected
      * @param action The performed action
-     * @return {@link SchedulerFactory<T>}
+     * @return {@link SchedulerFactory}
      */
     public SchedulerFactory<T> at(long iteration, ScheduledAction<T> action) {
         this.scheduledActions.put(iteration, action);
@@ -176,9 +176,9 @@ public class SchedulerFactory<T> {
     }
 
     /**
-     * Builds the {@link Scheduler<T>}
+     * Builds the {@link Scheduler}
      *
-     * @return {@link Scheduler<T>}
+     * @return {@link Scheduler}
      */
     public Scheduler<?> build() {
         buildInternal();

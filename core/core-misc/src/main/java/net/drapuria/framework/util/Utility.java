@@ -105,8 +105,8 @@ public class Utility {
         /**
          * Convert the given object into a string
          *
-         * @param object
-         * @return String
+         * @param object The convertable {@link Object object}
+         * @return String object as string
          */
         String toString(T object);
     }

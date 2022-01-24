@@ -10,6 +10,7 @@ import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.bukkit.inventory.menu.Menu;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
 import net.drapuria.framework.command.annotation.Command;
+import net.drapuria.framework.command.annotation.CommandParameter;
 import net.drapuria.framework.command.annotation.DefaultCommand;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ import java.util.Map;
 @Command(names = "test", useSubCommandsOnly = true)
 public class TestCommand extends DrapuriaCommand {
 
-    @DefaultCommand
+    @DefaultCommand()
     public void onCommand(Player player) {
         new Menu() {
             @Override

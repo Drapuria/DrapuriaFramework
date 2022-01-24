@@ -1,5 +1,5 @@
 name: DrapuriaExamplePlugin
-version: ${project.version}
+version: 1.0.0
 main: net.drapuria.framework.bukkit.plugin.example.ExamplePlugin
 author: Drapuria Development Team
 load: STARTUP

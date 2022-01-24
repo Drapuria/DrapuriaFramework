@@ -55,6 +55,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>bson</artifactId>
             <version>4.2.3</version>

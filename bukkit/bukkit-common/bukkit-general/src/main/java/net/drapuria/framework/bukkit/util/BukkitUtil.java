@@ -5,8 +5,10 @@
 package net.drapuria.framework.bukkit.util;
 
 import lombok.experimental.UtilityClass;
+import net.drapuria.framework.bukkit.reflection.resolver.MethodResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.event.player.PlayerEvent;
 
 /**
  * A class containing various utils helping with spigot development.
@@ -18,7 +20,7 @@ public class BukkitUtil {
      * Converts a {@link Location} to a {@link String}.
      *
      * @param loc      Bukkit location
-     * @param yawPitch Convert the yaw & pit as well?
+     * @param yawPitch Convert the yaw and pit as well?
      * @return Location as String
      **/
     public String locationToString(Location loc, boolean yawPitch) {
@@ -30,7 +32,7 @@ public class BukkitUtil {
      * Converts a {@link String} to a {@link Location}.
      *
      * @param stringLoc Location as String
-     * @param yawPitch  Convert the yaw & pitch as well?
+     * @param yawPitch  Convert the yaw and pitch as well?
      * @return The Bukkit Location
      */
     public Location stringToLocation(String stringLoc, boolean yawPitch) {
@@ -55,6 +57,7 @@ public class BukkitUtil {
      * @param pointY2 Location2#getY
      * @param pointZ1 Location1#getY
      * @param pointZ2 Location2#getY
+     *
      * @return The squared distance between all points
      */
     public double distanceSquared(final double pointX1, final double pointX2, final double pointY1,
@@ -63,6 +66,21 @@ public class BukkitUtil {
         final double y = pointY1 - pointY2;
         final double z = pointZ1 - pointZ2;
         return x * x + y * y + z * z;
+    }
+
+    /**
+     * Checks if Event class is a player event
+     *
+     * @param event The {@link Class event} of the event
+     * @return true if it is a player event false if not
+     */
+    public boolean isPlayerEvent(Class<?> event) {
+
+        if (PlayerEvent.class.isAssignableFrom(event)) {
+            return true;
+        }
+        MethodResolver resolver = new MethodResolver(event);
+        return resolver.resolveWrapper("getPlayer").exists();
     }
 
 }

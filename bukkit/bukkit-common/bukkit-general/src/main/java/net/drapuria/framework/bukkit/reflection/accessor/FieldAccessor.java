@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.accessor;
 
 import net.drapuria.framework.util.AccessUtil;

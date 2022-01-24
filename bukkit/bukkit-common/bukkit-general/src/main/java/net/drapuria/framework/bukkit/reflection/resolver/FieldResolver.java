@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.resolver;
 
 import net.drapuria.framework.bukkit.reflection.accessor.FieldAccessor;
@@ -9,6 +5,7 @@ import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
 import net.drapuria.framework.util.AccessUtil;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Resolver for fields
@@ -26,6 +23,13 @@ public class FieldResolver extends MemberResolver<Field> {
 	@Override
 	public Field resolveIndex(int index) throws IndexOutOfBoundsException, ReflectiveOperationException {
 		return AccessUtil.setAccessible(this.clazz.getDeclaredFields()[index]);
+	}
+
+	public Field resolve(Class<?> clazz, int index) {
+		Field[] fields = Arrays.stream(this.clazz.getDeclaredFields()).filter(field -> field.getType().equals(clazz)).toArray(Field[]::new);
+		if (fields.length <= index)
+			return null;
+		return fields[index];
 	}
 
 	@Override
@@ -125,6 +129,18 @@ public class FieldResolver extends MemberResolver<Field> {
 				return AccessUtil.setAccessible(field);
 			}
 		}
+		throw new NoSuchFieldException("Could not resolve field of type '" + type.toString() + "' in class " + this.clazz);
+	}
+
+	public FieldWrapper resolveByFirstTypeWrapper(Class<?> type) throws ReflectiveOperationException {
+		return new FieldWrapper(this.resolveByFirstType(type));
+	}
+
+	public FieldWrapper resolveByFirstTypeDynamic(Class<?> type) throws ReflectiveOperationException {
+		Field field = this.resolve(new ResolverQuery(type));
+
+		if (field != null)
+			return new FieldWrapper<>(field);
 		throw new NoSuchFieldException("Could not resolve field of type '" + type.toString() + "' in class " + this.clazz);
 	}
 

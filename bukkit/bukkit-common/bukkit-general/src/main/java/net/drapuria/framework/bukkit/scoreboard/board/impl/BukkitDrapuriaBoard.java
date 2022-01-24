@@ -4,7 +4,7 @@
 
 package net.drapuria.framework.bukkit.scoreboard.board.impl;
 
-import net.drapuria.framework.bukkit.scoreboard.ScoreboardOptions;
+import net.drapuria.framework.bukkit.scoreboard.SidebarOptions;
 import net.drapuria.framework.bukkit.scoreboard.board.DrapuriaBoard;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,22 +14,18 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import java.util.Map;
-
 public class BukkitDrapuriaBoard extends DrapuriaBoard {
 
-    private final ScoreboardOptions options;
     private Scoreboard scoreboard;
     private Objective sidebar;
 
-    public BukkitDrapuriaBoard(ScoreboardOptions options, Player player, String title) {
-        super(player, title);
-        this.options = options;
+    public BukkitDrapuriaBoard(SidebarOptions options, Player player, String title) {
+        super(options, player, title);
     }
 
     @Override
     public void createBoard() {
-        if (options.hook()) {
+        if (options.hook() && player.getScoreboard() != null) {
             scoreboard = player.getScoreboard();
         } else {
             scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -37,10 +33,13 @@ public class BukkitDrapuriaBoard extends DrapuriaBoard {
         }
         sidebar = scoreboard.registerNewObjective("aaa", "bbb");
         sidebar.setDisplaySlot(DisplaySlot.SIDEBAR);
+        sidebar.setDisplayName(this.getTitle());
     }
 
     @Override
     public void sendLine(int line, String team, String entry, String prefix, String suffix) {
+        if (sidebar == null || scoreboard == null)
+            createBoard();
         Team scoreboardTeam = scoreboard.getTeam(team);
         if (scoreboardTeam == null)
             scoreboardTeam = scoreboard.registerNewTeam(team);
@@ -52,8 +51,16 @@ public class BukkitDrapuriaBoard extends DrapuriaBoard {
     }
 
     @Override
-    public void sendClear(int line) {
+    public void sendClear(int line, String entry) {
+        final Scoreboard scoreboard = player.getScoreboard();
+        if (scoreboard != null) {
+            Team team = scoreboard.getEntryTeam(entry);
+            if (team != null) {
+                team.removeEntry(entry);
+                team.unregister();
+            }
 
+        }
     }
 
     @Override
@@ -67,6 +74,10 @@ public class BukkitDrapuriaBoard extends DrapuriaBoard {
 
     @Override
     public void sendDestroy() {
-
+        final Scoreboard scoreboard = player.getScoreboard();
+        if (scoreboard != null) {
+            scoreboard.getObjective(DisplaySlot.SIDEBAR).unregister();
+            scoreboard.clearSlot(DisplaySlot.SIDEBAR);
+        }
     }
 }

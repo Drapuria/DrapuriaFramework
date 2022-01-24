@@ -9,11 +9,17 @@ import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.header.HeaderMenuFactory;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
 import net.drapuria.framework.bukkit.item.ItemConstants;
+import net.drapuria.framework.bukkit.scoreboard.board.DrapuriaBoard;
 import net.drapuria.framework.bukkit.sound.SoundConstants;
 import net.drapuria.framework.bukkit.sound.SoundData;
 import net.drapuria.framework.bukkit.util.DrapuriaSoundDefaults;
+import net.minecraft.world.BossBattle;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarFlag;
+import org.bukkit.boss.BarStyle;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,6 +28,7 @@ public class ConstantHelper {
 
     @BootstrapInvoke
     public static void loadConstants() {
+        DrapuriaBoard.MAX_PREFIX_SUFFIX_LENGTH = 40;
         ItemConstants.BARRIER = ItemBuilder.of(Material.BARRIER).build();
         ItemConstants.RED_PANE = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).build();
         ItemConstants.PLACEHOLDER = ItemBuilder.of(Material.GRAY_STAINED_GLASS_PANE).build();

@@ -127,7 +127,7 @@ public class Scheduler<T> {
     }
 
     /**
-     * Cancels the {@link Scheduler<T>}
+     * Cancels the {@link Scheduler}
      */
     public void cancel() {
         if (cancelled)

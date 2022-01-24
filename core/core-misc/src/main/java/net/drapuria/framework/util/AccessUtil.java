@@ -14,7 +14,7 @@ import java.lang.reflect.Modifier;
  */
 public abstract class AccessUtil {
 
-    public static boolean VERBOSE = true;
+    public static boolean VERBOSE = false;
 
     /**
      * Sets the field accessible and removes final modifiers

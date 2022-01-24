@@ -9,6 +9,7 @@ import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.header.HeaderMenuFactory;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
 import net.drapuria.framework.bukkit.item.ItemConstants;
+import net.drapuria.framework.bukkit.scoreboard.board.DrapuriaBoard;
 import net.drapuria.framework.bukkit.sound.SoundConstants;
 import net.drapuria.framework.bukkit.sound.SoundData;
 import net.drapuria.framework.bukkit.util.DrapuriaSoundDefaults;
@@ -23,7 +24,6 @@ public class ConstantHelper {
 
     @BootstrapInvoke
     public static void loadConstants() {
-
         ItemConstants.BARRIER = ItemBuilder.of(Material.BARRIER).build();
         ItemConstants.RED_PANE = ItemBuilder.of(STAINED_GLASS_PANE).setDurability(14).build();
         ItemConstants.PLACEHOLDER = ItemBuilder.of(STAINED_GLASS_PANE).setDurability(7).build();

@@ -13,6 +13,15 @@ import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.PacketPlayInUseItem;
+import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
+import net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore;
+import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.server.network.PlayerConnection;
+import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -25,6 +34,9 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftHumanEntity;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.*;
 import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -68,6 +80,14 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
     @Override
     public void sendSubTitle(String text, int fadein, int showtime, int fadeout) {
 
+    }
+
+
+
+
+    @Override
+    public @Nullable GameMode getPreviousGameMode() {
+        return player.getPreviousGameMode();
     }
 
     @Override
@@ -145,6 +165,16 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
     @Override
     public boolean isFrozen() {
         return player.isFrozen();
+    }
+
+    @Override
+    public boolean isFreezeTickingLocked() {
+        return player.isFreezeTickingLocked();
+    }
+
+    @Override
+    public void lockFreezeTicks(boolean b) {
+        player.lockFreezeTicks(b);
     }
 
     @Override
@@ -905,6 +935,11 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
     @Override
     public void sendBlockDamage(@NotNull Location location, float v) {
         player.sendBlockDamage(location, v);
+    }
+
+    @Override
+    public void sendMultiBlockChange(@NotNull Map<Location, BlockData> map, boolean b) {
+        player.sendMultiBlockChange(map, b);
     }
 
     @Override

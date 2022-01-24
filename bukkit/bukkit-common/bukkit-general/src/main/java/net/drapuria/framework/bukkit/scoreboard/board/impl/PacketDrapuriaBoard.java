@@ -1,0 +1,133 @@
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
+package net.drapuria.framework.bukkit.scoreboard.board.impl;
+
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardDisplayObjective;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardObjective;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardScore;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.scoreboard.SidebarOptions;
+import net.drapuria.framework.bukkit.scoreboard.board.DrapuriaBoard;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.DisplaySlot;
+
+/**
+ * This class uses ProtocolLib to send Packets
+ */
+@SuppressWarnings("unchecked")
+public class PacketDrapuriaBoard extends DrapuriaBoard {
+
+    private static Class<? extends Enum> healthDisplayEnum;
+    private static ProtocolLibService protocolService = ProtocolLibService.getService;
+
+
+    static {
+        healthDisplayEnum = Minecraft.getHealthDisplayTypeClass();
+    }
+
+    private boolean created = false;
+
+    public PacketDrapuriaBoard(SidebarOptions options, Player player, String title) {
+        super(options, player, title);
+    }
+
+    @Override
+    public void createBoard() {
+        WrappedPacketOutScoreboardObjective packetA = new WrappedPacketOutScoreboardObjective();
+        packetA.setName(player.getName());
+        packetA.setDisplayName("Objective");
+        packetA.setAction(WrappedPacketOutScoreboardObjective.Action.ADD);
+        packetA.setHealthDisplayType(WrappedPacketOutScoreboardObjective.HealthDisplayType.INTEGER);
+        WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective();
+        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
+        packetB.setObjective(player.getName());
+
+        protocolService.sendPacket(player, packetA.asProtocolLibPacketContainer());
+        protocolService.sendPacket(player, packetB.asProtocolLibPacketContainer());
+        created = true;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        if (title == null)
+            title = "";
+        if (this.title.equals(title))
+            return;
+        super.setTitle(title);
+        if (!created)
+            createBoard();
+        WrappedPacketOutScoreboardObjective packetA = new WrappedPacketOutScoreboardObjective();
+        packetA.setName(player.getName());
+        packetA.setDisplayName(title);
+        packetA.setAction(WrappedPacketOutScoreboardObjective.Action.CHANGED);
+        packetA.setHealthDisplayType(WrappedPacketOutScoreboardObjective.HealthDisplayType.INTEGER);
+        protocolService.sendPacket(player, packetA.asProtocolLibPacketContainer());
+    }
+
+    @Override
+    public void sendLine(int line, String team, String entry, String prefix, String suffix) {
+        if (!created)
+            createBoard();
+        WrappedPacketOutScoreboardTeam packet = getOrRegisterTeam(line);
+        packet.setPrefix(prefix);
+        packet.setSuffix(suffix);
+        ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
+    }
+
+    @Override
+    public void sendClear(int line, String entry) {
+
+        WrappedPacketOutScoreboardScore packetA = new WrappedPacketOutScoreboardScore();
+        packetA.setEntry(getEntry(line));
+        packetA.setScore(line);
+        packetA.setObjective(player.getName());
+        packetA.setAction(WrappedPacketOutScoreboardScore.ScoreboardAction.REMOVE);
+        WrappedPacketOutScoreboardTeam packetB = getOrRegisterTeam(line);
+        packetB.setAction(1);
+        ProtocolLibService.getService.sendPacket(player, packetA.asProtocolLibPacketContainer());
+        ProtocolLibService.getService.sendPacket(player, packetB.asProtocolLibPacketContainer());
+    }
+
+    @Override
+    public void sendDestroy() {
+        WrappedPacketOutScoreboardObjective packetA = new WrappedPacketOutScoreboardObjective();
+        packetA.setAction(WrappedPacketOutScoreboardObjective.Action.REMOVE);
+        packetA.setName(player.getName());
+        WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective();
+        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
+        packetB.setObjective(player.getName());
+        ProtocolLibService.getService.sendPacket(player, packetB.asProtocolLibPacketContainer());
+        ProtocolLibService.getService.sendPacket(player, packetA.asProtocolLibPacketContainer());
+        created = false;
+    }
+
+    private WrappedPacketOutScoreboardTeam getOrRegisterTeam(int line) {
+
+        WrappedPacketOutScoreboardTeam packetB = new WrappedPacketOutScoreboardTeam();
+        packetB.setName("-sb" + line);
+        packetB.setAction(0);
+        packetB.setChatFormat(15);
+
+
+        if (getLines()[line] != null) {
+            packetB.setAction(2);
+        } else {
+            getLines()[line] = "";
+            WrappedPacketOutScoreboardScore packetA = new WrappedPacketOutScoreboardScore();
+            packetA.setEntry(getEntry(line));
+            packetA.setObjective(player.getName());
+            packetA.setScore(line);
+            packetA.setAction(WrappedPacketOutScoreboardScore.ScoreboardAction.CHANGE);
+            packetB.setAction(0);
+            packetB.getNameSet().add(getEntry(line));
+            ProtocolLibService.getService.sendPacket(player, packetA.asProtocolLibPacketContainer());
+
+        }
+        return packetB;
+    }
+
+}

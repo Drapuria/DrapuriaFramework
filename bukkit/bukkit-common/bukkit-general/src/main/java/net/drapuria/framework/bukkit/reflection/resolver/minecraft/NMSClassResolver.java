@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.resolver.minecraft;
 
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
@@ -31,4 +27,20 @@ public class NMSClassResolver extends ClassResolver {
 		}
 		return super.resolve(names);
 	}
+
+
+	public Class resolveSubClass(Class<?> mainClass, String... names) throws ClassNotFoundException {
+		String prefix = mainClass.getName() + "$";
+
+		if (!prefix.startsWith(Minecraft.getNMSPackage())) {
+			prefix = Minecraft.getNMSPackage() + "." + prefix;
+
+		}
+
+		for (int i = 0; i < names.length; i++) {
+			names[i] = prefix + names[i];
+		}
+		return super.resolve(names);
+	}
+
 }

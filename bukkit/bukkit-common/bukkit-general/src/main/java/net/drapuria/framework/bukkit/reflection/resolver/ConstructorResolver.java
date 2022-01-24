@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.resolver;
 
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ConstructorWrapper;

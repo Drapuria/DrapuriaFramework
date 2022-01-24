@@ -12,7 +12,7 @@ public interface CommandTypeParameterParser<T, S> {
 
     /**
      * @param sender The Command sender
-     * @param value The value as as string
+     * @param source The {@link String source} we want to parse
      * @return Parsed Value
      */
     T parse(S sender, String source);

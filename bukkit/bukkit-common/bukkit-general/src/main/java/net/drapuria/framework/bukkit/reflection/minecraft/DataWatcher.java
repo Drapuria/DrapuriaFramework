@@ -1,9 +1,6 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.minecraft;
 
+import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.reflection.resolver.ConstructorResolver;
 import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
 import net.drapuria.framework.bukkit.reflection.resolver.MethodResolver;
@@ -336,7 +333,7 @@ public class DataWatcher {
                 try {
                     this.type = new FieldResolver(nmsClassResolver.resolve(className)).resolve(fieldNames).get(null);
                 } catch (Exception e) {
-                    System.err.println("[ReflectionHelper] Failed to find DataWatcherObject for " + className + " " + Arrays.toString(fieldNames));
+                    Drapuria.LOGGER.error("[ReflectionHelper] Failed to find DataWatcherObject for " + className + " " + Arrays.toString(fieldNames));
                 }
             }
 
@@ -344,7 +341,7 @@ public class DataWatcher {
                 try {
                     this.type = new FieldResolver(nmsClassResolver.resolve(className)).resolveIndex(index).get(null);
                 } catch (Exception e) {
-                    System.err.println("[ReflectionHelper] Failed to find DataWatcherObject for " + className + " #" + index);
+                    Drapuria.LOGGER.error("[ReflectionHelper] Failed to find DataWatcherObject for " + className + " #" + index);
                 }
             }
 
@@ -360,7 +357,7 @@ public class DataWatcher {
                     }
                     this.type = new FieldResolver(clazz).resolveAccessor(dataWatcherFields.get(offset)).get(null);
                 } catch (Exception e) {
-                    System.err.println("[ReflectionHelper] Failed to find DataWatcherObject for " + className + " #" + ignored + " (offset: " + offset + ", fields: " + dataWatcherFields + ")");
+                    Drapuria.LOGGER.error("[ReflectionHelper] Failed to find DataWatcherObject for " + className + " #" + ignored + " (offset: " + offset + ", fields: " + dataWatcherFields + ")");
                 }
             }
 

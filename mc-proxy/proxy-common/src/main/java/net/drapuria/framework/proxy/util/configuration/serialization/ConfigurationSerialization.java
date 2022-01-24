@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Utility class for storing and retrieving classes for {@link Configuration}.
+ * Utility class for storing and retrieving classes for Configuration.
  */
 public class ConfigurationSerialization {
     public static final String SERIALIZED_TYPE_KEY = "==";

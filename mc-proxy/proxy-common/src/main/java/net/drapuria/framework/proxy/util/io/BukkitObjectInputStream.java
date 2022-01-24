@@ -13,8 +13,7 @@ import java.io.ObjectInputStream;
 
 
 /**
- * This class is designed to be used in conjunction with the {@link
- * ConfigurationSerializable} API. It translates objects back to their
+ * This class is designed to be used in conjunction with the ConfigurationSerialize API. It translates objects back to their
  * original implementation after being serialized by {@link
  * BukkitObjectInputStream}.
  * <p>

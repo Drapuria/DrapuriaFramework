@@ -1,7 +1,3 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
-
 package net.drapuria.framework.bukkit.reflection.minecraft;
 
 import net.drapuria.framework.bukkit.Drapuria;
@@ -31,7 +27,7 @@ public class MinecraftVersion {
     private final String obcPackage;
     private final boolean nmsVersionPrefix;
 
-    MinecraftVersion(String packageName, int version, String nmsFormat, String obcFormat, boolean nmsVersionPrefix) {
+    public MinecraftVersion(String packageName, int version, String nmsFormat, String obcFormat, boolean nmsVersionPrefix) {
         this.packageName = packageName;
         this.version = version;
         this.nmsFormat = nmsFormat;
@@ -41,7 +37,7 @@ public class MinecraftVersion {
         this.nmsVersionPrefix = nmsVersionPrefix;
     }
 
-    MinecraftVersion(String packageName, int version) {
+    public MinecraftVersion(String packageName, int version) {
         this(packageName, version, "net.minecraft.server.%s", "org.bukkit.craftbukkit.%s", true);
     }
 
@@ -133,8 +129,8 @@ public class MinecraftVersion {
         try {
             serverClass = Bukkit.getServer().getClass();
         } catch (Exception e) {
-            System.err.println("[ReflectionHelper/MinecraftVersion] Failed to get bukkit server class: " + e.getMessage());
-            System.err.println("[ReflectionHelper/MinecraftVersion] Assuming we're in a test environment!");
+            Drapuria.LOGGER.error("[ReflectionHelper/MinecraftVersion] Failed to get bukkit server class: " + e.getMessage());
+            Drapuria.LOGGER.error("[ReflectionHelper/MinecraftVersion] Assuming we're in a test environment!");
             return null;
         }
         String name = serverClass.getPackage().getName();
@@ -145,8 +141,7 @@ public class MinecraftVersion {
                 return minecraftVersion;
             }
         }
-        Drapuria.LOGGER.info("[ReflectionHelper/MinecraftVersion] Failed to find version enum for '" + name + "'/'" + versionPackage + "'");
-
+        Drapuria.LOGGER.error("[ReflectionHelper/MinecraftVersion] Failed to find version enum for '" + name + "'/'" + versionPackage + "'");
         Drapuria.LOGGER.info("[ReflectionHelper/MinecraftVersion] Generating dynamic constant...");
         Matcher matcher = Minecraft.NUMERIC_VERSION_PATTERN.matcher(versionPackage);
         while (matcher.find()) {
@@ -169,12 +164,11 @@ public class MinecraftVersion {
             String packageName = "v" + versionPackage.substring(1).toUpperCase();
 
             //dynamic register version
-            System.out.println("[ReflectionHelper/MinecraftVersion] Injected dynamic version " + packageName + " (#" + numVersion + ").");
-            System.out.println("[ReflectionHelper/MinecraftVersion] Please inform inventivetalent about the outdated version, as this is not guaranteed to work.");
+            Drapuria.LOGGER.info("[ReflectionHelper/MinecraftVersion] Injected dynamic version " + packageName + " (#" + numVersion + ").");
+            Drapuria.LOGGER.info("[ReflectionHelper/MinecraftVersion] Please inform inventivetalent about the outdated version, as this is not guaranteed to work.");
             return new MinecraftVersion(packageName, numVersion);
         }
-
-        System.err.println("[ReflectionHelper/MinecraftVersion] Failed to create dynamic version for " + versionPackage);
+        Drapuria.LOGGER.error("[ReflectionHelper/MinecraftVersion] Failed to create dynamic version for " + versionPackage);
 
         return new MinecraftVersion("UNKNOWN", -1);
     }

@@ -265,9 +265,9 @@ public class BinaryTree<E extends Comparable<E>> {
 
     /**
      * Method to print the tree InOrder
-     * InOrder : Left -> Root -> Right
+     * InOrder: Left to Root to Right
      *
-     * @param node
+     * @param node the {@link Node} we want to print from
      */
     public void printInOrder(Node<E> node) {
         /* If root is null, return else print
@@ -282,7 +282,7 @@ public class BinaryTree<E extends Comparable<E>> {
 
     /**
      * Method to print the tree PreOrder
-     * PreOrder : Root -> Left -> Right
+     * PreOrder: Root to Left to Right
      *
      * @param node
      */
@@ -299,9 +299,9 @@ public class BinaryTree<E extends Comparable<E>> {
 
     /**
      * Method to print the tree PostOrder
-     * PostOrder : Left -> Right -> Root
+     * PostOrder : Left to Right to Root
      *
-     * @param node
+     * @param node the {@link Node} we want to print
      */
     public void printPostorder(Node<E> node) {
         /* If root is null, return else print
@@ -317,13 +317,13 @@ public class BinaryTree<E extends Comparable<E>> {
     /**
      * Method to print the tree level by level 
      *
-     * Approach => Use 2 queues, Keep polling from queue 1 and 
+     * Approach: Use 2 queues, Keep polling from queue 1 and
      * keep adding to queue 2. Now, for next level, keep polling
      * from queue 2 and keep adding from queue 1. Stop when both
      * queues are empty. 
      * Basically elements at any level will be in one queue
      *
-     * @param root
+     * @param root the {@link Node node}.
      */
     public void printByLevelUsingTwoQueues(Node<E> root) {
         /* If root is null, return */
@@ -369,7 +369,7 @@ public class BinaryTree<E extends Comparable<E>> {
     /**
      * Method to print the tree level by level 
      *
-     * Approach => Use one queue and a delimiter i.e null.
+     * Approach: Use one queue and a delimiter i.e null.
      * Add delimiter after every level. As soon as you 
      * encounter a null, print a new line and add null
      * to the end of the queue
@@ -412,10 +412,10 @@ public class BinaryTree<E extends Comparable<E>> {
     /**
      * Method to print the tree level by level 
      *
-     * Approach => Use one queue with count. Keep count of nodes at every level. 
+     * Approach: Use one queue with count. Keep count of nodes at every level.
      * As soon as this count is 0 print a new line.
      *
-     * @param root
+     * @param root The root {@link Node node}.
      */
     public void printByLevelUsingOneQueueAndCounter(Node<E> root) {
         /* If root is null, return */

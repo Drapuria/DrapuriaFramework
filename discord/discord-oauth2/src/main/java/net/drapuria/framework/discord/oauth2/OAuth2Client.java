@@ -26,23 +26,23 @@ public interface OAuth2Client {
     /**
      * @param redirectUri Uri we redirect to
      * @param scopes used scopes
-     * @return generated state & auth url
+     * @return generated {@link String} array containing state and auth url
      */
     String[] generateAuthorizationUrl(String redirectUri, Scope... scopes);
 
     /**
-     * @param code
-     * @param state
-     * @param identifier
-     * @param scopes
-     * @return
-     * @throws InvalidStateException
+     * @param code The returned code
+     * @param state The returned state
+     * @param identifier The identifier of the auth
+     * @param scopes Allowed {@link Scope scopes}
+     * @return {@link OAuth2Action} session
+     * @throws InvalidStateException Throws exception if state is invalid
      */
     OAuth2Action<Session> startSession(String code, String state, String identifier, Scope... scopes) throws InvalidStateException;
 
     /**
-     * @param session
-     * @return
+     * @param session The authenticated {@link Session}
+     * @return {@link OAuth2Action}
      */
     OAuth2Action<OAuth2User> getUser(Session session);
 

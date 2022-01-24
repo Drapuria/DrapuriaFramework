@@ -164,7 +164,7 @@ public enum Permission
 
     /**
      * Returns whether or not this Permission is present at the Guild level
-     * (configurable via {@link Role Roles})
+     * (configurable via Roles)
      *
      * @return True if this permission is present at the Guild level.
      */
@@ -175,7 +175,7 @@ public enum Permission
 
     /**
      * Returns whether or not this Permission is present Channel level
-     * (configurable via {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionsOverrides})
+     * (configurable via PermissionsOverrides)
      *
      * @return True if this permission is present at the Channel level.
      */
@@ -185,7 +185,7 @@ public enum Permission
     }
 
     /**
-     * Whether this permission is specifically for {@link TextChannel TextChannels}
+     * Whether this permission is specifically for  TextChannels
      *
      * @return True, if and only if this permission can only be applied to text channels
      */
@@ -195,7 +195,7 @@ public enum Permission
     }
 
     /**
-     * Whether this permission is specifically for {@link VoiceChannel VoiceChannels}
+     * Whether this permission is specifically for VoiceChannel
      *
      * @return True, if and only if this permission can only be applied to voice channels
      */
@@ -205,14 +205,14 @@ public enum Permission
     }
 
     /**
-     * Gets the first {@link net.dv8tion.jda.api.Permission Permission} relating to the provided offset.
-     * <br>If there is no {@link net.dv8tion.jda.api.Permission Permssions} that matches the provided
-     * offset, {@link net.dv8tion.jda.api.Permission#UNKNOWN Permission.UNKNOWN} is returned.
+     * Gets the first {@link Permission Permission} relating to the provided offset.
+     * <br>If there is no {@link Permission Permssions} that matches the provided
+     * offset, {@link Permission#UNKNOWN Permission.UNKNOWN} is returned.
      *
      * @param  offset
-     *         The offset to match a {@link net.dv8tion.jda.api.Permission Permission} to.
+     *         The offset to match a {@link Permission Permission} to.
      *
-     * @return {@link net.dv8tion.jda.api.Permission Permission} relating to the provided offset.
+     * @return {@link Permission Permission} relating to the provided offset.
      */
     @NonNull
     public static Permission getFromOffset(int offset)
@@ -248,7 +248,7 @@ public enum Permission
     }
 
     /**
-     * This is effectively the opposite of {@link #getPermissions(long)}, this takes 1 or more {@link .Permission Permissions}
+     * This is effectively the opposite of {@link #getPermissions(long)}, this takes 1 or more {@link Permission Permissions}
      * and returns the raw offset {@code long} representation of the permissions.
      *
      * @param  permissions

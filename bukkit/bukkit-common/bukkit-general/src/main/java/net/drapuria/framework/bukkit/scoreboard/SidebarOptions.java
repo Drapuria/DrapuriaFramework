@@ -11,7 +11,14 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(chain = true, fluent = true)
-public class ScoreboardOptions {
+public class SidebarOptions {
+
+    public static SidebarOptions defaultOptions() {
+        return new SidebarOptions().hook(true)
+                .scoreDirectDown(false)
+                .showOnJoin(true)
+                .showPlayerHealthUnderName(false);
+    }
 
     private boolean hook;
     private boolean scoreDirectDown;

@@ -9,7 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * @param <I> The ItemStack we work with (multi version support)
+ * Represents a Player
+ *
  */
 public interface DrapuriaPlayer extends Player {
 

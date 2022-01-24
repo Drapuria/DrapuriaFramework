@@ -47,6 +47,12 @@
             <systemPath>${project.basedir}/../../../../lib/paper-server-1.18.1-R0.1-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.mojang</groupId>
             <artifactId>authlib</artifactId>
             <version>3.2.38</version>

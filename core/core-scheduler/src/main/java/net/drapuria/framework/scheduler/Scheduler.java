@@ -153,7 +153,7 @@ public class Scheduler<T> {
             }
         });
         if (pool != null) {
-            pool.removeScheduler(this);
+            pool.scheduleSchedulerRemove(this);
         }
     }
 }

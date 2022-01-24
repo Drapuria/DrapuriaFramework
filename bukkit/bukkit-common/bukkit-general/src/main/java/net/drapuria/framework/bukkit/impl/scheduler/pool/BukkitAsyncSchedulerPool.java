@@ -40,6 +40,10 @@ public class BukkitAsyncSchedulerPool extends BukkitSchedulerPool {
     @Override
     public void handle() {
         this.lastTickTime = System.currentTimeMillis();
+        if (!toRemove.isEmpty()) {
+            while (!toRemove.isEmpty())
+                this.schedulers.remove(toRemove.poll());
+        }
         this.schedulers.removeIf(Scheduler::tick);
         if (this.schedulers.isEmpty()) {
             FrameworkMisc.TASK_SCHEDULER.runSync(() -> {

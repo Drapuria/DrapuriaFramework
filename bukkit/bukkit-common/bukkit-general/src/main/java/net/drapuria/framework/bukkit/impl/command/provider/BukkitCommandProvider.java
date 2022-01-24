@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.impl.command.provider;
 
+import net.drapuria.framework.beans.annotation.ClasspathScan;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.annotation.UseFrameworkPlugin;
 import net.drapuria.framework.bukkit.impl.command.CommandMapImpl;
@@ -55,7 +56,12 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
         PluginManager.INSTANCE.registerListener(new PluginListenerAdapter() {
             @Override
             public void onPluginEnable(AbstractPlugin plugin) {
-                loadCommands(plugin, "");
+                if (plugin.getClass().isAnnotationPresent(ClasspathScan.class)) {
+                    for (String packageName : plugin.getClass().getAnnotation(ClasspathScan.class).value())
+                        loadCommands(plugin, packageName);
+
+                } else
+                    loadCommands(plugin, "");
             }
 
             @Override

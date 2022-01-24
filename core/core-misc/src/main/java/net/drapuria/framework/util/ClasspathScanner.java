@@ -4,24 +4,40 @@
 
 package net.drapuria.framework.util;
 
-import com.google.common.collect.ImmutableSet;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.github.fastclasspathscanner.ClassInfo;
+import io.github.fastclasspathscanner.ClassInfoList;
 import io.github.fastclasspathscanner.FastClasspathScanner;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import java.io.IOException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.concurrent.TimeUnit;
 
 public abstract class ClasspathScanner {
 
-    private static final  List<String> ignoredPaths = new ArrayList<>();
+    private static final LoadingCache<String, ClassInfoList> classCache = Caffeine.newBuilder()
+            .expireAfterAccess(1, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, ClassInfoList>() {
+                @Override
+                public @Nullable ClassInfoList load(@NonNull String s) throws Exception {
+                    return new FastClasspathScanner()
+                            .enableAllInfo()
+                           // .whitelistPackages(s.split(">>>>")[1])
+                            .blacklistPackages(ignoredPaths.toArray(new String[0]))
+                            //   .whitelistPaths(this.packageName)
+                            .whitelistJars(s.split(">>>>")[2])
+                            .scan(1000).getAllClasses();
+                }
+            });
 
+    private static final List<String> ignoredPaths = new ArrayList<>();
     public static void addIgnoredPath(String path) {
         ignoredPaths.add(path);
     }
@@ -45,42 +61,8 @@ public abstract class ClasspathScanner {
         String relPath = packageName.replace('.', '/');
         String resPath = resource.getPath().replace("%20", " ");
         String jarPath = resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
-
-        queryResult(new FastClasspathScanner()
-                .enableAllInfo()
-                .blacklistPackages(ignoredPaths.toArray(new String[0]))
-             //   .whitelistPaths(this.packageName)
-                .scan(1000).getAllClasses());
-                /*
-        Enumeration<JarEntry> entries = jarFile.entries();
-        Collection<Class<?>> classes = new ArrayList<>();
-        while (entries.hasMoreElements()) {
-            JarEntry entry = entries.nextElement();
-            String entryName = entry.getName();
-            String className = null;
-
-            if (entryName.endsWith(".class") && entryName.startsWith(relPath) && entryName.length() > (relPath.length() + "/".length()))
-                className = entryName.replace('/', '.').replace('\\', '.').replace(".class", "");
-
-            if (className != null) {
-                Class<?> clazz = null;
-                System.out.println(className);
-                try {
-                    clazz = Class.forName(className);
-                } catch (ClassNotFoundException e) {
-                    continue;
-                }
-                classes.add(clazz);
-            }
-        }
-        try {
-            jarFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        queryResult(ImmutableSet.copyOf(classes));
-               */
+        int length = jarPath.split("/").length;
+        queryResult(classCache.get(resource.toExternalForm() + ">>>>" + "PACKAGE" + ">>>>" + jarPath.substring(jarPath.split("/")[length - 1].length() + 1, jarPath.length())));
     }
 
     public abstract void queryResult(Collection<ClassInfo> classes);

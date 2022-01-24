@@ -126,11 +126,9 @@ public final class DrapuriaCommon {
     }
 
     public void loadAnnotatedDependencies(CodeSource codeSource, String packageName) {
-        System.out.println("SCANNING ANNOTATED");
         final TypeAnnotationScanner typeAnnotationScanner = new TypeAnnotationScanner(
                 codeSource,
                 packageName, MavenDependency.class);
-        System.out.println("SCANNED ANNOTATED");
         for (Class<?> annotatedClass : typeAnnotationScanner.getResult()) {
             for (MavenDependency mavenDependency : annotatedClass.getAnnotationsByType(MavenDependency.class)) {
                 if (DrapuriaCommon.LIBRARY_HANDLER.getLoaded().keySet()

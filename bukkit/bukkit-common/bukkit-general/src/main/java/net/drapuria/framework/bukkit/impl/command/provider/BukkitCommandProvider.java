@@ -96,7 +96,6 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
 
     @SneakyThrows
     private void registerCommandMap() {
-
         TypeAnnotationScanner scanner = new TypeAnnotationScanner(CommandMapImpl.class);
         scanner.getResult().stream().findFirst().ifPresent(aClass -> {
             Object o = null;

@@ -130,7 +130,7 @@ public class Scheduler<T> {
      * Cancels the {@link Scheduler}
      */
     public void cancel() {
-        if (cancelled)
+        if (this.cancelled)
             return;
         this.cancelled = true;
         final long currentTime = iterations;

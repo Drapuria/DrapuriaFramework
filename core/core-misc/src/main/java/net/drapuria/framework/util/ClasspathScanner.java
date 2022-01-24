@@ -62,7 +62,7 @@ public abstract class ClasspathScanner {
         String resPath = resource.getPath().replace("%20", " ");
         String jarPath = resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
         int length = jarPath.split("/").length;
-        queryResult(classCache.get(resource.toExternalForm() + ">>>>" + "PACKAGE" + ">>>>" + jarPath.substring(jarPath.split("/")[length - 1].length() + 1, jarPath.length())));
+        queryResult(classCache.get(resource.toExternalForm() + ">>>>" + "PACKAGE" + ">>>>" + jarPath.split("/")[length - 1]));
     }
 
     public abstract void queryResult(Collection<ClassInfo> classes);

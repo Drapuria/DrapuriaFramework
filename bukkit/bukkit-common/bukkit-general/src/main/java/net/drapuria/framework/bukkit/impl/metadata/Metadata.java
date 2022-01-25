@@ -28,12 +28,8 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Provides access to {@link MetadataRegistry} instances bound to players, entities, blocks and worlds.
- */
-
-/**
  *
- * @credit https://github.com/lucko/helper
+ * credit: https://github.com/lucko/helper
  *
  */
 public final class Metadata {

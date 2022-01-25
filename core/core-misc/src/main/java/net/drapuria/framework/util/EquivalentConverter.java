@@ -7,7 +7,6 @@ import javax.annotation.Nullable;
 /**
  * Interface that converts generic objects into types and back.
  *
- * @credit ProtocolLib
  * @author Kristian
  * @param <T> The specific type.
  */

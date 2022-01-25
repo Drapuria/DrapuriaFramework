@@ -5,7 +5,7 @@
     <parent>
         <artifactId>bungee</artifactId>
         <groupId>net.drapuria.framework</groupId>
-        <version>1.0-RELEASE</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -31,19 +31,19 @@
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-common</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-misc</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-repository</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-beans</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -79,37 +79,37 @@
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-modules</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-database</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-mongo</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-redis</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-sql</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-yaml</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -127,7 +127,7 @@
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>core-config</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -139,7 +139,7 @@
         <dependency>
             <groupId>net.drapuria.framework</groupId>
             <artifactId>proxy-common</artifactId>
-            <version>1.0-RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

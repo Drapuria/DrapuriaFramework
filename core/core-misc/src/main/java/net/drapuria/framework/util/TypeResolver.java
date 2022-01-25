@@ -641,7 +641,7 @@ public final class TypeResolver {
     /**
      * Resolves the first bound for the {@code typeVariable}, returning {@code Unknown.class} if none can be resolved.
      *
-     * @param typeVariable The {@link TypeVariable} we waant to resolve
+     * @param typeVariable The {@link TypeVariable} we want to resolve.
      */
     public static Type resolveBound(TypeVariable<?> typeVariable) {
         Type[] bounds = typeVariable.getBounds();

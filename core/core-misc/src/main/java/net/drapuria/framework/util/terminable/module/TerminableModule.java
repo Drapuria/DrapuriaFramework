@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 
 /**
  * A terminable module is a class which manipulates and constructs a number
- * of {@link Terminable}s.
+ * of {@link net.drapuria.framework.util.terminable.Terminable}s.
  *
  * @author lucko
  */

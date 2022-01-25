@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractSchedulerProvider {
 
-    protected final Map<Long, SchedulerPool<? extends ITask>> schedulerPools = new HashMap<>();
+    protected final Map<Long, SchedulerPool<? extends ITask>> schedulerPools = new ConcurrentHashMap<>();
     protected final Map<Scheduler<?>, Long> scheduledSchedulers = new ConcurrentHashMap<>();
     protected ITask delayTask;
 

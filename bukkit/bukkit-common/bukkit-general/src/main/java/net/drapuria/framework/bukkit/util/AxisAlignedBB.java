@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.util;
 
+import net.minecraft.server.v1_8_R3.Vec3D;
 import org.bukkit.Location;
 
 public class AxisAlignedBB
@@ -285,13 +286,22 @@ public class AxisAlignedBB
     }
 
     /**
-     * Returns if the supplied Vec3D is completely inside the bounding box
+     * Returns if the supplied location is completely inside the bounding box
      */
     public boolean isLocationInside(Location location)
     {
-        return location.getX() > this.minX && location.getY() < this.maxX && (location.getY() > this.minY && location.getY() < this.maxY && location.getZ() > this.minZ && location.getZ() < this.maxZ);
+        return location.getX() > this.minX
+                && location.getY() < this.maxX
+                && (location.getY() > this.minY && location.getY() < this.maxY
+                && location.getZ() > this.minZ && location.getZ() < this.maxZ);
     }
 
+    public boolean isPositionInside(Location testPos) {
+        return (minX <= testPos.getX() && maxX >= testPos.getX())
+                && (minY <= testPos.getY() && maxY >= testPos.getY()) && (minZ <= testPos.getZ()
+                && maxZ >= testPos.getZ());
+    }
+    
     /**
      * Returns the average length of the edges of the bounding box.
      */
@@ -326,17 +336,17 @@ public class AxisAlignedBB
     }
 
     /**
-     * Checks if the specified vector is within the YZ dimensions of the bounding box. Args: Vec3D
+     * Checks if the specified location is within the YZ dimensions of the bounding box. Args: Vec3D
      */
-    private boolean isLocationInYZ(Location location)
+    public boolean isLocationInYZ(Location location)
     {
         return location == null ? false : location.getY() >= this.minY && location.getY() <= this.maxY && location.getZ() >= this.minZ && location.getZ() <= this.maxZ;
     }
 
     /**
-     * Checks if the specified vector is within the XZ dimensions of the bounding box. Args: Vec3D
+     * Checks if the specified location is within the XZ dimensions of the bounding box. Args: Vec3D
      */
-    private boolean isLocationInXZ(Location location)
+    public boolean isLocationInXZ(Location location)
     {
         return location == null ? false : location.getX() >= this.minX && location.getX() <= this.maxX && location.getZ() >= this.minZ && location.getZ() <= this.maxZ;
     }

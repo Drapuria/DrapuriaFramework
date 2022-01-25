@@ -37,7 +37,7 @@ public abstract class SchedulerPool<T extends ITask> {
     public abstract void start();
 
     public void handle() {
-        if (scheduledRemove) {
+        if (this.scheduledRemove) {
             provider.removePool(this);
             return;
         }

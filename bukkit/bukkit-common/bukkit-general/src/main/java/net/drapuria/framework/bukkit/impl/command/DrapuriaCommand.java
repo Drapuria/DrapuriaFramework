@@ -101,7 +101,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
         return commandMeta.canAccess(player);
     }
 
-    private String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
+    public String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
         if (subCommand == null) {
             StringBuilder builder = new StringBuilder();
             AtomicInteger index = new AtomicInteger();

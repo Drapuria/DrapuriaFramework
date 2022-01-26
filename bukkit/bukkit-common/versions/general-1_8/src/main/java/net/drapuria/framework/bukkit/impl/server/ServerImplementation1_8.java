@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 @ServerImpl
 public class ServerImplementation1_8 implements ServerImplementation {
@@ -48,7 +49,11 @@ public class ServerImplementation1_8 implements ServerImplementation {
 
     @Override
     public List<Player> getPlayersInRadius(Location location, double radius) {
-        return null;
+        return location.getWorld().getNearbyEntities(location, radius / 2, radius / 2, radius / 2)
+                .stream()
+                .filter(entity -> entity instanceof Player)
+                .map(entity -> (Player) entity)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -90,7 +95,7 @@ public class ServerImplementation1_8 implements ServerImplementation {
     }
 
     @Override
-    public AbstractVirtualAnvil createVirtualAnvil(Player player, BiConsumer<Player, ConfirmAction> onCancel,BiFunction<Player, String, ConfirmAction> confirm) {
+    public AbstractVirtualAnvil createVirtualAnvil(Player player, BiConsumer<Player, ConfirmAction> onCancel, BiFunction<Player, String, ConfirmAction> confirm) {
         return new VirtualAnvil(player) {
             @Override
             public void onConfirm(String text) {

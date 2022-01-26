@@ -25,6 +25,11 @@ public abstract class AbstractSharedMenu extends AbstractMenu implements IShared
     }
 
     @Override
+    protected void updateButtons(Player player) {
+        updateButtons();
+    }
+
+    @Override
     public int getSize(Player player) {
         return -1;
     }

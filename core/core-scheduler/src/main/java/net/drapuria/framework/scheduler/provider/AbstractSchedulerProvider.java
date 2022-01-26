@@ -50,11 +50,7 @@ public abstract class AbstractSchedulerProvider {
     public void addSchedulerToProvider(final Scheduler<?> scheduler) {
         if (scheduler.getDelay() <= 0) {
             scheduler.tick();
-            if (!this.schedulerPools.containsKey(scheduler.getPeriod())) {
-                createSchedulerPool(scheduler.getPeriod());
-                addOrCreatePool(scheduler);
-                return;
-            }
+            addOrCreatePool(scheduler);
         }
         if (this.schedulerPools.containsKey(scheduler.getPeriod())) {
             SchedulerPool<?> pool = this.schedulerPools.get(scheduler.getPeriod());

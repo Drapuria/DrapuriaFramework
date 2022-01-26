@@ -29,6 +29,8 @@ public interface ISharedMenu extends IMenu {
         return this.getInventory();
     }
 
+    void updateButtons();
+
     default void removePlayerButtons(Player player) {
         ;
     }

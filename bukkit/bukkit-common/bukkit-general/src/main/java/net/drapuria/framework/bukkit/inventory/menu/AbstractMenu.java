@@ -91,6 +91,14 @@ public abstract class AbstractMenu implements IMenu {
         this.allowOutsideRightOrLeftClick = allowOutsideRightOrLeftClick;
     }
 
+    public void setHasPlaceholder(boolean hasPlaceholder) {
+        this.hasPlaceholder = hasPlaceholder;
+    }
+
+    public boolean hasPlaceholder() {
+        return hasPlaceholder;
+    }
+
     @Override
     public boolean allowOwnInventoryClick() {
         return this.allowOwnInventoryClick;

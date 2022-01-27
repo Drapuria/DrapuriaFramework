@@ -6,11 +6,9 @@ package net.drapuria.framework.bukkit.inventory.menu.listener;
 
 import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.bukkit.inventory.deprecatedmenu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.bukkit.inventory.menu.IMenu;
 import net.drapuria.framework.bukkit.inventory.menu.MenuService;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

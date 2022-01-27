@@ -1,4 +1,8 @@
-package net.drapuria.framework.bukkit.block;
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
+package net.drapuria.framework.bukkit.world.block;
 
 import org.bukkit.material.MaterialData;
 

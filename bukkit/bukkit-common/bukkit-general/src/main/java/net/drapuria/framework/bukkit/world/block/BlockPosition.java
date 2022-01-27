@@ -1,8 +1,10 @@
-package net.drapuria.framework.bukkit.block;
+/*
+ * Copyright (c) 2022. Drapuria
+ */
+
+package net.drapuria.framework.bukkit.world.block;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;

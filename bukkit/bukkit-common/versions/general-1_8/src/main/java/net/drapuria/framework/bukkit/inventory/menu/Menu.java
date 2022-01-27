@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +19,8 @@ public abstract class Menu extends AbstractMenu {
 
     private final Map<Player, Map<Integer, IButton>> playerButtons = new HashMap<>();
     private final Map<Player, Inventory> inventories = new HashMap<>();
+    private Button placeholderButton = Button.placeholder();
+
 
     @Override
     public Map<Integer, IButton> getCachedButtons(Player player) {
@@ -99,10 +100,23 @@ public abstract class Menu extends AbstractMenu {
             else
                 inventory = Bukkit.createInventory(null, size, title);
         }
+        if (hasPlaceholder()) {
+            final ItemStack placeHolderItem = placeholderButton.getIcon(player);
+            for (int i = 0; i < inventory.getSize(); i++)
+                inventory.setItem(i, placeHolderItem);
+        }
         for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue().getIcon(player));
         }
         consumer.accept(inventory, update);
+    }
+
+    public void setPlaceholderButton(Button placeholderButton) {
+        this.placeholderButton = placeholderButton;
+    }
+
+    public Button getPlaceholderButton() {
+        return placeholderButton;
     }
 
     @Override

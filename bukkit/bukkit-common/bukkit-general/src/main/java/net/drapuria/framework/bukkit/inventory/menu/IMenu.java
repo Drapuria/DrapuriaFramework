@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;

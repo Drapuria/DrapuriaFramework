@@ -2,7 +2,7 @@
  * Copyright (c) 2022. Drapuria
  */
 
-package net.drapuria.framework.jackson.libraries.relocate;
+package net.drapuria.framework.libraries.relocate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

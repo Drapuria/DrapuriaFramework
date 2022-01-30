@@ -2,7 +2,7 @@
  * Copyright (c) 2022. Drapuria
  */
 
-package net.drapuria.framework.jackson.libraries;
+package net.drapuria.framework.libraries;
 
 public class LibraryDownloadException extends Exception {
 

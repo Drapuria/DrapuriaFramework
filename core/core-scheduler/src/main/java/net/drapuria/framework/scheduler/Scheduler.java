@@ -85,7 +85,7 @@ public class Scheduler<T> {
                     } catch (Exception e) {
                         Stacktrace.print(e);
                     }
-                } else if (iterations % repeatedAction.getDivision() == repeatedAction.getRemainder())
+                } else if (currentIteration % repeatedAction.getDivision() == repeatedAction.getRemainder())
                     try {
                         repeatedAction.getAction().accept(expiredTime, getSupplier().get());
                     } catch (Exception e) {

@@ -2,13 +2,13 @@
  * Copyright (c) 2022. Drapuria
  */
 
-package net.drapuria.framework.jackson.libraries.relocate;
+package net.drapuria.framework.libraries.relocate;
 
 import lombok.AllArgsConstructor;
 
-import net.drapuria.framework.jackson.libraries.Library;
-import net.drapuria.framework.jackson.libraries.LibraryHandler;
-import net.drapuria.framework.jackson.libraries.classloader.IsolatedClassLoader;
+import net.drapuria.framework.libraries.Library;
+import net.drapuria.framework.libraries.LibraryHandler;
+import net.drapuria.framework.libraries.classloader.IsolatedClassLoader;
 
 import java.io.File;
 import java.lang.reflect.Constructor;

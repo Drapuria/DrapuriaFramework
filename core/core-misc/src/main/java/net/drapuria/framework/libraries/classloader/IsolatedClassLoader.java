@@ -2,7 +2,7 @@
  * Copyright (c) 2022. Drapuria
  */
 
-package net.drapuria.framework.jackson.libraries.classloader;
+package net.drapuria.framework.libraries.classloader;
 
 import java.net.URL;
 import java.net.URLClassLoader;

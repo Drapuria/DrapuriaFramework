@@ -29,7 +29,7 @@ public abstract class AbstractSchedulerProvider {
     public void tickPool() {
         scheduledSchedulers.entrySet().removeIf(entry -> {
             long delay = entry.getValue();
-            if (--delay == 0) {
+            if (--delay <= 0) {
                 entry.getKey().tick();
                 addOrCreatePool(entry.getKey());
                 return true;
@@ -48,14 +48,15 @@ public abstract class AbstractSchedulerProvider {
     }
 
     public void addSchedulerToProvider(final Scheduler<?> scheduler) {
+
+        if (this.schedulerPools.containsKey(scheduler.getPeriod())) {
+            SchedulerPool<?> pool = this.schedulerPools.get(scheduler.getPeriod());
+            scheduler.setDelay(Math.max(0, SchedulerHelper.getTicksFromDuration(System.currentTimeMillis() - pool.getLastTickTime(), true)));
+        }
         if (scheduler.getDelay() <= 0) {
             scheduler.tick();
             addOrCreatePool(scheduler);
             return;
-        }
-        if (this.schedulerPools.containsKey(scheduler.getPeriod())) {
-            SchedulerPool<?> pool = this.schedulerPools.get(scheduler.getPeriod());
-            scheduler.setDelay(SchedulerHelper.getTicksFromDuration(System.currentTimeMillis() - pool.getLastTickTime(), true));
         }
         this.scheduledSchedulers.put(scheduler, scheduler.getDelay());
     }

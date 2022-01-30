@@ -2,10 +2,10 @@
  * Copyright (c) 2022. Drapuria
  */
 
-package net.drapuria.framework.jackson.libraries;
+package net.drapuria.framework.libraries;
 
 import lombok.Getter;
-import net.drapuria.framework.jackson.libraries.relocate.Relocate;
+import net.drapuria.framework.libraries.relocate.Relocate;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

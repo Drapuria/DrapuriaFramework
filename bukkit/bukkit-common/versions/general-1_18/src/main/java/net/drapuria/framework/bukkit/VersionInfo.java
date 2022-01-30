@@ -4,7 +4,7 @@
 
 package net.drapuria.framework.bukkit;
 
-import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
 //   <groupId>javax.persistence</groupId>
 //    <artifactId>javax.persistence-api</artifactId>
 //    <version>2.2</version>

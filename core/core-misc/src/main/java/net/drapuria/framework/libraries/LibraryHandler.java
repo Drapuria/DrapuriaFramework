@@ -2,13 +2,13 @@
  * Copyright (c) 2022. Drapuria
  */
 
-package net.drapuria.framework.jackson.libraries;
+package net.drapuria.framework.libraries;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import net.drapuria.framework.FrameworkMisc;
-import net.drapuria.framework.jackson.libraries.classloader.IsolatedClassLoader;
-import net.drapuria.framework.jackson.libraries.relocate.RelocateHandler;
+import net.drapuria.framework.libraries.classloader.IsolatedClassLoader;
+import net.drapuria.framework.libraries.relocate.RelocateHandler;
 import net.drapuria.framework.plugin.AbstractPlugin;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginListenerAdapter;

@@ -12,12 +12,14 @@ import net.drapuria.framework.task.ITask;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class SchedulerPool<T extends ITask> {
 
     protected final List<Scheduler<?>> schedulers = new ArrayList<>();
+    protected final Queue<Scheduler<?>> toAdd = new LinkedBlockingQueue<>();
     protected final Queue<Scheduler<?>> toRemove = new LinkedBlockingQueue<>();
     protected final AbstractSchedulerProvider provider;
     @Getter
@@ -44,9 +46,17 @@ public abstract class SchedulerPool<T extends ITask> {
         this.lastTickTime = System.currentTimeMillis();
         if (!toRemove.isEmpty()) {
             while (!toRemove.isEmpty())
-                this.schedulers.remove(toRemove.poll());
+                this.schedulers.remove(this.toRemove.poll());
         }
-        this.schedulers.removeIf(Scheduler::tick);
+        if (!toAdd.isEmpty()) {
+            while (!toAdd.isEmpty())
+                this.schedulers.add(this.toAdd.poll());
+        }
+        this.schedulers.removeIf(Objects::isNull);
+        this.schedulers.forEach(scheduler -> {
+            if (scheduler.tick())
+                toRemove.add(scheduler);
+        });
         if (this.schedulers.isEmpty())
             this.scheduledRemove = true;
     }
@@ -55,11 +65,13 @@ public abstract class SchedulerPool<T extends ITask> {
     public void shutdown() {
         task.shutdown();
         new ArrayList<>(this.schedulers).forEach(Scheduler::cancel);
+        new ArrayList<>(this.toAdd).forEach(Scheduler::cancel);
+        task = null;
     }
 
     public void addScheduler(Scheduler<?> scheduler) {
         this.scheduledRemove = false;
-        this.schedulers.add(scheduler);
+        this.toAdd.add(scheduler);
         scheduler.setPool(this);
     }
 

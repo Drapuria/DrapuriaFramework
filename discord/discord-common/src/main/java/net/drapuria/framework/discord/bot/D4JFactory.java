@@ -8,7 +8,7 @@ import discord4j.core.DiscordClient;
 import discord4j.core.GatewayDiscordClient;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.discord.configuration.AbstractDiscordBotConfiguration;
-import net.drapuria.framework.jackson.libraries.Library;
+import net.drapuria.framework.libraries.Library;
 
 import java.util.concurrent.atomic.AtomicReference;
 

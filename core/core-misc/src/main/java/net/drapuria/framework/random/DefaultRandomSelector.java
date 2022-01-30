@@ -5,7 +5,7 @@
 package net.drapuria.framework.random;
 
 import com.google.common.base.Preconditions;
-import net.drapuria.framework.jackson.libraries.annotation.MavenDependency;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.drapuria.framework.random.weight.Weigher;
 
 import java.util.Collection;

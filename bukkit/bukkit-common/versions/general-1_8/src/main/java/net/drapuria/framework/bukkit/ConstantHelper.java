@@ -27,6 +27,7 @@ public class ConstantHelper {
         ItemConstants.BARRIER = ItemBuilder.of(Material.BARRIER).build();
         ItemConstants.RED_PANE = ItemBuilder.of(STAINED_GLASS_PANE).setDurability(14).build();
         ItemConstants.PLACEHOLDER = ItemBuilder.of(STAINED_GLASS_PANE).setDurability(7).build();
+        ItemConstants.BACK_BUTTON = ItemBuilder.of(Material.ITEM_FRAME).build();
 
         SoundConstants.FAIL = SoundData.of(Sound.NOTE_BASS);
         SoundConstants.SUCCESS = SoundData.of(Sound.NOTE_PLING);

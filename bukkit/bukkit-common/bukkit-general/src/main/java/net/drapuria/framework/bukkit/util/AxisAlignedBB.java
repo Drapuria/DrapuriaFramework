@@ -21,6 +21,14 @@ public class AxisAlignedBB
         return new AxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
+    /**
+     * Returns a bounding box with the specified bounds. Args: minX, minY, minZ, maxX, maxY, maxZ
+     */
+    public static AxisAlignedBB getBoundingBox(final Location min, final Location max)
+    {
+        return new AxisAlignedBB(min.getX(), min.getY(), min.getZ(), max.getX(), max.getY(), max.getZ());
+    }
+
     public AxisAlignedBB(double minX, double minY, double minZ, double maxX, double maxY, double maxZ)
     {
         this.minX = minX;

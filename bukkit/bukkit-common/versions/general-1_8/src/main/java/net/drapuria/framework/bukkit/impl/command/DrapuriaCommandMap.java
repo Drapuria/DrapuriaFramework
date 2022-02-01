@@ -11,6 +11,7 @@ import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -42,8 +43,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine, Location location) {
         if (!(sender instanceof Player)) return Collections.emptyList();
-        Player player = (Player) sender;
-        Set<String> completions = new HashSet<>();
+        final Player player = (Player) sender;
+        final Set<String> completions = new HashSet<>();
         try {
             boolean doneHere = false;
             final String inputString = cmdLine.toLowerCase();
@@ -90,7 +91,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                         Player.class,
                                         emptyStringArray));
                                 doneHere = true;
-                                break commandLoop;
+                                continue; // ?
+                                //  break commandLoop;
                             }
                             if (parameterData.getParameterCount() > parameterIndex) {
                                 BukkitParameter parameter = parameterData.get(parameterIndex);
@@ -105,14 +107,14 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                         }
 
                     }
-                    // loop through all subcommands and checks if player can access this
+                    // loop through all subcommands and checks if player can access the sub command
                     subCommandMeta:
                     for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()
                             .values()) {
                         if (!subCommand.canAccess(player)) {
                             continue;
                         }
-                        // loop through all subcommand aliases a
+                        // loop through all subcommand aliases
                         for (String subCommandAlias : subCommand.getAliases()) {
                             subCommandAlias = subCommandAlias.toLowerCase();
                             String[] argumentSplit = subCommandAlias.split(" ");
@@ -120,13 +122,14 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                             // check if sender has entered the command
                             if (StringUtils.startsWithIgnoreCase(subCommandAlias, subCommands)
                                     || StringUtils.startsWithIgnoreCase(subCommands, subCommandAlias)) {
-                                // check if there is paramter left to complete
+                                // check if there are parameters left to complete
                                 if (subCommands.toLowerCase().startsWith(subCommandAlias.toLowerCase() + " ")
                                         && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
-                                    if (parameterIndex == subCommand.getParameterData().getParameterCount()
-                                            || !cmdLine.endsWith(" ")) {
-                                        parameterIndex = parameterIndex - 2;
+                                    if (parameterIndex == subCommand.getParameterData().getParameterCount()) {
+                                        parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 2 : 1);
+                                    } else {
+                                        parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
                                     }
                                     if (parameterIndex < 0)
                                         parameterIndex = 0;
@@ -137,7 +140,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                                 Player.class,
                                                 emptyStringArray));
                                         doneHere = true;
-                                        break commandLoop;
+                                        continue; // ?
+                                        //  break commandLoop;
                                     }
                                     if (parameterData.getParameterCount() <= parameterIndex) {
                                         doneHere = true;
@@ -201,7 +205,6 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                 ? (new ArrayList<>()) : commandProvider.getTypeParameter(transformTo)
                 .tabComplete(sender, ImmutableSet.copyOf(tabCompleteFlags), parameter.toLowerCase());
     }
-
 
 
     @Override

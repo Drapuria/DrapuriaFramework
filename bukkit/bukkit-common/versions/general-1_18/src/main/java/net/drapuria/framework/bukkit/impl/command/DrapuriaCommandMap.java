@@ -104,7 +104,6 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                 }
                             }
                         }
-
                     }
                     // loop through all subcommands and checks if player can access the sub command
                     subCommandMeta:

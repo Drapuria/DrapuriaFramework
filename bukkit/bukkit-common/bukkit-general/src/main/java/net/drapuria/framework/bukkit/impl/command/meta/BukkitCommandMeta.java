@@ -182,7 +182,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
             return;
         }
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
-        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()) : executor;
+        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
 
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
             if (i == params.length) return;
@@ -207,7 +207,6 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
             }
         }
-
         try {
             this.method.invoke(this.instance, objects);
         } catch (IllegalAccessException | InvocationTargetException e) {

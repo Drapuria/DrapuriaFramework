@@ -38,7 +38,8 @@ public class BukkitCommandRepository implements CommandRepository<DrapuriaComman
         this.commands.add(command);
 
         if (this.commandProvider.getDrapuriaCommandMap().getCommand(command.getCommandMeta().getCommandName()) != null) {
-            DrapuriaCommon.getLogger().warn("Command " + command.getName() + " is already registered.");
+            DrapuriaCommon.getLogger().warn("Command " + command.getName() + " is already registered. Trying to overwrite. (NOTE: YOU SHOULD NOT DO THIS WITH NORMAL COMMANDS)");
+            unregisterBukkitCommand(command.getCommandMeta().getCommandName());
         }
         String prefix;
         if (source instanceof Module) {
@@ -63,6 +64,20 @@ public class BukkitCommandRepository implements CommandRepository<DrapuriaComman
         Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandProvider.getDrapuriaCommandMap());
         commandProvider.getDrapuriaCommandMap().unregisterDrapuriaCommand(command);
         knownCommands.remove(command.getName());
+    }
+
+    @SneakyThrows
+    private void unregisterBukkitCommand(String name) {
+        Field knownCommandsField = SimpleCommandMap.class.getDeclaredField("knownCommands");
+        knownCommandsField.setAccessible(true);
+        Map<String, Command> knownCommands = (Map<String, Command>) knownCommandsField.get(commandProvider.getDrapuriaCommandMap());
+        unregisterBukkitCommand(knownCommands.get(name));
+    }
+
+    private void unregisterBukkitCommand(Command command) {
+        if (command instanceof DrapuriaCommand)
+            return;
+        commandProvider.getDrapuriaCommandMap().unregisterDrapuriaCommand(command);
     }
 
     @Override

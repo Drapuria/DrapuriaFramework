@@ -80,6 +80,11 @@ public abstract class AbstractMenuFactory<F extends AbstractMenuFactory<F, B>, B
         return (F) this;
     }
 
+    public F button(Function<Player, B> button) {
+        buttons.put(buttons.size(), button);
+        return (F) this;
+    }
+
     public abstract IMenu buildMenu();
 
 

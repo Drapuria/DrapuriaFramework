@@ -41,8 +41,7 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine, Location location) {
-        if (!(sender instanceof Player)) return Collections.emptyList();
-        final Player player = (Player) sender;
+        if (!(sender instanceof final Player player)) return Collections.emptyList();
         final Set<String> completions = new HashSet<>();
         try {
             boolean doneHere = false;

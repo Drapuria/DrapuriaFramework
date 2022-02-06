@@ -39,6 +39,7 @@ public abstract class Menu extends AbstractMenu {
         this.inventories.put(player, inventory);
         player.openInventory(inventory);
         MenuService.getService.addOpenedMenu(player.getName(), this);
+        onOpen(player);
     }
 
     @Override

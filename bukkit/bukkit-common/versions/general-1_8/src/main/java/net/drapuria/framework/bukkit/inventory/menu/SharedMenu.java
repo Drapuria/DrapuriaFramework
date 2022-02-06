@@ -18,6 +18,7 @@ public abstract class SharedMenu extends AbstractSharedMenu {
             buildInventory();
         player.openInventory(inventory);
         MenuService.getService.addOpenedMenu(player.getName(), this);
+        onOpen(player);
     }
 
     private void buildInventory() {

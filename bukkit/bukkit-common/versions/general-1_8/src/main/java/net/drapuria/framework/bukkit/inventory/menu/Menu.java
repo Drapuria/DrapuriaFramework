@@ -43,7 +43,7 @@ public abstract class Menu extends AbstractMenu {
             setCachedButtons(player, buttons);
             MenuService.getService.addOpenedMenu(player.getName(), this);
         });
-
+        onOpen(player);
     }
 
     @Override

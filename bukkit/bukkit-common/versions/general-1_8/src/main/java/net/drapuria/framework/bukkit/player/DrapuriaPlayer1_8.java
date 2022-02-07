@@ -7,6 +7,7 @@ package net.drapuria.framework.bukkit.player;
 import com.google.common.base.Preconditions;
 import de.vantrex.hardcorespigot.modules.Module;
 import de.vantrex.hardcorespigot.profiles.potion.PotionProfile;
+import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.*;

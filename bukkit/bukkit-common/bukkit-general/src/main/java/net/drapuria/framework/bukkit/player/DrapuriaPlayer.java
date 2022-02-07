@@ -4,17 +4,28 @@
 
 package net.drapuria.framework.bukkit.player;
 
+import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.permissions.Permissible;
 
 /**
  * Represents a Player
- *
  */
-public interface DrapuriaPlayer extends Player {
+public interface DrapuriaPlayer extends Player, Permissible {
 
     void sendActionBar(String text);
+
+    default void sendActionBar(String text, long seconds) {
+        new SchedulerFactory<Runnable>()
+                .supplier(() -> () -> sendActionBar(text))
+                .repeated((aLong, runnable) -> runnable.run())
+                .iterations(seconds * 10)
+                .period(2)
+                .delay(0)
+                .build();
+    }
 
     void sendTitle(String text, int fadein, int showtime, int fadeout);
 
@@ -47,6 +58,4 @@ public interface DrapuriaPlayer extends Player {
         getInventory().setHeldItemSlot(0);
         updateInventory();
     }
-
-
 }

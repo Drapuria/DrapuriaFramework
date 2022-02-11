@@ -8,6 +8,9 @@ import java.io.DataOutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+
+import net.drapuria.framework.ObjectSerializer;
+import net.drapuria.framework.beans.annotation.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
@@ -15,7 +18,8 @@ import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-public class ItemStackSerializer {
+@Component
+public class ItemStackSerializer implements ObjectSerializer<ItemStack, String> {
     public ItemStackSerializer() {
     }
 
@@ -126,5 +130,25 @@ public class ItemStackSerializer {
             var3.printStackTrace();
             return null;
         }
+    }
+
+    @Override
+    public String serialize(ItemStack input) {
+        return serializeItemStack(input);
+    }
+
+    @Override
+    public ItemStack deserialize(String output) {
+        return deserializeItemStack(output);
+    }
+
+    @Override
+    public Class<ItemStack> inputClass() {
+        return ItemStack.class;
+    }
+
+    @Override
+    public Class<String> outputClass() {
+        return String.class;
     }
 }

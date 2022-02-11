@@ -14,11 +14,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class StringMapObjectSerializer implements ObjectSerializer<Map, String> {
+public class MapObjectSerializer implements ObjectSerializer<Map, String> {
 
     private static Gson gson = new Gson();
 
-    private static final Type TYPE_TOKEN = new TypeToken<HashMap<String, String>>() {
+    private static final Type TYPE_TOKEN = new TypeToken<HashMap<?, ?>>() {
     }.getType();
 
     @Override

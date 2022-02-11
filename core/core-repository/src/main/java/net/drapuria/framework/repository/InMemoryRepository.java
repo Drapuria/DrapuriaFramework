@@ -101,7 +101,7 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
             declaredField = fieldCache.get(field);
         }
         for (T deo : storage.values()) {
-            if (declaredField.get(declaredField) == key) {
+            if (declaredField.get(deo).equals(key)) {
                 return Optional.of(deo);
             }
         }

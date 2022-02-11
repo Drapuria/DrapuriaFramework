@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @param <T> Object to cache
@@ -77,6 +78,11 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     @Override
     public long count() {
         return storage.size();
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return this.storage.values().stream();
     }
 
     @Override

@@ -7,6 +7,7 @@ package net.drapuria.framework.repository;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 public interface CrudRepository<T, ID extends Serializable> extends Repository<T, ID>{
 
@@ -35,6 +36,8 @@ public interface CrudRepository<T, ID extends Serializable> extends Repository<T
     Iterable<T> findAll();
 
     Iterable<T> findAllById(List<ID> ids);
+
+    Stream<T> stream();
 
     boolean existsById(ID id);
 

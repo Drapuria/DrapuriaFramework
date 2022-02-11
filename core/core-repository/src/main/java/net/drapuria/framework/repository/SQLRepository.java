@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 @SuppressWarnings("unchecked")
 public abstract class SQLRepository<T, ID extends Serializable> implements CrudRepository<T, ID> {
@@ -148,6 +149,11 @@ public abstract class SQLRepository<T, ID extends Serializable> implements CrudR
     @Override
     public boolean existsById(ID id) {
         return this.performSessionResult(session -> session.find(this.type(), id) != null);
+    }
+
+    @Override
+    public Stream<T> stream() {
+        return (Stream<T>) this.performSessionResult(session -> session.results(this.type())).stream();
     }
 
     @Override

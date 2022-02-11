@@ -111,9 +111,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                     subCommandMeta:
                     for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()
                             .values()) {
-                        if (!subCommand.canAccess(player)) {
+                        if (!subCommand.canAccess(player))
                             continue;
-                        }
                         // loop through all subcommand aliases
                         for (String subCommandAlias : subCommand.getAliases()) {
                             subCommandAlias = subCommandAlias.toLowerCase();
@@ -127,8 +126,10 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                         && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
                                     if (parameterIndex == subCommand.getParameterData().getParameterCount()) {
-                                        parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 2 : 1);
+                                        player.sendMessage("YO");
+                                        parameterIndex = parameterIndex - (1);
                                     } else {
+                                        player.sendMessage("HI");
                                         parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
                                     }
                                     if (parameterIndex < 0)
@@ -158,9 +159,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
-                                if (--finalIndex > parameterData.getParameterCount()) {
+                                if (--finalIndex > parameterData.getParameterCount())
                                     continue subCommandMeta;
-                                }
                                 // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");
                                 // split missing string into parts

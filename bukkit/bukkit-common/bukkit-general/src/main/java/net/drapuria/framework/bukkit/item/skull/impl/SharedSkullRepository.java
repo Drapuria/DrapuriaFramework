@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Service(name = "sharedSkullRepository")
 public class SharedSkullRepository implements CrudRepository<ItemStack, String> {
@@ -69,6 +70,13 @@ public class SharedSkullRepository implements CrudRepository<ItemStack, String> 
     @Override
     public Iterable<ItemStack> findAllById(List<String> strings) {
         return hdbRepository.findAllById(strings);
+    }
+
+    @Override
+    public Stream<ItemStack> stream() {
+        List<ItemStack> list = new ArrayList<>();
+        hdbRepository.findAll().forEach(list::add);
+        return list.stream();
     }
 
     @Override

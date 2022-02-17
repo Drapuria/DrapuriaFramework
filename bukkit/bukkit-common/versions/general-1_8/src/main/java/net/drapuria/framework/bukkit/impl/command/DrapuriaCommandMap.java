@@ -126,10 +126,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                         && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
                                     if (parameterIndex == subCommand.getParameterData().getParameterCount()) {
-                                        player.sendMessage("YO");
                                         parameterIndex = parameterIndex - (1);
                                     } else {
-                                        player.sendMessage("HI");
                                         parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
                                     }
                                     if (parameterIndex < 0)

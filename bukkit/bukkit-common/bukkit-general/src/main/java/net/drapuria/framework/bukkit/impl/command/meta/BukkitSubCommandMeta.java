@@ -10,6 +10,7 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameter;
 import net.drapuria.framework.command.annotation.SubCommand;
+import net.drapuria.framework.command.meta.CommandMeta;
 import net.drapuria.framework.command.meta.SubCommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
 import org.bukkit.entity.Player;
@@ -25,8 +26,8 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
     private final String commandPermission;
     private final SubCommand subCommand;
     private final boolean useDrapuriaPlayer;
-    public BukkitSubCommandMeta(SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer) {
-        super(parameterData, subCommand.names(), instance, method, subCommand.parameters());
+    public BukkitSubCommandMeta(CommandMeta<Player, ?> commandMeta, SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer) {
+        super(commandMeta, parameterData, subCommand.names(), instance, method, subCommand.parameters());
         this.subCommand = subCommand;
         this.useDrapuriaPlayer = useDrapuriaPlayer;
         this.commandPermission = this.subCommand.permission();
@@ -40,6 +41,9 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
             Parameter parameter = this.parameterData.getParameters()[i];
             if (i == params.length) {
+                if (this.commandMeta != null && commandMeta.getMethod() != null) {
+                    commandMeta.execute(player, params);
+                }
                 return false;
             }
 

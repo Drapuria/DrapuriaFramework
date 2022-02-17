@@ -12,6 +12,7 @@ import java.lang.reflect.Method;
 @Getter
 public abstract class SubCommandMeta<E, T extends ParameterData<?>> {
 
+    protected final CommandMeta<E, ?> commandMeta;
     protected final T parameterData;
     protected final String[] aliases;
 
@@ -22,7 +23,8 @@ public abstract class SubCommandMeta<E, T extends ParameterData<?>> {
     protected final String parameterString;
     protected boolean asyncExecution;
 
-    public SubCommandMeta(T parameterData, String[] aliases, Object instance, Method method, String parameterString) {
+    public SubCommandMeta(CommandMeta<E, ?> commandMeta, T parameterData, String[] aliases, Object instance, Method method, String parameterString) {
+        this.commandMeta = commandMeta;
         this.parameterData = parameterData;
         this.aliases = aliases;
         this.instance = instance;

@@ -18,6 +18,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
 
+import static org.bukkit.Material.AIR;
 import static org.bukkit.event.inventory.ClickType.SHIFT_LEFT;
 import static org.bukkit.event.inventory.ClickType.SHIFT_RIGHT;
 import static org.bukkit.event.inventory.InventoryAction.DROP_ALL_CURSOR;
@@ -56,7 +57,16 @@ public class MenuListener implements Listener {
 
         final Map<Integer, IButton> buttons = currentMenu.getCachedButtons(player);
         final IButton currentButton = buttons.get(slot);
-        if (currentButton == null) return;
+        if (currentButton == null) {
+
+                if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
+                    currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
+                }
+                if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
+                    currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
+                }
+                return;
+        }
         if (!event.isCancelled() && currentButton.shouldCancel(player, slot, clickType))
             event.setCancelled(true);
 

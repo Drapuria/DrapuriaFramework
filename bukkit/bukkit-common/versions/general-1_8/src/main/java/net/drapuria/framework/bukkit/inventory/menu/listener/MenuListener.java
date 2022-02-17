@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.inventory.menu.listener;
 
+import net.drapuria.framework.beans.annotation.Autowired;
 import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.inventory.menu.IButton;
@@ -18,6 +19,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
 
+import static org.bukkit.Material.AIR;
 import static org.bukkit.event.inventory.ClickType.SHIFT_LEFT;
 import static org.bukkit.event.inventory.ClickType.SHIFT_RIGHT;
 import static org.bukkit.event.inventory.InventoryAction.DROP_ALL_CURSOR;
@@ -27,7 +29,8 @@ import static org.bukkit.event.inventory.InventoryAction.DROP_ONE_CURSOR;
 public class MenuListener implements Listener {
 
     private final Plugin plugin = Drapuria.PLUGIN;
-    private final MenuService service = MenuService.getService;
+    @Autowired
+    private MenuService service;
 
     @EventHandler
     public void onInventoryClick(final InventoryClickEvent event) {
@@ -51,20 +54,38 @@ public class MenuListener implements Listener {
             if (!currentMenu.allowOwnInventoryClick() || clickType == SHIFT_LEFT || clickType == SHIFT_RIGHT)
                 event.setCancelled(true);
         }
-        if (clickedInventory.equals(menuInventory) && event.getCursor() != null && !currentMenu.isAcceptNewItems())
+        if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && !currentMenu.isAcceptNewItems())
             event.setCancelled(true);
 
         final Map<Integer, IButton> buttons = currentMenu.getCachedButtons(player);
         final IButton currentButton = buttons.get(slot);
-        if (currentButton == null) return;
+        if (currentButton == null) {
+            handleItemRemoveOrInsert(event, player, currentMenu, clickedInventory, menuInventory);
+            return;
+        }
         if (!event.isCancelled() && currentButton.shouldCancel(player, slot, clickType))
             event.setCancelled(true);
+        else if (!event.isCancelled()) {
+            handleItemRemoveOrInsert(event, player, currentMenu, clickedInventory, menuInventory);
+        }
 
         if (!event.isCancelled() && event.getHotbarButton() != -1) {
             if (!currentMenu.acceptItemRemove())
                 event.setCancelled(true);
+            else {
+                handleItemRemoveOrInsert(event, player, currentMenu, clickedInventory, menuInventory);
+            }
         }
         currentButton.onClick(player, slot, clickType, event.getHotbarButton());
+    }
+
+    private void handleItemRemoveOrInsert(InventoryClickEvent event, Player player, IMenu currentMenu, Inventory clickedInventory, Inventory menuInventory) {
+        if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
+            currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
+        }
+        if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
+            currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
+        }
     }
 
     @EventHandler
@@ -75,7 +96,7 @@ public class MenuListener implements Listener {
         final Inventory menuInventory = currentMenu.getInventory(player);
         final Inventory clickedInventory = event.getInventory();
         final Inventory bottomInventory = event.getView().getBottomInventory();
-        if (clickedInventory.equals(menuInventory) && !currentMenu.isAcceptNewItems()) {
+        if (clickedInventory.equals(menuInventory)) {
             if (clickedInventory.equals(bottomInventory))
                 return;
             event.setCancelled(true);

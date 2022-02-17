@@ -156,7 +156,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                     }
                 }
                 BukkitParameterData parameterData = new BukkitParameterData(parameters);
-                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class);
+                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class);
 
                 String defaultAlias = meta.getDefaultAlias();
 

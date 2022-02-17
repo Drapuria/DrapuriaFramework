@@ -7,6 +7,7 @@ package net.drapuria.framework.bukkit.inventory.menu;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 public abstract class AbstractMenu implements IMenu {
 
@@ -116,6 +117,16 @@ public abstract class AbstractMenu implements IMenu {
 
     @Override
     public void onOpen(Player player) {
+
+    }
+
+    @Override
+    public void onItemInsert(Player player, ItemStack itemStack, int slot) {
+
+    }
+
+    @Override
+    public void onItemRemove(Player player, ItemStack itemStack, int slot) {
 
     }
 

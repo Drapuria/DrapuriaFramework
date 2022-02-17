@@ -188,7 +188,7 @@ public class LegacySqlStatementBuilder implements SqlStatementBuilder {
                         value = whereObj.getValue().toString();
                     }
 
-                    where += whereObj.getProperty() + (value.toString().startsWith("UNHEX") ? ("=" + value.toString()/*.replace("'", "''")*/ + "") : "='" + value.toString().replace("'", "''") + "'");
+                    where += whereObj.getProperty() + (value.toString().startsWith("UNHEX") ? ("='" + value.toString().replace("'", "''") + "'") : "='" + value.toString().replace("'", "''") + "'");
                     if (iterator.hasNext()) {
                         where += ",";
                     }

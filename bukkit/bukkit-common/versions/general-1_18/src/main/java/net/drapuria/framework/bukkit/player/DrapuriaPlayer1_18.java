@@ -413,6 +413,11 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
     }
 
     @Override
+    public @NotNull SpawnCategory getSpawnCategory() {
+        return player.getSpawnCategory();
+    }
+
+    @Override
     public @NotNull Component displayName() {
         return player.displayName();
     }

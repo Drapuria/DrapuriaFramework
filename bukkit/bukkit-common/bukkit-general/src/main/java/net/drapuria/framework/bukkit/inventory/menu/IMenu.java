@@ -4,10 +4,10 @@
 
 package net.drapuria.framework.bukkit.inventory.menu;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 
@@ -48,6 +48,10 @@ public interface IMenu {
     void setAcceptNewItems(boolean acceptNewItems);
 
     boolean acceptItemRemove();
+
+    void onItemInsert(final Player player, final ItemStack itemStack, int slot);
+
+    void onItemRemove(final Player player, final ItemStack itemStack, int slot);
 
     void setAcceptItemRemove(boolean acceptItemRemove);
 

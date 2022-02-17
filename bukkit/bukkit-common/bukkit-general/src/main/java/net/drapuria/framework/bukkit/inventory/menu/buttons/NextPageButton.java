@@ -14,7 +14,7 @@ public class NextPageButton extends Button {
     @Override
     public ItemStack getIcon(Player player) {
         return new ItemBuilder(Material.ARROW)
-                .setDisplayName("§7Zurück")
+                .setDisplayName("§7Weiter")
                 .build();
     }
 }

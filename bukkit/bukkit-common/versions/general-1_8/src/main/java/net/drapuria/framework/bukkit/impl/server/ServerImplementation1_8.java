@@ -6,6 +6,7 @@ package net.drapuria.framework.bukkit.impl.server;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.bukkit.impl.annotation.ServerImpl;
 import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
@@ -123,14 +124,15 @@ public class ServerImplementation1_8 implements ServerImplementation {
                 ConfirmAction action = confirm.apply(this.player, text);
                 setConfirmAction(action);
                 if (action == ConfirmAction.CONFIRMED)
-                    FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
-                        player.closeInventory();
-                    });
+                    player.closeInventory();
             }
 
             @Override
             public void onCancel() {
-                onCancel.accept(player, this.getConfirmAction());
+                if (this.getConfirmAction() == ConfirmAction.CONFIRMED)
+                    DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> onCancel.accept(player, this.getConfirmAction()), 1L);
+                else
+                    onCancel.accept(player, this.getConfirmAction());
             }
         };
     }
@@ -148,8 +150,10 @@ public class ServerImplementation1_8 implements ServerImplementation {
 
             @Override
             public void onCancel() {
-                onCancel.accept(player, this.getConfirmAction());
-            }
+                if (this.getConfirmAction() == ConfirmAction.CONFIRMED)
+                    DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> onCancel.accept(player, this.getConfirmAction()), 1L);
+                else
+                    onCancel.accept(player, this.getConfirmAction());            }
         };
     }
 }

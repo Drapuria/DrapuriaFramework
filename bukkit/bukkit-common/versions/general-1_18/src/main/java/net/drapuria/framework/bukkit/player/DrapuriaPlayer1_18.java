@@ -84,7 +84,6 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
 
 
 
-
     @Override
     public @Nullable GameMode getPreviousGameMode() {
         return player.getPreviousGameMode();
@@ -1430,6 +1429,16 @@ public record DrapuriaPlayer1_18(Player player) implements DrapuriaPlayer {
     @Override
     public void setViewDistance(int i) {
         player.setViewDistance(i);
+    }
+
+    @Override
+    public int getSimulationDistance() {
+        return player.getSimulationDistance();
+    }
+
+    @Override
+    public void setSimulationDistance(int simulationDistance) {
+        player.setSimulationDistance(simulationDistance);
     }
 
     @Override

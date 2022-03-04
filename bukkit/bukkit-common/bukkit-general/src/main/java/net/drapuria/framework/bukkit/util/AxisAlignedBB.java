@@ -113,6 +113,7 @@ public class AxisAlignedBB
         return getBoundingBox(var7, var9, var11, var13, var15, var17);
     }
 
+
     public AxisAlignedBB func_111270_a(AxisAlignedBB p_111270_1_)
     {
         double var2 = Math.min(this.minX, p_111270_1_.minX);

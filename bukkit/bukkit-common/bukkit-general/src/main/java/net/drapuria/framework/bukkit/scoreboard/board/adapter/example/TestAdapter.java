@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.scoreboard.board.adapter.example;
 
+import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.scoreboard.board.adapter.DefaultAdapter;
 import net.drapuria.framework.bukkit.scoreboard.board.adapter.ScoreboardAdapter;
 import net.drapuria.framework.bukkit.text.SimpleAnimatedText;
@@ -20,8 +21,9 @@ public class TestAdapter implements ScoreboardAdapter, DefaultAdapter {
      */
 
     private final SimpleAnimatedText text = new SimpleAnimatedText("Drapuria", "§8§l", "§5§l", "§d§l", "§5§l");
+    private final SimpleAnimatedText text2 = new SimpleAnimatedText("DAS IST EIN SEHR SEHR SEHR SEHR LANGER TEXT", "§7§l", "§a§l", "§2§l", "§a§l");
     private boolean b = false;
-    int i = 4;
+    private int i = 4;
     @Override
     public String getTitle(Player player) {
         return text.next();
@@ -31,7 +33,7 @@ public class TestAdapter implements ScoreboardAdapter, DefaultAdapter {
     public List<String> getLines(Player player) {
 
         List<String> lines = new ArrayList<>();
-        lines.add("§a§lDAS IST EIN SEHR SEHR SEHR SEHR LANGER TEXT");
+        lines.add(text2.last());
         /*
         if (b) {
             i++;

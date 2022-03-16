@@ -3,23 +3,36 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>bukkit-common</artifactId>
+        <artifactId>versions</artifactId>
         <groupId>net.drapuria.framework</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>versions</artifactId>
+    <artifactId>1_18</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>general-1_8</module>
-        <module>general-1_18</module>
-        <module>1_18</module>
+        <module>1_18_2</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>net.drapuria.framework</groupId>
+            <artifactId>general-1_18</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>3.2.38</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
-
 </project>

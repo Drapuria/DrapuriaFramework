@@ -12,15 +12,15 @@ import org.bukkit.World;
 import java.util.UUID;
 
 @Component
-public class WorldSerializer implements ObjectSerializer<World, UUID> {
+public class WorldSerializer implements ObjectSerializer<World, String> {
     @Override
-    public UUID serialize(World input) {
-        return input.getUID();
+    public String serialize(World input) {
+        return input.getUID().toString();
     }
 
     @Override
-    public World deserialize(UUID output) {
-        return Bukkit.getWorld(output);
+    public World deserialize(String output) {
+        return Bukkit.getWorld(UUID.fromString(output));
     }
 
     @Override
@@ -29,7 +29,7 @@ public class WorldSerializer implements ObjectSerializer<World, UUID> {
     }
 
     @Override
-    public Class<UUID> outputClass() {
-        return UUID.class;
+    public Class<String> outputClass() {
+        return String.class;
     }
 }

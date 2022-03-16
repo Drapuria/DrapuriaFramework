@@ -11,16 +11,10 @@ import net.drapuria.framework.bukkit.impl.annotation.ServerImpl;
 import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
 import net.drapuria.framework.bukkit.inventory.anvil.ConfirmAction;
 import net.drapuria.framework.bukkit.inventory.anvil.VirtualAnvil;
+import net.drapuria.framework.bukkit.protocol.ProtocolService;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.bukkit.util.Skin;
-import net.kyori.adventure.audience.MessageType;
-import net.kyori.adventure.identity.Identified;
-import net.kyori.adventure.identity.Identity;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,13 +27,10 @@ import org.bukkit.material.MaterialData;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
-import static java.awt.SystemColor.text;
 
 @ServerImpl
 public class ServerImplementation1_18 implements ServerImplementation {
@@ -98,15 +89,7 @@ public class ServerImplementation1_18 implements ServerImplementation {
 
     @Override
     public Skin getSkinFromPlayer(Player player) {
-        EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
-        GameProfile profile = ((CraftPlayer) player).getProfile();
-        if (!profile.getProperties().get("textures").isEmpty()) {
-            Property property = profile.getProperties().get("textures").iterator().next();
-            String texture = property.getValue();
-            String signature = property.getSignature();
-            return new Skin(texture, signature);
-        }
-        return null;
+       return ProtocolService.protocolService.getVersionHelper().getSkinFromPlayer(player);
     }
 
     @Override

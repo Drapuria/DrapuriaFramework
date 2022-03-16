@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 //@Component
 public class TestAdapter implements ScoreboardAdapter, DefaultAdapter {
@@ -34,7 +36,7 @@ public class TestAdapter implements ScoreboardAdapter, DefaultAdapter {
 
         List<String> lines = new ArrayList<>();
         lines.add(text2.last());
-        /*
+
         if (b) {
             i++;
             if (i == 16)
@@ -46,8 +48,7 @@ public class TestAdapter implements ScoreboardAdapter, DefaultAdapter {
         }
         if (i == 0)
             return new ArrayList<>();
-        lines = IntStream.range(0, i).mapToObj(String::valueOf).collect(Collectors.toList());
-         */
+        lines.addAll(IntStream.range(0, i).mapToObj(String::valueOf).collect(Collectors.toList()));
         return lines;
     }
 

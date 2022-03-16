@@ -14,7 +14,7 @@ public enum PlayerVersion {
     V_1_15(573, 575, 578),
     V_1_16(735, 751, 753, 754),
     V_1_17(755, 756),
-    V_1_18(757),
+    V_1_18(757, 758),
     ;
 
     private Integer[] rawVersion;

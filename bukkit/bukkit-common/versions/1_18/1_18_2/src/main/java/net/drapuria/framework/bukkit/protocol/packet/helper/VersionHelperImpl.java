@@ -15,11 +15,10 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.EnumChatFormat;
 import net.minecraft.network.chat.ChatMessage;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.util.Optional;
@@ -42,9 +41,9 @@ public class VersionHelperImpl implements VersionHelper {
                                             WrappedPacketOutScoreboardTeam.NameTagVisibility visibility) {
         ScoreboardTeam team = new ScoreboardTeam(new Scoreboard(), name);
         team.a(PaperAdventure.asVanilla(Component.text(displayName)));
-    //    team.c(new ChatMessage(suffix));
+        //    team.c(new ChatMessage(suffix));
         team.c(PaperAdventure.asVanilla(Component.text(suffix)));
-      //  team.b(new ChatMessage(prefix));
+        //  team.b(new ChatMessage(prefix));
         team.b(PaperAdventure.asVanilla(Component.text(prefix)));
         team.a(friendlyFire);
         team.b(visibility != WrappedPacketOutScoreboardTeam.NameTagVisibility.HIDE_FOR_OWN_TEAM);
@@ -60,7 +59,6 @@ public class VersionHelperImpl implements VersionHelper {
 
     @Override
     public Skin getSkinFromPlayer(Player player) {
-        EntityPlayer entityPlayer = ((CraftPlayer) player).getHandle();
         GameProfile profile = ((CraftPlayer) player).getProfile();
         if (!profile.getProperties().get("textures").isEmpty()) {
             Property property = profile.getProperties().get("textures").iterator().next();
@@ -70,6 +68,4 @@ public class VersionHelperImpl implements VersionHelper {
         }
         return null;
     }
-
-
 }

@@ -68,8 +68,6 @@ public record DrapuriaPlayer1_18_2(Player player) implements DrapuriaPlayer {
 
     }
 
-
-
     @Override
     public @Nullable
     GameMode getPreviousGameMode() {
@@ -565,6 +563,11 @@ public record DrapuriaPlayer1_18_2(Player player) implements DrapuriaPlayer {
     @Override
     public void kickPlayer(@Nullable String s) {
         player.kickPlayer(s);
+    }
+
+    @Override
+    public void kick() {
+        player.kick();
     }
 
     @Override
@@ -1289,6 +1292,16 @@ public record DrapuriaPlayer1_18_2(Player player) implements DrapuriaPlayer {
     @Override
     public void setScoreboard(@NotNull Scoreboard scoreboard) throws IllegalArgumentException, IllegalStateException {
         player.setScoreboard(scoreboard);
+    }
+
+    @Override
+    public @Nullable WorldBorder getWorldBorder() {
+        return null;
+    }
+
+    @Override
+    public void setWorldBorder(@Nullable WorldBorder worldBorder) {
+        player.setWorldBorder(worldBorder);
     }
 
     @Override

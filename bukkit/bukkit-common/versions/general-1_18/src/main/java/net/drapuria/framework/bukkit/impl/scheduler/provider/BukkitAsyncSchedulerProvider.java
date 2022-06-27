@@ -22,6 +22,20 @@ public class BukkitAsyncSchedulerProvider extends AsyncAbstractSchedulerProvider
     }
 
     @Override
+    public void tickPool() {
+        scheduledSchedulers.entrySet().removeIf(entry -> {
+            long delay = entry.getValue();
+            if (--delay <= 0) {
+                entry.getKey().tick();
+                addOrCreatePool(entry.getKey());
+                return true;
+            }
+            scheduledSchedulers.put(entry.getKey(), delay);  // java 17 fix
+            return false;
+        });
+    }
+
+    @Override
     protected void createSchedulerPool(long period) {
         super.schedulerPools.put(period, new BukkitAsyncSchedulerPool(period, this));
     }

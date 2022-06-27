@@ -34,9 +34,7 @@ public abstract class AbstractSchedulerProvider {
                 addOrCreatePool(entry.getKey());
                 return true;
             }
-            System.out.println(entry);
-            scheduledSchedulers.put(entry.getKey(), delay); // idk i think i´ll just add an extra provider for >java 8
-          //  entry.setValue(delay);
+            entry.setValue(delay);
             return false;
         });
     }

@@ -14,8 +14,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class BukkitAsyncSchedulerProvider extends AsyncAbstractSchedulerProvider {
 
-    // TODO ADD SPIGOT 1.18 SERVER TO USE NMS
-
     @Override
     protected void initPool() throws TaskAlreadyStartedException {
         (super.delayTask = new DrapuriaAsyncBukkitTask()).start(0, 1, this::tickPool);

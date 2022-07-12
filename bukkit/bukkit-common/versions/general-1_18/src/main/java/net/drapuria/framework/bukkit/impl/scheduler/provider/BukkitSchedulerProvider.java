@@ -34,5 +34,4 @@ public class BukkitSchedulerProvider extends AbstractSchedulerProvider {
             return false;
         });
     }
-
 }

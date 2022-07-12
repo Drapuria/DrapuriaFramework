@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 @ServerImpl
 public class ServerImplementation1_18 implements ServerImplementation {
     @Override
-    public Entity getEntity(UUID uuid) { // REPLACE WITH FOR LOOP
+    public Entity getEntity(UUID uuid) {
         //noinspection Convert2streamapi ---> for loop is faster in this case since we return @ first hit
         for (World world : Bukkit.getWorlds()) {
             Entity entity = world.getEntity(uuid);

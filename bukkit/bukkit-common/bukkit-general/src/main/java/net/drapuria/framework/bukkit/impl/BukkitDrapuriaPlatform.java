@@ -54,7 +54,7 @@ public class BukkitDrapuriaPlatform implements DrapuriaPlatform {
 
     @Override
     public void registerCommandProvider() {
-        CommandService commandService = (CommandService) BeanContext.INSTANCE.getBean(CommandService.class);
+        final CommandService commandService = (CommandService) BeanContext.INSTANCE.getBean(CommandService.class);
         commandService.registerCommandProvider(new BukkitCommandProvider(commandService));
     }
 }

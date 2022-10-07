@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class UUIDFetcher {
+public final class UUIDFetcher {
 
     /**
      * Date when name changes were introduced

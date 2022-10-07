@@ -19,20 +19,37 @@ public class ASMEventExecutorGenerator {
     @NonNull
     public static byte[] generateEventExecutor(@NonNull Method m, @NonNull String name) {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
-        writer.visit(52, ACC_PUBLIC, name.replace('.', '/'), null, Type.getInternalName(Object.class), new String[] {Type.getInternalName(EventExecutor.class)});
+        writer.visit(
+            52,
+            ACC_PUBLIC, name.replace('.', '/'),
+            null,
+            Type.getInternalName(Object.class),
+            new String[] {Type.getInternalName(EventExecutor.class)}
+            );
         // Generate constructor
-        GeneratorAdapter methodGenerator = new GeneratorAdapter(writer.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null), ACC_PUBLIC, "<init>", "()V");
+        GeneratorAdapter methodGenerator = new GeneratorAdapter(
+            writer.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null),
+             ACC_PUBLIC,
+             "<init>", "()V");
         methodGenerator.loadThis();
-        methodGenerator.visitMethodInsn(INVOKESPECIAL, Type.getInternalName(Object.class), "<init>", "()V"); // Invoke the super class (Object) constructor
+        methodGenerator.visitMethodInsn(INVOKESPECIAL,
+         Type.getInternalName(Object.class),
+          "<init>", "()V"); // Invoke the super class (Object) constructor
         methodGenerator.returnValue();
         methodGenerator.endMethod();
         // Generate the execute method
-        methodGenerator = new GeneratorAdapter(writer.visitMethod(ACC_PUBLIC, "execute", "(Lorg/bukkit/event/Listener;Lorg/bukkit/event/Event;)V", null, null), ACC_PUBLIC, "execute", "(Lorg/bukkit/event/Listener;Lorg/bukkit/event/Listener;)V");;
+        methodGenerator = new GeneratorAdapter(writer.visitMethod(ACC_PUBLIC, 
+        "execute", 
+        "(Lorg/bukkit/event/Listener;Lorg/bukkit/event/Event;)V", 
+        null, 
+        null), ACC_PUBLIC, "execute", "(Lorg/bukkit/event/Listener;Lorg/bukkit/event/Listener;)V");;
         methodGenerator.loadArg(0);
         methodGenerator.checkCast(Type.getType(m.getDeclaringClass()));
         methodGenerator.loadArg(1);
         methodGenerator.checkCast(Type.getType(m.getParameterTypes()[0]));
-        methodGenerator.visitMethodInsn(m.getDeclaringClass().isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL, Type.getInternalName(m.getDeclaringClass()), m.getName(), Type.getMethodDescriptor(m));
+        methodGenerator.visitMethodInsn(
+            m.getDeclaringClass().isInterface() ? INVOKEINTERFACE : INVOKEVIRTUAL,
+             Type.getInternalName(m.getDeclaringClass()), m.getName(), Type.getMethodDescriptor(m));
         if (m.getReturnType() != void.class) {
             methodGenerator.pop();
         }

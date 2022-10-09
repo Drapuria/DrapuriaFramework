@@ -287,7 +287,6 @@ public class Query {
             } else {
                 localCon = transaction.getConnection();
             }
-            System.out.println("sql: " + sql);
             state = localCon.prepareStatement(sql);
             loadArgs(state);
 

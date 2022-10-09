@@ -287,11 +287,11 @@ public class Query {
             } else {
                 localCon = transaction.getConnection();
             }
+            System.out.println("sql: " + sql);
             state = localCon.prepareStatement(sql);
             loadArgs(state);
 
             ResultSet rs = state.executeQuery();
-
             metaData = rs.getMetaData();
             int colCount = metaData.getColumnCount();
 

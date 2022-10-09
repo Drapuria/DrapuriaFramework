@@ -6,9 +6,9 @@ package net.drapuria.framework.discord.bot;
 
 public abstract class DiscordBotFactory<B> {
 
-    public B init() {
+    public DiscordBotFactory<B> init() {
         setupLibraries();
-        return create();
+        return this;
     }
 
     public abstract B create();

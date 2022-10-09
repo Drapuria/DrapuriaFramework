@@ -55,14 +55,16 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
             if (parameter.getClassType() == String.class && (i + 1) >= this.parameterData.getParameterCount() && (i + 1) < params.length) {
                 String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
                 if (parameter.isWildcard()) {
+                    /*
                     StringBuilder stringBuilder = new StringBuilder(builder);
                     for (int index = i; index < params.length; index++) {
                         stringBuilder.append(" ").append(params[index]);
                     }
-                    objects[i + 1] = stringBuilder.toString();
+                     */
+                    objects[i + 1] = builder;
                     break;
                 } else
-                    objects[i + 1] = builder;
+                    objects[i + 1] = builder.split(" ")[0];
             } else {
                 objects[i + 1] = commandTypeParameter.parse(player, params[i]);
             }

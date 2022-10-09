@@ -11,13 +11,18 @@ import net.drapuria.framework.discord.message.impl.CachedJDAMessage;
 import net.drapuria.framework.libraries.Library;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class JDAFactory extends DiscordBotFactory<JDA> {
 
     private final AbstractDiscordBotConfiguration<?> configuration;
 
     private JDA jda;
-
+    private final Set<GatewayIntent> intents = new HashSet<>();
     public JDAFactory(AbstractDiscordBotConfiguration<?> configuration) {
         this.configuration = configuration;
     }
@@ -28,10 +33,31 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
     public JDA create() {
         assert jda == null;
         this.jda = JDABuilder.createDefault(configuration.token())
+                .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .build();
         jda.awaitReady();
         CachedJDAMessage.factory = this;
         return this.jda;
+    }
+
+    public JDAFactory addIntent(GatewayIntent intent) {
+        this.intents.add(intent);
+        return this;
+    }
+
+    public JDAFactory removeIntent(final GatewayIntent intent) {
+        this.intents.remove(intent);
+        return this;
+    }
+
+    public JDAFactory addIntents(Collection<GatewayIntent> intents) {
+        this.intents.addAll(intents);
+        return this;
+    }
+
+    public JDAFactory clearIntents(final GatewayIntent intent) {
+        this.intents.clear();
+        return this;
     }
 
     @Override

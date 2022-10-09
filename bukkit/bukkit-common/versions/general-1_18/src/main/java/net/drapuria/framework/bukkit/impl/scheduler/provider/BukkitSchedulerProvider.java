@@ -31,6 +31,7 @@ public class BukkitSchedulerProvider extends AbstractSchedulerProvider {
                 return true;
             }
             scheduledSchedulers.put(entry.getKey(), delay);  // java 17 fix
+
             return false;
         });
     }

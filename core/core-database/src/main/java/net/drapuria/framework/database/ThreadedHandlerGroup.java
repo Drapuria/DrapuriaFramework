@@ -20,8 +20,8 @@ public class ThreadedHandlerGroup extends HandlerGroup {
         this.thread = new Thread(() -> {
             try {
                 Thread.sleep(super.executeDelay);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
+
             }
             if (getHandlerList() != null)
                 executeAll();

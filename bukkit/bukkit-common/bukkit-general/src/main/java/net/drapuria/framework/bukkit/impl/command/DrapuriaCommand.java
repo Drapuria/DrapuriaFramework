@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.impl.command;
 
+import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.DrapuriaCommon;
@@ -28,6 +29,10 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
     }
 
     public void execute(Player player, String[] arguments) {
+        if (!canAccess(player)) {
+            Drapuria.IMPLEMENTATION.sendActionBar(player, generateDefaultPermission());
+            return;
+        }
         if (arguments.length == 0) {
             if (this.commandMeta.isUseUnlySubCommands())
                 player.sendMessage(generateDefaultUsage(null, ""));

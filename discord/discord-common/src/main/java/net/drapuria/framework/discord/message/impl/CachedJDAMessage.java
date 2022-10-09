@@ -7,7 +7,7 @@ package net.drapuria.framework.discord.message.impl;
 import net.drapuria.framework.discord.bot.JDAFactory;
 import net.drapuria.framework.discord.message.CachedMessage;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,5 +48,4 @@ public class CachedJDAMessage extends CachedMessage<TextChannel, RestAction<?>, 
             return CompletableFuture.completedFuture(null);
         return textChannel.deleteMessageById(this.messageId).submit();
     }
-
 }

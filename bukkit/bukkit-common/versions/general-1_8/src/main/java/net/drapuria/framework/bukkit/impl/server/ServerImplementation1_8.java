@@ -15,6 +15,8 @@ import net.drapuria.framework.bukkit.inventory.anvil.VirtualAnvil;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.bukkit.util.Skin;
 import net.minecraft.server.v1_8_R3.EntityPlayer;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -69,6 +71,8 @@ public class ServerImplementation1_8 implements ServerImplementation {
 
     @Override
     public void sendActionBar(Player player, String message) {
+        ((CraftPlayer) player).getHandle().playerConnection
+                .sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message.trim() + "\"}"), (byte) 2));
 
     }
 

@@ -65,7 +65,6 @@ public class OAuth2ClientImpl implements OAuth2Client {
     @Override
     public OAuth2Action<Session> startSession(String code, String state, String identifier, Scope... scopes) throws InvalidStateException {
 
-
         final String redirectUri = stateController.consumeState(state);
         if (redirectUri == null)
             throw new InvalidStateException(String.format("No state '%s' exists!", state));

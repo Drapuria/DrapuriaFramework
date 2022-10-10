@@ -57,7 +57,11 @@ public final class DrapuriaCommon {
             // Jackson
             Library.JACKSON_CORE,
             Library.JACKSON_DATABIND,
-            Library.JACKSON_ANNOTATIONS
+            Library.JACKSON_ANNOTATIONS,
+
+            // KOTLIN
+            Library.KOTLIN_STDLIB_COMMON,
+            Library.KOTLIN_STLIB
 
     );
 

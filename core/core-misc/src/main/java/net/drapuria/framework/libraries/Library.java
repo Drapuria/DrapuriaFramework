@@ -171,6 +171,18 @@ public class Library {
                     "gson",
                     "2.8.9",
                     null
+            ),
+            KOTLIN_STDLIB_COMMON = new Library(
+                    "org.jetbrains.kotlin",
+                    "kotlin-stdlib-common",
+                    "1.7.10",
+                    null
+            ),
+            KOTLIN_STLIB = new Library(
+                    "org.jetbrains.kotlin",
+                    "kotlin-stdlib",
+                    "1.7.10",
+                    null
             );
 
     private final String mavenRepo;

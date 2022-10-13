@@ -16,6 +16,8 @@ public class Stacktrace {
 
     private static final Logger LOGGER = LogManager.getLogger("DrapuriaFramework-Error");
 
+    public void print(String str, Throwable throwable) { LOGGER.error(str + (str.endsWith(" ") ? "" : " ") + getStacktrace(throwable));}
+
     public void print(Throwable throwable) {
         LOGGER.error("An error occurs! : " + getStacktrace(throwable));
     }
@@ -23,7 +25,6 @@ public class Stacktrace {
     public String getStacktrace(Throwable throwable) {
         StringWriter stack = new StringWriter();
         throwable.printStackTrace(new PrintWriter(stack));
-
         return stack.toString();
     }
 

@@ -124,7 +124,7 @@ public class LibraryHandler {
 
         CountDownLatch latch = new CountDownLatch(libraries.length);
 
-        for (Library library : libraries) {
+        Arrays.stream(libraries).parallel().forEach(library -> {
             EXECUTOR.execute(() -> {
                 try {
                     loadLibrary(library, autoLoad);
@@ -135,8 +135,7 @@ public class LibraryHandler {
                     latch.countDown();
                 }
             });
-
-        }
+        });
 
         try {
             latch.await();

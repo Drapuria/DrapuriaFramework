@@ -189,7 +189,7 @@ public final class DrapuriaCommon {
         return new Builder();
     }
 
-    public class Builder {
+    public static class Builder {
 
         private DrapuriaPlatform platform;
         private IEventHandler eventHandler;

@@ -15,6 +15,10 @@ public interface ISchedulerService {
 
     <T extends AbstractSchedulerProvider> T getProvider(Class<T> providerClass);
 
+    <T extends AbstractSchedulerProvider> T getProvider(final String providerName);
+
+    Class<? extends AbstractSchedulerProvider>  getProviderClass(final String providerName);
+
     void shutdown();
 
 }

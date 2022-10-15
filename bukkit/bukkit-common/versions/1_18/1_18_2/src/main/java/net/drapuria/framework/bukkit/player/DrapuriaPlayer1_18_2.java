@@ -51,7 +51,7 @@ import org.jetbrains.annotations.Nullable;
 import java.net.InetSocketAddress;
 import java.util.*;
 
-public record DrapuriaPlayer1_18_2(Player player) implements DrapuriaPlayer {
+public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements DrapuriaPlayer {
 
     @Override
     public void sendActionBar(String text) {
@@ -94,6 +94,11 @@ public record DrapuriaPlayer1_18_2(Player player) implements DrapuriaPlayer {
         } else {
             getInventory().addItem(item);
         }
+    }
+
+    @Override
+    public long getSessionJoin() {
+        return this.sessionJoin;
     }
 
     @Override

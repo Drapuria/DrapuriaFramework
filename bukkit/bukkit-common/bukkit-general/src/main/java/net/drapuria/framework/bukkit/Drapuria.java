@@ -21,6 +21,8 @@ import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
 import net.drapuria.framework.bukkit.messaging.BungeeMessaging;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
 import net.drapuria.framework.command.service.CommandService;
+import net.drapuria.framework.libraries.annotation.MavenDependency;
+import net.drapuria.framework.libraries.annotation.MavenRepository;
 import net.drapuria.framework.module.service.ModuleService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;

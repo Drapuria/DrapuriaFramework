@@ -47,10 +47,12 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
     private final Player player;
     private final UUID uniqueId;
+    private final long sessionJoin;
 
     public DrapuriaPlayer1_8(Player player) {
         this.player = player;
         this.uniqueId = player.getUniqueId();
+        this.sessionJoin = System.currentTimeMillis();
     }
 
     @Override
@@ -90,6 +92,11 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
         } else {
             getInventory().addItem(item);
         }
+    }
+
+    @Override
+    public long getSessionJoin() {
+        return this.sessionJoin;
     }
 
     public void teleportAsync(Location location) {

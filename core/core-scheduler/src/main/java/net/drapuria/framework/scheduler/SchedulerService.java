@@ -58,6 +58,19 @@ public class SchedulerService implements ISchedulerService {
         return registerProvider(providerClass);
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends AbstractSchedulerProvider> T getProvider(String providerName) {
+        final Class<T> providerClass = (Class<T>) this.providers.keySet().stream().filter(aClass -> aClass.getSimpleName().equals(providerName)).findFirst().orElse(null);
+        return this.getProvider(providerClass);
+    }
+
+    @Override
+    public Class<? extends AbstractSchedulerProvider> getProviderClass(String providerName) {
+        return this.providers.keySet().stream().filter(aClass -> aClass.getSimpleName().equals(providerName)).findFirst().orElse(null);
+    }
+
+
     @Override
     public void shutdown() {
         providers.values().forEach(this::unregister);

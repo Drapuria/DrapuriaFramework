@@ -37,6 +37,8 @@ public interface DrapuriaPlayer extends Player, Permissible {
 
     void giveItem(final ItemStack item);
 
+    long getSessionJoin();
+
     default void clearPotionEffects() {
         getActivePotionEffects().forEach(potionEffect -> removePotionEffect(potionEffect.getType()));
         setWalkSpeed(.2F);

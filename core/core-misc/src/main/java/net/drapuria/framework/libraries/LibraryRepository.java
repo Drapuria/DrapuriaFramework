@@ -32,11 +32,15 @@ public enum LibraryRepository {
 
     protected URLConnection openConnection(Library library, String mavenRepoPath) throws IOException {
         URL url = new URL(mavenRepoPath + library.getMavenRepoPath());
+        System.out.println("maven repo path: " + mavenRepoPath);
+        System.out.println("yes: " + library.getMavenRepoPath());
+        System.out.println("urlhost: " + url.getHost());
         return url.openConnection();
     }
 
     public byte[] downloadRaw(Library dependency, String mavenRepoPath) throws LibraryDownloadException {
         try {
+            System.out.println("mavenRepoPath: " + mavenRepoPath);
             HttpURLConnection connection = (HttpURLConnection) openConnection(dependency, mavenRepoPath);
             connection.setDoOutput(false);
             connection.setRequestMethod("GET");

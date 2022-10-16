@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@MavenDependency(groupId = "com.github.derklaro", artifactId = "requestbuilder", version = "1.0.6", repo = @MavenRepository(url = "https://jitpack.io"))
+@MavenDependency(groupId = "com.github.derklaro", artifactId = "requestbuilder", version = "1.0.6", repo = @MavenRepository(url = "https://jitpack.io/"))
 public class NPCProfile {
 
     private static final ThreadLocal<Gson> GSON = ThreadLocal.withInitial(

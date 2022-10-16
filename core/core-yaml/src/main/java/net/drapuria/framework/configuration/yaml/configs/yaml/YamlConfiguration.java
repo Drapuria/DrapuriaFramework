@@ -21,7 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-public abstract class YamlConfiguration extends Configuration<YamlConfiguration> {
+public class YamlConfiguration extends Configuration<YamlConfiguration> {
     private final YamlSource source;
 
     protected YamlConfiguration(Path path, YamlProperties properties) {

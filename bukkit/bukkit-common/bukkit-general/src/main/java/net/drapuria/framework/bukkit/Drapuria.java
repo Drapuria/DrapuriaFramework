@@ -5,6 +5,7 @@
 package net.drapuria.framework.bukkit;
 
 
+import com.sun.tools.javac.util.Assert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -21,33 +22,22 @@ import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
 import net.drapuria.framework.bukkit.messaging.BungeeMessaging;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
 import net.drapuria.framework.command.service.CommandService;
-import net.drapuria.framework.libraries.annotation.MavenDependency;
-import net.drapuria.framework.libraries.annotation.MavenRepository;
 import net.drapuria.framework.module.service.ModuleService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.random.FastRandom;
-import net.drapuria.framework.scheduler.action.RepeatedAction;
-import net.drapuria.framework.scheduler.action.ScheduledAction;
-import net.drapuria.framework.scheduler.factory.SchedulerFactory;
-import net.drapuria.framework.scheduler.provider.ThreadedSchedulerProvider;
 import net.drapuria.framework.util.MethodAnnotationScanner;
 import net.drapuria.framework.util.Stacktrace;
-import org.apache.http.util.Asserts;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bukkit.Bukkit;
-import org.bukkit.Server;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The Bukkit Framework Main class
@@ -74,8 +64,13 @@ public class Drapuria {
      * @param plugin The BukkitPlugin managing this framework
      */
     public static void init(Plugin plugin) {
-        Asserts.check(Drapuria.PLUGIN == null, "Drapuria already initiated.");
-
+        if (Drapuria.PLUGIN != null) {
+            try {
+                throw new Exception("Drapuria already initiated.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
         Drapuria.PLUGIN = plugin;
         Drapuria.CLASS_LOADER = new PluginClassLoader(plugin.getClass().getClassLoader());
         Drapuria.RANDOM = new FastRandom();

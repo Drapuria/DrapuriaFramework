@@ -11,7 +11,6 @@ public interface Hologram {
 
     void hide(final Player player);
 
-
     void setLocation(Location location);
 
     void checkHologram();

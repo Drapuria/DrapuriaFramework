@@ -18,6 +18,10 @@
 
     <repositories>
         <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
             <id>vantrex-nexus</id>
             <name>vantrex-nexus</name>
             <url>https://maven.vantrex.de/repository/maven-releases/</url>

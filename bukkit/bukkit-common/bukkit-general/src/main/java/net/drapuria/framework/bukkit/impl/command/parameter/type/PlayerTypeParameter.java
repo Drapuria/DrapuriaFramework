@@ -5,6 +5,7 @@
 package net.drapuria.framework.bukkit.impl.command.parameter.type;
 
 import net.drapuria.framework.beans.annotation.Component;
+import net.drapuria.framework.command.parameter.Parameter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.HumanEntity;
@@ -29,8 +30,7 @@ public class PlayerTypeParameter extends CommandTypeParameter<Player>{
 
     @Override
     public Player parse(Player player, String source) {
-        return (source.equalsIgnoreCase("self") ? player : Bukkit.getPlayer(source));
-
+        return (source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? player : Bukkit.getPlayer(source));
     }
 
     @Override

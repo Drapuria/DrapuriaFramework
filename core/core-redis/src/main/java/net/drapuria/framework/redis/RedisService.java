@@ -26,12 +26,15 @@ import java.nio.file.Path;
 @ServiceDependency(dependencies = {"serializer", "jackson"})
 public class RedisService {
 
+    public static RedisService getService;
+
     private RedissonClient client;
 
-    private boolean enabled;
+    private final boolean enabled;
 
     @ShouldInitialize
     public boolean shouldInitialize() {
+        System.out.println("shouldInitialize redis service");
         return enabled;
     }
 
@@ -40,11 +43,12 @@ public class RedisService {
         if (!configFile.exists()) {
             DrapuriaCommon.PLATFORM.saveResources("redis.yml", false);
         }
-        enabled = new RedisConfiguration().isEnabled();
+        this.enabled = new RedisConfiguration().isEnabled();
+        getService = this;
     }
 
     @SneakyThrows
-    @PreInitialize
+    @PostInitialize
     public void initClient() {
             this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml"))
                     .setCodec(new JsonJacksonCodec(JacksonService.INSTANCE.getMainMapper())));
@@ -77,7 +81,7 @@ public class RedisService {
         private boolean enabled;
 
         protected RedisConfiguration() {
-            super(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml").toPath());
+            super(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis-enabled.yml").toPath());
             loadAndSave();
         }
 
@@ -85,5 +89,4 @@ public class RedisService {
             return enabled;
         }
     }
-
 }

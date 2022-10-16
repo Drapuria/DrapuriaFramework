@@ -67,6 +67,7 @@ public class SchedulerService implements ISchedulerService {
 
     @Override
     public Class<? extends AbstractSchedulerProvider> getProviderClass(String providerName) {
+        this.providers.keySet().forEach(aClass -> System.out.println(aClass.getSimpleName()));
         return this.providers.keySet().stream().filter(aClass -> aClass.getSimpleName().equals(providerName)).findFirst().orElse(null);
     }
 

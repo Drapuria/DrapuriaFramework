@@ -10,8 +10,8 @@ import net.drapuria.framework.command.parameter.Parameter;
 @Getter
 public class BukkitParameter extends Parameter {
     private final String[] tabCompleteFlags;
-    public BukkitParameter(Class<?> classType, String parameter, String defaultValue, boolean wildcard, String[] tabCompleteFlags) {
-        super(classType, parameter, defaultValue, wildcard);
+    public BukkitParameter(Class<?> classType, String parameter, String defaultValue, boolean wildcard, String[] tabCompleteFlags, java.lang.reflect.Parameter javaParameter) {
+        super(classType, parameter, defaultValue, wildcard, javaParameter);
         this.tabCompleteFlags = tabCompleteFlags;
     }
 }

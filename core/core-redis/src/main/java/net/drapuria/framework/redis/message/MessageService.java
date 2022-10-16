@@ -4,14 +4,11 @@
 
 package net.drapuria.framework.redis.message;
 
+import net.drapuria.framework.beans.annotation.*;
 import net.drapuria.framework.redis.RedisService;
 import net.drapuria.framework.redis.message.annotation.Message;
 import net.drapuria.framework.redis.message.annotation.MessageHandler;
 import net.drapuria.framework.redis.message.subscription.RedisPubSub;
-import net.drapuria.framework.beans.annotation.Autowired;
-import net.drapuria.framework.beans.annotation.PostInitialize;
-import net.drapuria.framework.beans.annotation.PreInitialize;
-import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.drapuria.framework.util.AccessUtil;
@@ -23,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@Service(name = "redisMessageService")
+@Service(name = "redisMessageService", dependencies = "redis")
 public class MessageService {
 
     @Autowired
@@ -36,6 +33,12 @@ public class MessageService {
 
     @Autowired
     private RedisService redisService;
+
+
+    @ShouldInitialize
+    public boolean shouldInitialize() {
+        return RedisService.getService != null  && RedisService.getService.shouldInitialize();
+    }
 
     @PreInitialize
     public void registerComponent() {

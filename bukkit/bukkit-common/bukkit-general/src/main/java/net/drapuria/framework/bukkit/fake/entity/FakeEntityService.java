@@ -2,6 +2,7 @@ package net.drapuria.framework.bukkit.fake.entity;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.drapuria.framework.beans.annotation.PostDestroy;
 import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
@@ -12,6 +13,7 @@ import net.drapuria.framework.scheduler.Scheduler;
 import net.drapuria.framework.scheduler.SchedulerService;
 import net.drapuria.framework.scheduler.TickTime;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
+import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
 import net.drapuria.framework.util.Stacktrace;
 
 import java.util.Collection;
@@ -44,12 +46,14 @@ public class FakeEntityService {
 
     }
 
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
     @PostInitialize
     public void startUpdater() {
         new SchedulerFactory<Runnable>()
                 .period(5, TickTime.SECONDS)
                 .delay(3, TickTime.SECONDS)
-                .provider(SchedulerService.getService.getProviderClass("BukkitSchedulerProvider"))
+                .provider((Class<? extends AbstractSchedulerProvider>) Class.forName("net.drapuria.framework.bukkit.impl.scheduler.provider.BukkitSchedulerProvider"))
                 .supplier(() -> () -> pools.values().forEach(FakeEntityPool::updateEntityCollection))
                 .repeated((aLong, runnable) -> runnable.run())
                 .build();

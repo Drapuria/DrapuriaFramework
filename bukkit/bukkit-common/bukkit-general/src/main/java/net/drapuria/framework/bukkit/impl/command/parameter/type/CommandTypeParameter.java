@@ -18,7 +18,7 @@ public abstract class CommandTypeParameter<T> implements CommandTypeParameterPar
 
     /**
      * @param sender The Command sender (
-     * @param value  The value as as string
+     * @param value  The value as a string
      * @return T as  the parsed value
      */
     public abstract T parseNonPlayer(CommandSender sender, String value);

@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.impl.command.meta;
 
+import net.drapuria.framework.bukkit.impl.command.PlayerParameter;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.player.PlayerRepository;
 import lombok.Getter;
@@ -104,14 +105,16 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                     annotationParameterTypes[i - 1],
                                     parameterInfo.defaultValue(),
                                     parameterInfo.wildcard(),
-                                    parameterInfo.tabCompleteFlags());
+                                    parameterInfo.tabCompleteFlags(),
+                                    method.getParameters()[i]);
 
                         } else {
                             parameters[i - 1] = new BukkitParameter(parameter,
                                     annotationParameterTypes[i - 1],
                                     "",
                                     false,
-                                    new String[]{});
+                                    new String[]{},
+                                    method.getParameters()[i]);
                         }
                     }
                     this.parameterData = new BukkitParameterData(parameters);
@@ -145,25 +148,26 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 annotationParameterTypes[i - 1],
                                 parameterInfo.defaultValue(),
                                 parameterInfo.wildcard(),
-                                parameterInfo.tabCompleteFlags());
+                                parameterInfo.tabCompleteFlags(),
+                                method.getParameters()[i]);
 
                     } else {
                         parameters[i - 1] = new BukkitParameter(parameter,
                                 annotationParameterTypes[i - 1],
                                 "",
                                 false,
-                                new String[]{});
+                                new String[]{},
+                                method.getParameters()[i]);
                     }
                 }
                 BukkitParameterData parameterData = new BukkitParameterData(parameters);
-                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class);
+                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class, parent);
 
                 String defaultAlias = meta.getDefaultAlias();
 
                 tmpHashMap.put(defaultAlias, meta);
                 this.activeAliases.put(defaultAlias, Arrays.asList(meta.getAliases()));
             }
-
         return tmpHashMap;
     }
 
@@ -185,7 +189,13 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
         objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
 
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
-            if (i == params.length) return;
+            if (i == params.length) {
+                if (parameterData.getParameterCount() == i) break;
+                BukkitParameter bukkitParameter = parameterData.get(i);
+                CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(bukkitParameter.getClassType());
+                objects[i + 1] = commandTypeParameter.parse(executor, bukkitParameter.getDefaultValue());
+                break;
+            }
             Parameter parameter = this.parameterData.getParameters()[i];
             CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
             if (commandTypeParameter == null)
@@ -204,14 +214,24 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 } else
                     objects[i + 1] = builder;
             } else {
-                objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
+                BukkitParameter bukkitParameter = parameterData.get(i);
+                if (bukkitParameter.getClassType() == Player.class && bukkitParameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
+                    if (bukkitParameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
+                        final Object object = commandTypeParameter.parse(executor,  params[i]);
+                        if (object == null) {
+                            parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), params[i]);
+                            return;
+                        }
+                        objects[i + 1] = object;
+                    }
+                } else
+                    objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
             }
         }
         try {
             this.method.invoke(this.instance, objects);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
-
         }
     }
 }

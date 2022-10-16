@@ -4,6 +4,9 @@
 
 package net.drapuria.framework.bukkit.impl.command.meta;
 
+import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
+import net.drapuria.framework.bukkit.impl.command.PlayerParameter;
+import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.player.PlayerRepository;
 import lombok.Getter;
 import net.drapuria.framework.bukkit.Drapuria;
@@ -24,27 +27,29 @@ import java.util.stream.Collectors;
 public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameterData> {
 
     private final String commandPermission;
+    private final DrapuriaCommand parent;
     private final SubCommand subCommand;
     private final boolean useDrapuriaPlayer;
-    public BukkitSubCommandMeta(CommandMeta<Player, ?> commandMeta, SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer) {
+    public BukkitSubCommandMeta(CommandMeta<Player, ?> commandMeta, SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer, DrapuriaCommand parent) {
         super(commandMeta, parameterData, subCommand.names(), instance, method, subCommand.parameters());
         this.subCommand = subCommand;
         this.useDrapuriaPlayer = useDrapuriaPlayer;
         this.commandPermission = this.subCommand.permission();
+        this.parent = parent;
     }
 
     @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
     @Override
-    public boolean execute(Player player, String[] params) {
+    public boolean execute(Player executor, String[] params) {
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
-        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(player.getUniqueId()).get() : player;
+        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
             Parameter parameter = this.parameterData.getParameters()[i];
             if (i == params.length) {
                 if (this.commandMeta != null && commandMeta.getMethod() != null) {
-                    commandMeta.execute(player, params);
+                    commandMeta.execute(executor, params);
                 }
-                return false;
+                return true;
             }
 
             CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
@@ -66,7 +71,19 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
                 } else
                     objects[i + 1] = builder.split(" ")[0];
             } else {
-                objects[i + 1] = commandTypeParameter.parse(player, params[i]);
+                BukkitParameter bukkitParameter = parameterData.get(i);
+                if (bukkitParameter.getClassType() == Player.class && bukkitParameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
+                    if (bukkitParameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
+                        final Object object = commandTypeParameter.parse(executor,  params[i]);
+                        if (object == null) {
+                            parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), params[i]);
+                            return true;
+                        }
+                        objects[i + 1] = object;
+                    }
+                } else
+                    objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
+               // objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
             }
         }
         try {

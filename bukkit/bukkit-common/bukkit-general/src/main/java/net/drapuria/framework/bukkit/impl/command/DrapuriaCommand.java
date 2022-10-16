@@ -8,6 +8,7 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.command.FrameworkCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -105,6 +106,15 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
     public boolean canAccess(Player player) {
         return commandMeta.canAccess(player);
     }
+
+    public void playerNotFound(final DrapuriaPlayer executor, final String player) {
+        executor.sendActionBar(String.format(this.getPlayerNotOnlineMessage(), player));
+    }
+
+    protected String getPlayerNotOnlineMessage() {
+        return "§7%s§c ist nicht online.";
+    }
+
 
     protected String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
         if (subCommand == null) {

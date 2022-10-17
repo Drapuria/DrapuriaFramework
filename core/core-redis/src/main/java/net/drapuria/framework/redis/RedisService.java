@@ -50,7 +50,8 @@ public class RedisService {
     @SneakyThrows
     @PostInitialize
     public void initClient() {
-            this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml")).setCodec(new JsonJacksonCodec(JacksonService.INSTANCE.getMainMapper())));
+        System.out.println("init redis client");
+        this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml")).setCodec(new JsonJacksonCodec(JacksonService.INSTANCE.getMainMapper())));
     }
 
     @PostDestroy

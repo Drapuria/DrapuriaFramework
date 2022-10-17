@@ -21,7 +21,7 @@ public class SerializerJacksonConfigure implements JacksonConfigure {
         final SimpleModule module = new SimpleModule();
         module.addSerializer(new SerializerFactory.JacksonSerailizer(serializer));
         module.addDeserializer(serializer.inputClass(), new SerializerFactory.JacksonDeserailizer(serializer));
-
+        System.out.println("registered " + serializer.getClass().getSimpleName());
         objectMapper.registerModule(module);
     }
 }

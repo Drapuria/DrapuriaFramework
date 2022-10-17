@@ -34,7 +34,6 @@ public class RedisService {
 
     @ShouldInitialize
     public boolean shouldInitialize() {
-        System.out.println("shouldInitialize redis service");
         return enabled;
     }
 
@@ -50,8 +49,9 @@ public class RedisService {
     @SneakyThrows
     @PostInitialize
     public void initClient() {
-        System.out.println("init redis client");
-        this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml")).setCodec(new JsonJacksonCodec(JacksonService.INSTANCE.getMainMapper())));
+        System.out.println("redis client init");
+        this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml"))
+                .setCodec(new JsonJacksonCodec(JacksonService.INSTANCE.getMainMapper())));
     }
 
     @PostDestroy

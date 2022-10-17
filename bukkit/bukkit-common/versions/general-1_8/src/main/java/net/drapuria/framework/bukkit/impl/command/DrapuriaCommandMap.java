@@ -74,11 +74,13 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;
                     }
+                    player.sendMessage("COMMAND");
                     if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
-
                         // check if there is paramter left to complete
                         BukkitParameterData parameterData = drapuriaCommand.getCommandMeta().getParameterData();
+                        player.sendMessage("" + parameterData.getParameterCount());
                         if (parameterData.getParameterCount() > 0) {
+                            player.sendMessage("hi");
                             int parameterIndex = index;
                             if (parameterIndex == parameterData.getParameterCount()
                                     || !cmdLine.endsWith(" ")) {
@@ -106,6 +108,10 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     doneHere = true;
                                 }
                             }
+                        } else {
+                            player.sendMessage("done here x1");
+                            doneHere = true;
+                            //continue commandLoop;
                         }
                     }
                     // loop through all subcommands and checks if player can access the sub command
@@ -160,7 +166,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
-                                if (finalIndex - 1 > parameterData.getParameterCount()) {
+                                if (--finalIndex > parameterData.getParameterCount()) {
                                     if (StringUtils.contains(subCommands, subCommandAlias)) {
                                         doneHere = true;
                                         continue subCommandMeta;

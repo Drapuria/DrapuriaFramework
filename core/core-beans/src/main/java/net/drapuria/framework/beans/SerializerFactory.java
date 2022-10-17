@@ -71,7 +71,6 @@ public class SerializerFactory {
         while ((serializer = serializerQueue.poll()) != null) {
             jacksonService.registerJacksonConfigure(new SerializerJacksonConfigure(serializer));
         }
-
         serializerQueue = null;
     }
 

@@ -160,8 +160,10 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                 }
                                 int finalIndex = index - 1;
                                 if (finalIndex - 1 > parameterData.getParameterCount()) {
-                                    if (StringUtils.contains(subCommands, subCommandAlias) )
+                                    if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                        doneHere = true;
                                         continue subCommandMeta;
+                                    }
                                 }
                                 // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");

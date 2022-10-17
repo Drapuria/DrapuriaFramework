@@ -47,6 +47,7 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
         final Player player = (Player) sender;
         final Set<String> completions = new HashSet<>();
         try {
+            boolean completeAll = true;
             boolean doneHere = false;
             final String inputString = cmdLine.toLowerCase();
             final String[] input = cmdLine.split(" ");
@@ -160,8 +161,10 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                 }
                                 int finalIndex = index - 1;
                                 if (finalIndex - 1 > parameterData.getParameterCount()) {
-                                    if (StringUtils.contains(subCommands, subCommandAlias) )
+                                    if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                        doneHere = true;
                                         continue subCommandMeta;
+                                    }
                                 }
                                 // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");

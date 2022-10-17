@@ -21,6 +21,8 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
+// 1.8 IMPLEMENTATION
+
 @CommandMapImpl
 public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap {
 
@@ -70,8 +72,6 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
 
                     //check if our input starts with command
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
-                        player.sendMessage(inputString);
-                        player.sendMessage(command.toLowerCase());
                         continue;
                     }
                     if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
@@ -107,7 +107,6 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                 }
                             }
                         }
-
                     }
                     // loop through all subcommands and checks if player can access the sub command
                     subCommandMeta:
@@ -115,9 +114,11 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                             .values()) {
                         if (!subCommand.canAccess(player))
                             continue;
+
                         // loop through all subcommand aliases
                         for (String subCommandAlias : subCommand.getAliases()) {
                             subCommandAlias = subCommandAlias.toLowerCase();
+                            //final String tmpSubCommands = subCommands.endsWith(" ") ? subCommands.index
                             String[] argumentSplit = subCommandAlias.split(" ");
                             final BukkitParameterData parameterData = subCommand.getParameterData();
                             // check if sender has entered the command
@@ -159,8 +160,12 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
-                                if (--finalIndex > parameterData.getParameterCount())
-                                    continue subCommandMeta;
+                                if (finalIndex - 1 > parameterData.getParameterCount()) {
+                                    if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                        doneHere = true;
+                                        continue subCommandMeta;
+                                    }
+                                }
                                 // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");
                                 // split missing string into parts
@@ -170,8 +175,9 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                 // get the missing parts
                                 final String toComplete = missingParts[0];
                                 // get the realarguments
-                                if (toComplete.isEmpty())
+                                if (toComplete.isEmpty()) {
                                     continue subCommandMeta;
+                                }
                                 for (String m : realArguments) {
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {

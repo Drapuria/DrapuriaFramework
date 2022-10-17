@@ -21,4 +21,6 @@ public @interface SubCommand {
 
     boolean async() default false;
 
+    boolean completeAll() default false;
+
 }

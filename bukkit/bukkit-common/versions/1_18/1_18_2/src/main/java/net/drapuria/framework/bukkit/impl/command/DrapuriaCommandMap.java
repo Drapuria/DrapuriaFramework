@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 
+// 1.18.2 IMPLEMENTATION
+
 @CommandMapImpl
 public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
 
@@ -41,9 +43,11 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
 
     @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine, Location location) {
-        if (!(sender instanceof final Player player)) return Collections.emptyList();
+        if (!(sender instanceof Player)) return Collections.emptyList();
+        final Player player = (Player) sender;
         final Set<String> completions = new HashSet<>();
         try {
+            boolean completeAll = true;
             boolean doneHere = false;
             final String inputString = cmdLine.toLowerCase();
             final String[] input = cmdLine.split(" ");
@@ -108,12 +112,13 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                     subCommandMeta:
                     for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()
                             .values()) {
-                        if (!subCommand.canAccess(player)) {
+                        if (!subCommand.canAccess(player))
                             continue;
-                        }
+
                         // loop through all subcommand aliases
                         for (String subCommandAlias : subCommand.getAliases()) {
                             subCommandAlias = subCommandAlias.toLowerCase();
+                            //final String tmpSubCommands = subCommands.endsWith(" ") ? subCommands.index
                             String[] argumentSplit = subCommandAlias.split(" ");
                             final BukkitParameterData parameterData = subCommand.getParameterData();
                             // check if sender has entered the command
@@ -124,7 +129,7 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                         && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
                                     if (parameterIndex == subCommand.getParameterData().getParameterCount()) {
-                                        parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 2 : 1);
+                                        parameterIndex = parameterIndex - (1);
                                     } else {
                                         parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
                                     }
@@ -155,8 +160,11 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
-                                if (--finalIndex > parameterData.getParameterCount()) {
-                                    continue subCommandMeta;
+                                if (finalIndex - 1 > parameterData.getParameterCount()) {
+                                    if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                        doneHere = true;
+                                        continue subCommandMeta;
+                                    }
                                 }
                                 // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");
@@ -167,8 +175,9 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                 // get the missing parts
                                 final String toComplete = missingParts[0];
                                 // get the realarguments
-                                if (toComplete.isEmpty())
+                                if (toComplete.isEmpty()) {
                                     continue subCommandMeta;
+                                }
                                 for (String m : realArguments) {
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {

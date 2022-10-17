@@ -112,4 +112,6 @@ buildNumber.properties
 # Common working directory
 run/
 
+build-drapuria.sh
+
 .gradle

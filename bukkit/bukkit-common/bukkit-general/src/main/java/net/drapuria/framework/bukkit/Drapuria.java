@@ -5,7 +5,6 @@
 package net.drapuria.framework.bukkit;
 
 
-import com.sun.tools.javac.util.Assert;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -14,6 +13,7 @@ import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.beans.annotation.Autowired;
 import net.drapuria.framework.beans.component.ComponentRegistry;
+import net.drapuria.framework.bukkit.configuration.BukkitDrapuriaConfiguration;
 import net.drapuria.framework.bukkit.impl.*;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
@@ -36,6 +36,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
@@ -51,6 +52,7 @@ public class Drapuria {
     public static FastRandom RANDOM;
     public static PluginClassLoader CLASS_LOADER;
     public static boolean SHUTTING_DOWN = false;
+    public static BukkitDrapuriaConfiguration drapuriaConfiguration;
 
     @Autowired
     public static CommandService getCommandService;
@@ -78,6 +80,7 @@ public class Drapuria {
 
         SpigotUtil.init();
         Drapuria.initCommon();
+        Drapuria.drapuriaConfiguration = new BukkitDrapuriaConfiguration();
         IMPLEMENTATION = ServerImplementation.load(BeanContext.INSTANCE);
         AbstractVirtualAnvil.load();
         getCommandProvider = (BukkitCommandProvider) getCommandService.getCommandProvider();
@@ -93,7 +96,8 @@ public class Drapuria {
                 Stacktrace.print(e);
             }
         }));
-
+        if (drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().isEnabled())
+            startUpdateFolderChecker();
     }
 
     @SneakyThrows
@@ -137,5 +141,27 @@ public class Drapuria {
 
     public static void callEvent(Event event) {
         PLUGIN.getServer().getPluginManager().callEvent(event);
+    }
+
+    private static void startUpdateFolderChecker() {
+        DrapuriaCommon.TASK_SCHEDULER.runRepeated(() -> {
+            if (isJarFileInsideUpdateFolder())
+                DrapuriaCommon.PLATFORM.shutdown();
+
+        }, 20 * 30, drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay());
+    }
+
+    private static boolean isJarFileInsideUpdateFolder() {
+        final File updateFolder = new File("plugins/update");
+        if (!updateFolder.exists()) {
+            if (!updateFolder.mkdir())
+                return false;
+        }
+        final File[] files = updateFolder.listFiles();
+        if (files == null || files.length == 0)
+            return false;
+        if (Arrays.stream(files).anyMatch(file -> !file.getName().endsWith(".jar")))
+            return false;
+        return (Arrays.stream(files).allMatch(file -> file.getName().endsWith(".jar")));
     }
 }

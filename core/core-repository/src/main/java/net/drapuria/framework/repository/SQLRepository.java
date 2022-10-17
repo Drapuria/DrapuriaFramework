@@ -43,17 +43,13 @@ public abstract class SQLRepository<T, ID extends Serializable> implements CrudR
         this.updatePolicy = updatePolicy;
     }
 
-    @PreInitialize
-    public void preInit() {
-        setupFactory();
-    }
-
     public void setupFactory() {
 
     }
 
     @PostInitialize
     public void init() {
+        setupFactory();
         if (this.type != null) {
             this.factory = SqlService.getService.factory(this.getClass(), type);
         } else {

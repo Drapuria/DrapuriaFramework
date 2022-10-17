@@ -70,6 +70,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
 
                     //check if our input starts with command
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
+                        player.sendMessage(inputString);
+                        player.sendMessage(command.toLowerCase());
                         continue;
                     }
                     if (drapuriaCommand.getCommandMeta().getParameterData() != null) {

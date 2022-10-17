@@ -6,6 +6,7 @@ package net.drapuria.framework.repository;
 
 
 import net.drapuria.framework.RepositoryType;
+import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.database.SqlService;
 import net.drapuria.framework.database.connection.AbstractConnectionFactory;
 import net.drapuria.framework.database.orm.Session;
@@ -40,6 +41,15 @@ public abstract class SQLRepository<T, ID extends Serializable> implements CrudR
     public SQLRepository(UpdatePolicy updatePolicy, RepositoryType type) {
         this.type = type;
         this.updatePolicy = updatePolicy;
+    }
+
+    @PreInitialize
+    public void preInit() {
+        setupFactory();
+    }
+
+    public void setupFactory() {
+
     }
 
     @PostInitialize

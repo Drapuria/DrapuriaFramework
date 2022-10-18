@@ -33,7 +33,7 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
     public JDA create() {
         assert jda == null;
         this.jda = JDABuilder.createDefault(configuration.token())
-                .enableIntents(GatewayIntent.GUILD_MEMBERS)
+                .enableIntents(intents)
                 .build();
         jda.awaitReady();
         CachedJDAMessage.factory = this;

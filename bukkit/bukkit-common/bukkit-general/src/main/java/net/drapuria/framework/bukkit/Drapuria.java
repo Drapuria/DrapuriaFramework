@@ -148,7 +148,7 @@ public class Drapuria {
             if (isJarFileInsideUpdateFolder())
                 DrapuriaCommon.PLATFORM.shutdown();
 
-        }, 20 * 30, drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay());
+        }, drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay(), drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay());
     }
 
     private static boolean isJarFileInsideUpdateFolder() {

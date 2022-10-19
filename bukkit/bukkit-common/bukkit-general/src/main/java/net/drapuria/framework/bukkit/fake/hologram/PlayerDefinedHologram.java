@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
+import com.google.common.collect.ImmutableSet;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
@@ -102,7 +103,7 @@ public class PlayerDefinedHologram implements Hologram {
     }
 
     public void destroy() {
-        shownFor.forEach(this::hide);
+        ImmutableSet.copyOf(this.shownFor).forEach(this::hide);
     }
 
     @Override

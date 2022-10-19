@@ -87,6 +87,7 @@ public class HologramService {
         } else {
             if (this.oldUseEventsForHologramHandling) {
                 this.isUseEventsForHologramHandling = true;
+                this.oldUseEventsForHologramHandling = false;
                 if (scheduledFuture != null)
                     scheduledFuture.cancel(false);
                 this.registerEvents();

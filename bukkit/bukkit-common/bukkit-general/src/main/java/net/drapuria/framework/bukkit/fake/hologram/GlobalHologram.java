@@ -2,6 +2,7 @@ package net.drapuria.framework.bukkit.fake.hologram;
 
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import lombok.NoArgsConstructor;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
@@ -124,8 +125,8 @@ public class GlobalHologram implements Hologram {
         }
     }
 
-    void destroy() {
-        shownFor.forEach(this::hide);
+    public void destroy() {
+        ImmutableSet.copyOf(this.shownFor).forEach(this::hide);
     }
 
     public void refreshLines() {

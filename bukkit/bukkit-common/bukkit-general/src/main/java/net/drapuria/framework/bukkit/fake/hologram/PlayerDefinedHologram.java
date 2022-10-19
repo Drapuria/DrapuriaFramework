@@ -1,14 +1,17 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
 import lombok.Setter;
+import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
+import net.drapuria.framework.bukkit.util.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PlayerDefinedHologram implements Hologram {
 
@@ -17,6 +20,11 @@ public class PlayerDefinedHologram implements Hologram {
     private final Map<Player, List<Line>> playerLines = new HashMap<>();
     @Setter
     private IPlayerDefinedHologram interfaze = null;
+    private boolean isBoundToPlayer = false;
+    private Player boundTo = null;
+    private double boundYOffset = 0.6;
+    private FakeShowType fakeShowType;
+    private final List<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
 
     public PlayerDefinedHologram(final Location location, final IPlayerDefinedHologram interfaze) {
         this(location);
@@ -140,6 +148,9 @@ public class PlayerDefinedHologram implements Hologram {
     }
 
     public void checkHologram(final Player player) {
+        if (this.fakeShowType != FakeShowType.ALL
+                && ((this.fakeShowType == FakeShowType.INCLUDING && !this.isExcludedOrIncluded(player)) ||
+                (this.fakeShowType == FakeShowType.EXCLUDING && this.isExcludedOrIncluded(player)))) return;
         final boolean isInRange = HologramHelper.isInRange(player.getLocation(), this.location);
         if (!isInRange && isLoaded(player)) {
             hide(player);
@@ -148,6 +159,76 @@ public class PlayerDefinedHologram implements Hologram {
         if (isInRange && !isLoaded(player))
             show(player);
     }
+
+    @Override
+    public void setLocationBoundToPlayer(boolean boundToPlayer) {
+        this.isBoundToPlayer = boundToPlayer;
+    }
+
+    @Override
+    public void setLocationBoundToPlayer(boolean boundToPlayer, Player player) {
+        this.isBoundToPlayer = boundToPlayer;
+        this.boundTo = player;
+    }
+
+    @Override
+    public boolean isLocationBoundToPlayer() {
+        return this.isBoundToPlayer;
+    }
+
+    @Override
+    public Player getBoundPlayer() {
+        return this.boundTo;
+    }
+
+    @Override
+    public void setBoundPlayer(Player player) {
+        this.boundTo = player;
+    }
+
+    @Override
+    public void setBoundYOffset(double yOffset) {
+        this.boundYOffset = yOffset;
+    }
+
+    @Override
+    public double getBoundYOffset() {
+        return this.boundYOffset;
+    }
+
+    @Override
+    public FakeShowType getType() {
+        return this.fakeShowType;
+    }
+
+    @Override
+    public void setType(FakeShowType fakeShowType) {
+        if (fakeShowType == FakeShowType.PLAYER_BASED) {
+            throw new UnsupportedOperationException("Cannot set GlobalHologram FakeShowType to PLAYER_BASED!");
+        }
+        this.fakeShowType = fakeShowType;
+    }
+
+    @Override
+    public List<Player> getIncludedOrExcludedPlayers() {
+        return this.includedOrExcludedPlayers;
+    }
+
+    @Override
+    public void addExcludedOrIncludedPlayer(Player player) {
+        this.includedOrExcludedPlayers.add(player);
+    }
+
+    @Override
+    public void removeExcludedOrIncludedPlayer(Player player) {
+        this.includedOrExcludedPlayers.remove(player);
+    }
+
+    @Override
+    public boolean isExcludedOrIncluded(Player player) {
+        return this.includedOrExcludedPlayers.contains(player);
+    }
+
 
     public interface IPlayerDefinedHologram {
 

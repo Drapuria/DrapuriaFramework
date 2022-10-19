@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.fake.hologram.helper;
 
 import lombok.experimental.UtilityClass;
+import net.drapuria.framework.bukkit.Drapuria;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 
@@ -15,5 +16,9 @@ public class HologramHelper {
 
     private int diff(int x1, int x2) {
         return Math.abs(x1 - x2);
+    }
+
+    public int newId() {
+        return Drapuria.RANDOM.nextInt(1000000) + 32000;
     }
 }

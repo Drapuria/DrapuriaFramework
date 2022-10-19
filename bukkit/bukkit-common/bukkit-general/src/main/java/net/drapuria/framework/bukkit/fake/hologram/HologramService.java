@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.beans.annotation.*;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityService;
@@ -18,6 +19,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -29,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Service(name = "hologramService")
 public class HologramService {
 
-    private boolean isUseEventsForHologramHandling;
+    private boolean isUseEventsForHologramHandling = true, oldUseEventsForHologramHandling = isUseEventsForHologramHandling;
     private final Set<EventSubscription<?>> subscribedEvents = new HashSet<>();
     private ScheduledFuture<?> scheduledFuture;
 
@@ -49,12 +52,54 @@ public class HologramService {
     public void init() {
         if (!isUseEventsForHologramHandling) {
             initScheduler();
-        }
+        } else registerEvents();
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                checkPlayerBoundHolograms();
+            }
+        }.runTaskTimerAsynchronously(Drapuria.PLUGIN, 20 * 20, 20 * 30);
     }
 
-    private void initScheduler() {
-        scheduledFuture = executorService.scheduleWithFixedDelay(this::checkLoadableHolograms, 500, 100, TimeUnit.MILLISECONDS);
+    private long delay = 500;
 
+    private void initScheduler() {
+        scheduledFuture = executorService.scheduleWithFixedDelay(this::checkLoadableHolograms, 500, delay, TimeUnit.MILLISECONDS);
+    }
+
+    public void checkPlayerBoundHolograms() {
+        if (
+                ImmutableList.copyOf(hologramRepository.getGlobalHolograms()).stream().anyMatch(GlobalHologram::isLocationBoundToPlayer) ||
+                        ImmutableList.copyOf(hologramRepository.getPlayerDefinedHolograms()).stream().anyMatch(PlayerDefinedHologram::isLocationBoundToPlayer) ||
+                        ImmutableList.copyOf(hologramRepository.getPlayerHolograms()).stream().anyMatch(PlayerHologram::isLocationBoundToPlayer)) {
+            if (this.isUseEventsForHologramHandling) {
+                this.oldUseEventsForHologramHandling = this.isUseEventsForHologramHandling;
+                this.unregisterEvents();
+                this.isUseEventsForHologramHandling = false;
+            }
+            if (delay == 1) return;
+            delay = 1;
+            FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
+                if (scheduledFuture != null)
+                    scheduledFuture.cancel(false);
+                initScheduler();
+            });
+        } else {
+            if (this.oldUseEventsForHologramHandling) {
+                this.isUseEventsForHologramHandling = true;
+                if (scheduledFuture != null)
+                    scheduledFuture.cancel(false);
+                this.registerEvents();
+            }
+            if (delay == 50) return;
+            delay = 50;
+            if (!this.isUseEventsForHologramHandling) {
+                FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
+                    scheduledFuture.cancel(false);
+                    initScheduler();
+                });
+            }
+        }
     }
 
     @PreDestroy
@@ -77,6 +122,7 @@ public class HologramService {
         isUseEventsForHologramHandling = useEventsForHologramHandling;
         if (this.isUseEventsForHologramHandling) {
             scheduledFuture.cancel(false);
+            scheduledFuture = null;
             registerEvents();
         } else {
             unregisterEvents();
@@ -84,47 +130,70 @@ public class HologramService {
         }
     }
 
+    private void onHologramsUpdate() {
+        if (this.isUseEventsForHologramHandling)
+            this.checkLoadableHolograms();
+    }
+
     public void addHologram(final PlayerHologram playerHologram) {
         final Player player = playerHologram.getPlayer();
         this.hologramRepository.createPlayerHologramRepository(player);
         this.hologramRepository.getHolograms(player).add(playerHologram);
+        if (this.isUseEventsForHologramHandling && player.isOnline())
+            this.checkLoadableHolograms(player);
     }
 
     public void addHologram(final GlobalHologram globalHologram) {
         this.hologramRepository.getGlobalHolograms().add(globalHologram);
+        this.onHologramsUpdate();
     }
 
     public void addHologram(final PlayerDefinedHologram playerDefinedHologram) {
         this.hologramRepository.getPlayerDefinedHolograms().add(playerDefinedHologram);
+        this.onHologramsUpdate();
     }
 
     public void removeHologram(final PlayerHologram playerHologram) {
-        this.hologramRepository.getHolograms(playerHologram.getPlayer()).remove(playerHologram);
-        playerHologram.hide(playerHologram.getPlayer());
+        final Player player = playerHologram.getPlayer();
+        this.hologramRepository.getHolograms(player).remove(playerHologram);
+        playerHologram.hide(player);
+        if (player.isOnline())
+            this.checkLoadableHolograms(player);
     }
 
     public void removeHologram(final GlobalHologram globalHologram) {
         this.hologramRepository.getGlobalHolograms().remove(globalHologram);
         globalHologram.destroy();
+        this.onHologramsUpdate();
     }
 
     public void removeHologram(final PlayerDefinedHologram playerDefinedHologram) {
         this.hologramRepository.getPlayerDefinedHolograms().remove(playerDefinedHologram);
         playerDefinedHologram.destroy();
+        this.onHologramsUpdate();
     }
 
     private void checkLoadableHolograms() {
         for (final Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
             for (Hologram hologram : this.hologramRepository.getHolograms(player)) {
-                hologram.checkHologram();
+                if (hologram.isLocationBoundToPlayer())
+                    hologram.updateBound();
+                else
+                    hologram.checkHologram();
             }
         }
         for (GlobalHologram globalHologram : this.hologramRepository.getGlobalHolograms()) {
-            globalHologram.checkHologram();
+            if (globalHologram.isLocationBoundToPlayer())
+                globalHologram.updateBound();
+            else
+                globalHologram.checkHologram();
         }
 
         for (PlayerDefinedHologram playerDefinedHologram : this.hologramRepository.getPlayerDefinedHolograms()) {
-            playerDefinedHologram.checkHologram();
+            if (playerDefinedHologram.isLocationBoundToPlayer())
+                playerDefinedHologram.updateBound();
+            else
+                playerDefinedHologram.checkHologram();
         }
     }
 

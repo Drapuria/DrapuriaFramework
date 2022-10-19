@@ -51,7 +51,7 @@ public class FakeEntityService {
     @PostInitialize
     public void startUpdater() {
         new SchedulerFactory<Runnable>()
-                .period(5, TickTime.SECONDS)
+                .period(2, TickTime.MINUTE)
                 .delay(3, TickTime.SECONDS)
                 .provider((Class<? extends AbstractSchedulerProvider>) Class.forName("net.drapuria.framework.bukkit.impl.scheduler.provider.BukkitSchedulerProvider"))
                 .supplier(() -> () -> pools.values().forEach(FakeEntityPool::updateEntityCollection))

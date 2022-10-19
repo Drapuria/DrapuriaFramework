@@ -2,9 +2,13 @@ package net.drapuria.framework.bukkit.fake.hologram;
 
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.ImmutableList;
+import lombok.NoArgsConstructor;
+import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
+import net.drapuria.framework.bukkit.util.BukkitUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -13,16 +17,28 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
+@NoArgsConstructor
 public class GlobalHologram implements Hologram {
 
     private final List<Line> lines = new ArrayList<>();
     private Location location;
-    private final Set<Player> shownFor = new HashSet<>();
+    private transient final Set<Player> shownFor = new HashSet<>();
+    private boolean isBoundToPlayer = false;
+    private Player boundTo = null;
+    private double boundYOffset = 0.8;
+    private FakeShowType fakeShowType;
+    private final List<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
 
     @Override
     public Location getLocation() {
         return this.location;
+    }
+
+    public GlobalHologram(final Location location) {
+        this.location = location;
     }
 
     @Override
@@ -66,15 +82,13 @@ public class GlobalHologram implements Hologram {
         double currentY = this.location.getY() + getFullHologramHeight();
         for (int i = 0; i < this.lines.size(); i++) {
             Line line = this.lines.get(i);
-            if (i != 0) {
-                currentY -= line.getHeight();
-                currentY -= 0.05D;
-                oldCurrentY -= line.getHeight();
-                oldCurrentY -= 0.05D;
-            }
             for (Player player : this.shownFor) {
                 PacketHelper.sendPackets(player, line.getTeleportPackets(player, oldLocation.getX(), oldCurrentY, oldLocation.getZ(), this.location.getX(), currentY, this.location.getZ()));
             }
+            currentY -= line.getHeight();
+            currentY -= 0.05D;
+            oldCurrentY -= line.getHeight();
+            oldCurrentY -= 0.05D;
         }
         checkHologram();
     }
@@ -124,13 +138,12 @@ public class GlobalHologram implements Hologram {
         double currentY = this.location.getY() + getFullHologramHeight();
         for (int i = 0; i < this.lines.size(); i++) {
             final Line line = this.lines.get(i);
-            if (i != 0) {
-                currentY -= line.getHeight();
-                currentY -= 0.05D;
-            }
+
             for (Player player : this.shownFor) {
                 PacketHelper.sendPackets(player, line.getSpawnPackets(player, this.location.getX(), currentY, this.location.getZ()));
             }
+            currentY -= line.getHeight();
+            currentY -= 0.05D;
         }
     }
 
@@ -145,7 +158,88 @@ public class GlobalHologram implements Hologram {
         }
     }
 
+    @Override
+    public void setLocationBoundToPlayer(boolean boundToPlayer) {
+        this.isBoundToPlayer = boundToPlayer;
+    }
+
+    @Override
+    public void setLocationBoundToPlayer(boolean boundToPlayer, Player player) {
+        this.isBoundToPlayer = boundToPlayer;
+        this.boundTo = player;
+    }
+
+    @Override
+    public boolean isLocationBoundToPlayer() {
+        return this.isBoundToPlayer;
+    }
+
+    @Override
+    public Player getBoundPlayer() {
+        return this.boundTo;
+    }
+
+    @Override
+    public void setBoundPlayer(Player player) {
+        this.boundTo = player;
+    }
+
+    @Override
+    public void setBoundYOffset(double yOffset) {
+        this.boundYOffset = yOffset;
+    }
+
+    @Override
+    public double getBoundYOffset() {
+        return this.boundYOffset;
+    }
+
+    @Override
+    public FakeShowType getType() {
+        return this.fakeShowType;
+    }
+
+    @Override
+    public void setType(FakeShowType fakeShowType) {
+        if (fakeShowType == FakeShowType.PLAYER_BASED) {
+            throw new UnsupportedOperationException("Cannot set GlobalHologram FakeShowType to PLAYER_BASED!");
+        }
+        this.fakeShowType = fakeShowType;
+    }
+
+    @Override
+    public List<Player> getIncludedOrExcludedPlayers() {
+        return this.includedOrExcludedPlayers;
+    }
+
+    @Override
+    public void addExcludedOrIncludedPlayer(Player player) {
+        if (player instanceof DrapuriaPlayer)
+            player = player.getPlayer();
+        this.includedOrExcludedPlayers.add(player);
+        if (this.isLoaded(player) && this.fakeShowType == FakeShowType.EXCLUDING)
+            hide(player);
+    }
+
+    @Override
+    public void removeExcludedOrIncludedPlayer(Player player) {
+        if (player instanceof DrapuriaPlayer)
+            player = player.getPlayer();
+        this.includedOrExcludedPlayers.remove(player);
+        if (this.isLoaded(player) && this.fakeShowType == FakeShowType.INCLUDING)
+            hide(player);
+    }
+
+    @Override
+    public boolean isExcludedOrIncluded(Player player) {
+        return this.includedOrExcludedPlayers.contains(player);
+    }
+
     public void checkHologram(final Player player) {
+        if (this.fakeShowType != FakeShowType.ALL
+                && ((this.fakeShowType == FakeShowType.INCLUDING && !this.isExcludedOrIncluded(player)) ||
+                (this.fakeShowType == FakeShowType.EXCLUDING && this.isExcludedOrIncluded(player)))) return;
+
         final boolean isInRange = HologramHelper.isInRange(player.getLocation(), this.location);
         if (!isInRange && this.isLoaded(player)) {
             hide(player);
@@ -166,5 +260,4 @@ public class GlobalHologram implements Hologram {
         }
         return height;
     }
-
 }

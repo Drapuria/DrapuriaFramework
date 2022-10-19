@@ -144,11 +144,14 @@ public class Drapuria {
     }
 
     private static void startUpdateFolderChecker() {
+        long delay = drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay();
+        if (delay < 400)
+            delay = 400;
         DrapuriaCommon.TASK_SCHEDULER.runRepeated(() -> {
             if (isJarFileInsideUpdateFolder())
                 DrapuriaCommon.PLATFORM.shutdown();
 
-        }, drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay(), drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay());
+        }, delay, drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().getCheckDelay());
     }
 
     private static boolean isJarFileInsideUpdateFolder() {

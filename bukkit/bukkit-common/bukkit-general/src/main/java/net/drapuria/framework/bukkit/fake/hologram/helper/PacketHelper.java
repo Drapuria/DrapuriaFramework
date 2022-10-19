@@ -23,8 +23,9 @@ public class PacketHelper {
         String version = Bukkit.getServer().getClass().getPackage().getName();
         version = version.substring(version.lastIndexOf(".") + 1);
         try {
-            getNmsCopy = Class.forName("org.bukkit.craftbukkit. " + version + ".inventory.CraftItemStack").getDeclaredMethod("asNMSCopy", ItemStack.class);
+            getNmsCopy = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack").getDeclaredMethod("asNMSCopy", ItemStack.class);
         } catch (NoSuchMethodException | ClassNotFoundException e) {
+            getNmsCopy = null;
             Stacktrace.print(e.getMessage(), e);
         }
     }
@@ -58,9 +59,9 @@ public class PacketHelper {
         packet.getIntegers().write(5, 0);
         packet.getIntegers().write(6, 0);
         packet.getIntegers().write(7, 0);
-        packet.getIntegers().write(8, 1);
+        packet.getIntegers().write(8, 0);
         packet.getIntegers().write(9, 2);
-        packet.getIntegers().write(9, 1);
+        packet.getIntegers().write(10, 1);
         return packet;
     }
 
@@ -68,7 +69,7 @@ public class PacketHelper {
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         WrappedDataWatcher watcher = new WrappedDataWatcher();
         try {
-            watcher.setObject(10, getNmsCopy.invoke(null, itemStack));
+            watcher.setObject(10, getNmsCopy.invoke(null, itemStack), true);
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -96,9 +97,9 @@ public class PacketHelper {
     public PacketContainer armorStandMeta(int entityId, String text) {
         PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_METADATA);
         WrappedDataWatcher watcher = new WrappedDataWatcher();
-        watcher.setObject(10, 31, true);
-        watcher.setObject(0, 32, true);
-        watcher.setObject(3, 1, true);
+        watcher.setObject(10, (byte) 31, true);
+        watcher.setObject(0, (byte) 32, true);
+        watcher.setObject(3, (byte) 1, true);
         watcher.setObject(2, text);
         packet.getIntegers().write(0, entityId);
         packet.getWatchableCollectionModifier().write(0, watcher.getWatchableObjects());

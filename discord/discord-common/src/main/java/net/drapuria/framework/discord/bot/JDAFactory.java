@@ -12,6 +12,8 @@ import net.drapuria.framework.libraries.Library;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -22,6 +24,7 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
     private final AbstractDiscordBotConfiguration<?> configuration;
 
     private JDA jda;
+    private MemberCachePolicy memberCachePolicy = MemberCachePolicy.DEFAULT;
     private final Set<GatewayIntent> intents = new HashSet<>();
     public JDAFactory(AbstractDiscordBotConfiguration<?> configuration) {
         this.configuration = configuration;
@@ -32,8 +35,9 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
     @Override
     public JDA create() {
         assert jda == null;
-        this.jda = JDABuilder.createDefault(configuration.token())
-                .enableIntents(intents)
+        this.jda = JDABuilder.createDefault(configuration.token(), intents)
+                .setMemberCachePolicy(memberCachePolicy)
+                //.enableCache(CacheFlag.CLIENT_STATUS)
                 .build();
         jda.awaitReady();
         CachedJDAMessage.factory = this;
@@ -60,6 +64,11 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
         return this;
     }
 
+    public JDAFactory setMemberCachePolicy(MemberCachePolicy cachePolicy) {
+        this.memberCachePolicy = cachePolicy;
+        return this;
+    }
+
     @Override
     public void shutdown() {
         if (this.jda != null) {
@@ -77,7 +86,7 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
         try {
             Class.forName("net.dv8tion.jda.api.JDA");
         } catch (Exception ignored) {
-            Library jdaLibrary = new Library("net.dv8tion", "JDA", "5.0.0-alpha.3", null);
+            Library jdaLibrary = new Library("net.dv8tion", "JDA", "5.0.0-alpha.21", null);
             DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, jdaLibrary);
         }
 

@@ -137,6 +137,7 @@ public final class DrapuriaCommon {
                                 library.getName().equalsIgnoreCase(mavenDependency.artifactId())
                                         && library.getVersion().equalsIgnoreCase(mavenDependency.version())
                                         && library.getGroupId().equalsIgnoreCase(mavenDependency.groupId()))) {
+                    System.out.println("downloading library: " + mavenDependency);
                     DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, new Library(
                             mavenDependency.groupId(),
                             mavenDependency.artifactId(),

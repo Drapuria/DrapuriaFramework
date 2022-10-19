@@ -23,7 +23,6 @@ import java.util.Map;
 @Service(name = "redisMessageService", dependencies = "redis")
 public class MessageService {
 
-    @Autowired
     public static MessageService getService;
 
     private RedisPubSub<Object> redisPubSub;
@@ -42,6 +41,7 @@ public class MessageService {
 
     @PreInitialize
     public void registerComponent() {
+        getService = this;
         ComponentRegistry.registerComponentHolder(new ComponentHolder() {
             @Override
             public Class<?>[] type() {

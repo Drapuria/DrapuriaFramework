@@ -7,25 +7,35 @@ package net.drapuria.framework.discord.bot;
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.discord.configuration.AbstractDiscordBotConfiguration;
+import net.drapuria.framework.discord.message.CachedMessage;
 import net.drapuria.framework.discord.message.impl.CachedJDAMessage;
 import net.drapuria.framework.libraries.Library;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentNavigableMap;
 
 public class JDAFactory extends DiscordBotFactory<JDA> {
 
     private final AbstractDiscordBotConfiguration<?> configuration;
 
     private JDA jda;
-    private MemberCachePolicy memberCachePolicy = MemberCachePolicy.DEFAULT;
+    private MemberCachePolicy memberCachePolicy = null;
+    private ChunkingFilter chunkingFilter = null;
+    private Activity activity = null;
+    private OnlineStatus onlineStatus = null;
     private final Set<GatewayIntent> intents = new HashSet<>();
+    private final Set<CacheFlag> cacheFlags = new HashSet<>();
+    private final Set<CacheFlag> disableCacheFlags = new HashSet<>();
     public JDAFactory(AbstractDiscordBotConfiguration<?> configuration) {
         this.configuration = configuration;
     }
@@ -35,9 +45,22 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
     @Override
     public JDA create() {
         assert jda == null;
+        if (activity == null)
+            activity = Activity.playing("Bot build by Drapuria.net");
+        if (onlineStatus == null)
+            onlineStatus = OnlineStatus.ONLINE;
+        if (memberCachePolicy == null)
+            memberCachePolicy = MemberCachePolicy.DEFAULT;
+        if (chunkingFilter == null)
+            chunkingFilter = ChunkingFilter.NONE;
         this.jda = JDABuilder.createDefault(configuration.token(), intents)
                 .setMemberCachePolicy(memberCachePolicy)
-                //.enableCache(CacheFlag.CLIENT_STATUS)
+                .enableCache(cacheFlags)
+                .disableCache(cacheFlags)
+                .setChunkingFilter(chunkingFilter)
+                .setActivity(activity)
+                .setStatus(onlineStatus)
+                .setAutoReconnect(true)
                 .build();
         jda.awaitReady();
         CachedJDAMessage.factory = this;
@@ -64,8 +87,33 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
         return this;
     }
 
+    public JDAFactory setChunkingFilter(ChunkingFilter chunkingFilter) {
+        this.chunkingFilter = chunkingFilter;
+        return this;
+    }
+
+    public JDAFactory addCacheFlag(final CacheFlag cacheFlag) {
+        this.cacheFlags.add(cacheFlag);
+        return this;
+    }
+
+    public JDAFactory disableCacheFlag(final CacheFlag cacheFlag) {
+        this.disableCacheFlags.remove(cacheFlag);
+        return this;
+    }
+
     public JDAFactory setMemberCachePolicy(MemberCachePolicy cachePolicy) {
         this.memberCachePolicy = cachePolicy;
+        return this;
+    }
+
+    public JDAFactory setOnlineStatus(OnlineStatus onlineStatus) {
+        this.onlineStatus = onlineStatus;
+        return this;
+    }
+
+    public JDAFactory setActivity(Activity activity) {
+        this.activity = activity;
         return this;
     }
 
@@ -82,7 +130,7 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
     }
 
     @Override
-    public void setupLibraries() {
+    public JDAFactory setupLibraries() {
         try {
             Class.forName("net.dv8tion.jda.api.JDA");
         } catch (Exception ignored) {
@@ -90,6 +138,12 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
             DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, jdaLibrary);
         }
 
+        try {
+            Class.forName("okio.Buffer");
+        } catch (Exception ignored) {
+            Library okioLib = new Library("com.squareup.okio", "okio", "2.8.0", null);
+            DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true,  okioLib);
+        }
         try {
             Class.forName("okhttp3.Request");
         } catch (Exception ignored) {
@@ -123,5 +177,6 @@ public class JDAFactory extends DiscordBotFactory<JDA> {
                     "http://zoidberg.ukp.informatik.tu-darmstadt.de/artifactory/public-releases/");
             DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, library);
         }
+        return this;
     }
 }

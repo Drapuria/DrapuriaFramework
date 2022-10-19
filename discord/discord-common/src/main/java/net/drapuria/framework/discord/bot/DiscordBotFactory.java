@@ -17,5 +17,5 @@ public abstract class DiscordBotFactory<B> {
 
     public abstract B get();
 
-    public abstract void setupLibraries();
+    public abstract DiscordBotFactory<B> setupLibraries();
 }

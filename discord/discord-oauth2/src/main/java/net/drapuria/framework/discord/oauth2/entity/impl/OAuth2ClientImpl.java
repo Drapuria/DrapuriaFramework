@@ -39,6 +39,7 @@ import java.util.zip.ZipException;
 @Getter
 public class OAuth2ClientImpl implements OAuth2Client {
 
+
     private final long clientId;
     private final String clientSecret;
     private final SessionController sessionController;

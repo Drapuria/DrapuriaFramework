@@ -19,7 +19,7 @@ public class CachedJDAMessage extends CachedMessage<TextChannel, RestAction<?>, 
 
 
     public CachedJDAMessage(final Message message) {
-        super(message.getIdLong(), message.getChannel().getIdLong());
+        super(message.getIdLong(), message.getChannel().getIdLong(), message.getContentRaw());
     }
 
 

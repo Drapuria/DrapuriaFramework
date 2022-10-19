@@ -44,13 +44,13 @@ public class D4JFactory extends DiscordBotFactory<GatewayDiscordClient> {
         return client;
     }
 
-    @Override
-    public void setupLibraries() {
+    public D4JFactory setupLibraries() {
         try {
             Class.forName("discord4j.core.DiscordClient");
         } catch (Exception ignored) {
             Library library = new Library("com.discord4j", "discord4j-core", "3.2.1", null);
             DrapuriaCommon.LIBRARY_HANDLER.downloadLibraries(true, library);
         }
+        return this;
     }
 }

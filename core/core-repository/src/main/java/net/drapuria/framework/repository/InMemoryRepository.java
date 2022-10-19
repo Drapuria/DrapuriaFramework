@@ -126,6 +126,32 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     }
 
     @SneakyThrows
+    public Optional<T> findByEqualsIgnoreCase(String field, String key) {
+        Field declaredField;
+        if (!fieldCache.containsKey(field)) {
+            declaredField = daoType.getDeclaredField(field);
+            declaredField.setAccessible(true);
+            fieldCache.put(field, declaredField);
+        } else {
+            declaredField = fieldCache.get(field);
+        }
+        if (declaredField.getType() == String.class) {
+            for (T deo : storage.values()) {
+                if (((String)declaredField.get(deo)).equalsIgnoreCase(key)) {
+                    return Optional.of(deo);
+                }
+            }
+        } else {
+            for (T deo : storage.values()) {
+                if (declaredField.get(deo).equals(key)) {
+                    return Optional.of(deo);
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    @SneakyThrows
     @Override
     @SuppressWarnings("unchecked")
     public <S extends T> S save(S pojo) {

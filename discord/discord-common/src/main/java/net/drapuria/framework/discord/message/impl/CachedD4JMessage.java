@@ -23,7 +23,7 @@ public class CachedD4JMessage extends CachedMessage<TextChannel, Mono<Message>, 
     private final Snowflake messageSnowflake;
 
     public CachedD4JMessage(Message message) {
-        super(message.getChannelId().asLong(), message.getId().asLong());
+        super(message.getChannelId().asLong(), message.getId().asLong(), message.getContent());
         this.channelSnowflake = Snowflake.of(super.getChannelId());
         this.messageSnowflake = Snowflake.of(super.getMessageId());
     }

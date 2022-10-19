@@ -172,6 +172,10 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
         this.saveToFile();
     }
 
+    public InMemoryRepository<T, ID> getInMemoryRepository() {
+        return inMemoryRepository;
+    }
+
     @Override
     public void init() {
 

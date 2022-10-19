@@ -16,6 +16,7 @@ public abstract class CachedMessage<TC, R, M, D> {
 
     protected final long messageId;
     protected final long channelId;
+    protected final String content;
 
 
     @SuppressWarnings({"unchecked", "EqualsWhichDoesntCheckParameterClass"})

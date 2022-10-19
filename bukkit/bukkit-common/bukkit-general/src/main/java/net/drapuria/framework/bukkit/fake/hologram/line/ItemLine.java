@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.fake.hologram.line;
 
 import com.comphenix.protocol.events.PacketContainer;
+import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramOffsets;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
@@ -12,6 +13,7 @@ public class ItemLine implements Line {
 
     private final int entityId;
     private final int armorStandId;
+    @Getter
     private ItemStack item;
 
     public ItemLine(int entityId, int armorStandId, ItemStack item) {

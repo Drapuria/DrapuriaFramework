@@ -169,7 +169,7 @@ public class Library {
             GSON = new Library(
                     "com.google.code.gson",
                     "gson",
-                    "2.8.9",
+                    "2.9.1",
                     null
             ),
             KOTLIN_STDLIB_COMMON = new Library(

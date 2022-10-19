@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
 import com.google.common.collect.ImmutableSet;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
@@ -14,6 +15,7 @@ import org.bukkit.entity.Player;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@NoArgsConstructor
 public class PlayerDefinedHologram implements Hologram {
 
     private Location location;

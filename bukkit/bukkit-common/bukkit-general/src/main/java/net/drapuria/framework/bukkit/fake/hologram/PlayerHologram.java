@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;

@@ -22,7 +22,7 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     private final Map<String, Field> fieldCache = new HashMap<>();
 
     protected final Map<ID, T> storage = new HashMap<>();
-    private final Field keyField;
+    private Field keyField;
 
     private final Class<T> daoType;
     private final Class<ID> key;
@@ -38,6 +38,17 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
         if (keyField != null)
             keyField.setAccessible(true);
         init();
+    }
+
+    public InMemoryRepository(Class<T> daoType, Class<ID> key) {
+        this.daoType = daoType;
+        this.key = key;
+        this.keyField = Arrays.stream(daoType.getDeclaredFields()).filter(field -> field.getType() == key)
+                .findFirst()
+                .orElse(null);
+        if (keyField != null)
+            keyField.setAccessible(true);
+        this.init();
     }
 
     @Override
@@ -122,6 +133,7 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
         if (keyField == null) {
             for (Field field : pojo.getClass().getDeclaredFields()) {
                 if (field.getType() == key) {
+                    this.keyField = field;
                     field.setAccessible(true);
                     id = (ID) field.get(pojo);
                     break;

@@ -9,9 +9,11 @@ import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.bukkit.inventory.menu.Menu;
 import net.drapuria.framework.bukkit.item.ItemBuilder;
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.command.annotation.Command;
 import net.drapuria.framework.command.annotation.CommandParameter;
 import net.drapuria.framework.command.annotation.DefaultCommand;
+import net.drapuria.framework.command.annotation.SubCommand;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -21,44 +23,29 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-@Command(names = "test", useSubCommandsOnly = false)
+@Command(names = {"drapuriatest"}, description = "Drapuria Test Command")
 public class TestCommand extends DrapuriaCommand {
 
-    @DefaultCommand()
-    public void onCommand(Player player) {
-        new Menu() {
-            @Override
-            public String getTitle(Player player) {
-                return "HI";
-            }
+    @SubCommand(names = "arguments", parameters = "{Integer} {Text}")
+    public void argsTestWithInteger(final DrapuriaPlayer player, final Integer integer, @CommandParameter(wildcard = true) final String text) {
+        player.sendMessage("used {Integer} {Text}");
+        player.sendMessage("Output: " + integer + " " + text);
+    }
 
-            @Override
-            public int getSize(Player player) {
-                return 54;
-            }
+    @SubCommand(names = "arguments", parameters = "{Text}")
+    public void argsTestNoInteger(final DrapuriaPlayer player, @CommandParameter(wildcard = true) final String text) {
+        player.sendMessage("used {Text}");
+        player.sendMessage("Output: " + text);
+    }
 
-            @Override
-            public InventoryType getBukkitInventoryType(Player player) {
-                return null;
-            }
+    @SubCommand(names = "bbb", parameters = "{Integer}")
+    public void bbb(final DrapuriaPlayer player, Integer integer) {
+        player.sendMessage("used {Integer}");
+    }
 
-            @Override
-            public Map<Integer, IButton> getButtons(Player player) {
-                Map<Integer, IButton> buttons = new HashMap<>();
-                buttons.put(2, new Button() {
-                    @Override
-                    public ItemStack getIcon(Player player) {
-                        return ItemBuilder.of(Material.BEDROCK).setDisplayName("a").build();
-                    }
-
-                    @Override
-                    public void onClick(Player player, int slot, ClickType clickType, int hotbarButton) {
-                        player.sendMessage("HI");
-                    }
-                });
-                return buttons;
-            }
-        }.openMenu(player);
+    @SubCommand(names = "bbb", parameters = "{Player}")
+    public void bbb(final DrapuriaPlayer player, Player target) {
+        player.sendMessage("used {Player}");
     }
 
 }

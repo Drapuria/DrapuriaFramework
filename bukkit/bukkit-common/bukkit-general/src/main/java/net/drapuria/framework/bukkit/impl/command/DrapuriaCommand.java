@@ -15,10 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitCommandMeta> {
@@ -47,8 +44,25 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             return;
         }
         final String cmdLine = String.join(" ", arguments);
-        final StringBuilder actualCommand = new StringBuilder();
+        StringBuilder actualCommand = new StringBuilder();
         Map<BukkitSubCommandMeta, String[]> objects = new HashMap<>();
+        for (final String argument : arguments) {
+            if (actualCommand.length() > 0)
+                actualCommand.append(" ");
+            actualCommand.append(argument);
+            List<BukkitSubCommandMeta> subCommandMeta = this.commandMeta.getValidSubCommandMetas(actualCommand.toString().toLowerCase());
+            for (BukkitSubCommandMeta bukkitSubCommandMeta : subCommandMeta) {
+                if (bukkitSubCommandMeta != null) {
+                    String[] array = Arrays.stream(cmdLine.replaceFirst(actualCommand.toString(), "")
+                                    .split(" "))
+                            .filter(s -> !s.isEmpty()).toArray(String[]::new);
+                    objects.put(bukkitSubCommandMeta, array);
+                }
+            }
+        }
+        System.out.println("ACTUAL COMMAND: " + actualCommand.toString());
+        /*
+        actualCommand = new StringBuilder();
         for (final String argument : arguments) {
             if (actualCommand.length() > 0)
                 actualCommand.append(" ");
@@ -61,6 +75,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 objects.put(subCommandMeta, array);
             }
         }
+         */
         if (objects.isEmpty()) {
             if (this.commandMeta.isUseUnlySubCommands())
                 player.sendMessage(generateDefaultUsage(null, ""));
@@ -73,6 +88,17 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             }
         } else {
 
+            objects.entrySet()
+                    .stream()
+                    .filter(entry -> entry.getKey().isEveryArgumentPresent(player, entry.getValue()))
+                    .max(Comparator.comparingInt(value -> value.getKey().getParameterData().getParameterCount()))
+                    .ifPresent(entry -> {
+                        if (entry.getKey().isAsyncExecution()) {
+                            DrapuriaCommon.executorService.execute(() -> entry.getKey().execute(player, entry.getValue()));
+                        } else
+                            entry.getKey().execute(player, entry.getValue());
+                    });
+            /*
             objects.entrySet().stream()
                     .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
                     .ifPresent(entry -> {
@@ -81,6 +107,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                         } else
                             entry.getKey().execute(player, entry.getValue());
                     });
+             */
         }
     }
 

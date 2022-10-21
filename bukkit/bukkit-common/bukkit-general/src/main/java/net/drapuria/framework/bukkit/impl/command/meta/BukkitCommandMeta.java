@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.SQLOutput;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
     private String commandPermission;
 
     private DrapuriaCommand parent;
-    private final Map<String, List<String>> activeAliases;
+    private final Map<String, List<String>> activeAliases; // das hier ist kein alias sondern subcommand alias?
     private final Map<String, BukkitSubCommandMeta> subCommandMeta;
     private final Map<String, Set<BukkitSubCommandMeta>> subCommandMeta2;
     private boolean isUseUnlySubCommands;
@@ -53,7 +54,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
      //   this.parent.getAliases().remove(this.commandName);
         this.parent.setName(this.commandName);
         this.parent.setDescription(this.commandDescription);
-        this.commandAliases = Arrays.copyOfRange(this.commandAliases, 1, this.commandAliases.length);
+     //   this.commandAliases = Arrays.copyOfRange(this.commandAliases, 1, this.commandAliases.length);
         this.parent.setAliases(Arrays.asList(this.commandAliases));
         // this.parent.setPermission(this.commandPermission);
         System.out.println(this.commandName);
@@ -65,27 +66,28 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
         this.commandPermission = commandPermission;
     }
 
-    public BukkitSubCommandMeta getSubCommandMeta(String input) {
-        System.out.println("getting subcommmand meta @ here for " + input);
-        System.out.println(this.activeAliases.entrySet().parallelStream().filter(entry -> entry.getValue().contains(input)).collect(Collectors.toList()));
-        BukkitSubCommandMeta meta = this.activeAliases.entrySet()
+    public List<BukkitSubCommandMeta> getValidSubCommandMetas(String input) {
+        return this.activeAliases.entrySet()
                 .parallelStream()
                 .filter(entry -> entry.getValue().contains(input))
                 .map(entry -> this.subCommandMeta2.get(entry.getKey()))
                 .flatMap(Collection::stream)
-                .findFirst()
-                .orElse(null);
-        System.out.println("META: " + meta);
-        return meta;
+                .collect(Collectors.toList());
+    }
+
+    public BukkitSubCommandMeta getSubCommandMeta(String input) {
         /*
+        System.out.println("META: " + meta.stream()
+                .flatMap(x -> Arrays.stream(x.getParameterData().getParameters()))
+                .map(Parameter::getParameter)
+                .collect(Collectors.joining(",")));
+         */
         return this.activeAliases.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().contains(input))
                 .findFirst()
                 .map(entry -> this.subCommandMeta.get(entry.getKey()))
                 .orElse(null);
-
-         */
     }
 
 
@@ -147,7 +149,6 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
 
     @SuppressWarnings("DuplicatedCode")
     private Map<String, BukkitSubCommandMeta> fetchSubCommands() {
-        System.out.println(fetchSubCommands2());
         Map<String, BukkitSubCommandMeta> tmpHashMap = new HashMap<>();
         Method[] methods = this.parent.getClass().getDeclaredMethods();
 
@@ -186,7 +187,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 String defaultAlias = meta.getDefaultAlias();
                 System.out.println("defaultAlias: " + defaultAlias);
                 tmpHashMap.put(defaultAlias, meta);
-                this.activeAliases.put(defaultAlias, Arrays.asList(meta.getAliases()));
+             //   this.activeAliases.put(defaultAlias, Arrays.asList(meta.getAliases()));
             }
         return tmpHashMap;
     }
@@ -229,7 +230,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class, parent);
 
                 String defaultAlias = meta.getDefaultAlias();
-            //    System.out.println("defaultAlias: " + defaultAlias);
+                //    System.out.println("defaultAlias: " + defaultAlias);
                 if (!tmpHashMap.containsKey(defaultAlias)) {
                     tmpHashMap.put(defaultAlias, new HashSet<>());
                 }
@@ -285,7 +286,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 BukkitParameter bukkitParameter = parameterData.get(i);
                 if (bukkitParameter.getClassType() == Player.class && bukkitParameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
                     if (bukkitParameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
-                        final Object object = commandTypeParameter.parse(executor,  params[i]);
+                        final Object object = commandTypeParameter.parse(executor, params[i]);
                         if (object == null) {
                             parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), params[i]);
                             return;

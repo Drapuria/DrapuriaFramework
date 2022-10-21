@@ -44,14 +44,13 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
         objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
-            Parameter parameter = this.parameterData.getParameters()[i];
             if (i == params.length) {
-                if (this.commandMeta != null && commandMeta.getMethod() != null) {
+                if (this.commandMeta != null && commandMeta.getMethod() != null) { // TODO WHY DO WE HAVE THIS BUT RETURN TRUE EVEN IF IT DID NOT GET EXECUTED??
                     commandMeta.execute(executor, params);
                 }
                 return true;
             }
-
+            Parameter parameter = this.parameterData.getParameters()[i];
             CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
 
             if (commandTypeParameter == null)
@@ -90,6 +89,22 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
             this.method.invoke(this.instance, objects);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
+        }
+        return true;
+    }
+
+    public boolean isEveryArgumentPresent(final Player executor, final String[] params) {
+        for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
+            if (i == params.length) {                 // TODO WHAT IS THIS? (SEE ABOVE TODO)
+                executor.sendMessage("RETURNING @ i == params.length");
+                return true;
+            }
+            final Parameter parameter = this.parameterData.get(i);
+            CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
+            if (commandTypeParameter == null || commandTypeParameter.parse(executor, params[i]) == null) {
+                executor.sendMessage("RETURNING false @ == null");
+                return false;
+            }
         }
         return true;
     }

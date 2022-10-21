@@ -4,7 +4,6 @@
 
 package net.drapuria.framework.database.orm.impl;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import net.drapuria.framework.ObjectSerializer;

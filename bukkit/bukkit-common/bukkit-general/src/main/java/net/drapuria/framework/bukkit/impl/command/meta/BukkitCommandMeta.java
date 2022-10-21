@@ -50,7 +50,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
         this.subCommandMeta = this.fetchSubCommands();
         this.subCommandMeta2 = this.fetchSubCommands2();
 
-        this.parent.getAliases().remove(this.commandName);
+     //   this.parent.getAliases().remove(this.commandName);
         this.parent.setName(this.commandName);
         this.parent.setDescription(this.commandDescription);
         this.commandAliases = Arrays.copyOfRange(this.commandAliases, 1, this.commandAliases.length);

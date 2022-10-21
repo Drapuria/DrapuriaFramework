@@ -190,6 +190,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {
                                         completions.add(m);
+                                        doneHere = true; // TODO CHECK IF WE NEED THIS HERE?
                                         continue subCommandMeta;
                                     }
                                 }
@@ -201,6 +202,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
 
             List<String> completionList = new ArrayList<>(completions);
             // check if we have to go through bukkit completions & check if the players has permission to go through every command
+            player.sendMessage("!DONEHERE");
             if (!doneHere && player.hasPermission("drapuria.command.tabcomplete.all")) {
                 List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine, (null));
                 if (vanillaCompletionList != null)

@@ -62,14 +62,16 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                 final BukkitCommandMeta meta = drapuriaCommand.getCommandMeta();
                 // loop through all command aliases if we have the permission to use this command
                 for (final String command : meta.getCommandAliases()) {
+                    /*
                     if (spaceIndex < 0
                             && inputString.length() < command.length() && StringUtils.startsWithIgnoreCase(
                             command,
                             inputString)) {  //If we are in the main command (no space), we add the all commands to the completion
-                        completions.add("/" + command.toLowerCase());
+                     //   completions.add("/" + command.toLowerCase());
+                      //  player.sendMessage("added /" + command.toLowerCase());
                         continue;
                     }
-
+                     */
                     //check if our input starts with command
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;

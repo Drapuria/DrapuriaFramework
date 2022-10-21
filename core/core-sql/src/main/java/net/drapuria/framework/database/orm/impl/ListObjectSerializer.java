@@ -13,7 +13,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 
-//@Component
+@Component
 public class ListObjectSerializer implements ObjectSerializer<List, String> {
 
     private static final Gson GSON;

@@ -250,6 +250,10 @@ public class GlobalHologram implements Hologram {
             show(player);
     }
 
+    public List<Line> getLines() {
+        return lines;
+    }
+
     private double getFullHologramHeight() {
         double height = 0.0D;
         for (int i = 0; i < this.lines.size(); i++) {

@@ -26,10 +26,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
@@ -40,6 +37,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
     private DrapuriaCommand parent;
     private final Map<String, List<String>> activeAliases;
     private final Map<String, BukkitSubCommandMeta> subCommandMeta;
+    private final Map<String, Set<BukkitSubCommandMeta>> subCommandMeta2;
     private boolean isUseUnlySubCommands;
     private boolean useDrapuriaPlayer;
 
@@ -50,10 +48,17 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
 
         this.fetchCommands();
         this.subCommandMeta = this.fetchSubCommands();
-        this.parent.setAliases(Arrays.asList(this.commandAliases));
+        this.subCommandMeta2 = this.fetchSubCommands2();
+
+        this.parent.getAliases().remove(this.commandName);
         this.parent.setName(this.commandName);
         this.parent.setDescription(this.commandDescription);
+        this.commandAliases = Arrays.copyOfRange(this.commandAliases, 1, this.commandAliases.length);
+        this.parent.setAliases(Arrays.asList(this.commandAliases));
         // this.parent.setPermission(this.commandPermission);
+        System.out.println(this.commandName);
+        System.out.println(Arrays.toString(this.commandAliases));
+        System.out.println(this.activeAliases);
     }
 
     public void setCommandPermission(String commandPermission) {
@@ -61,12 +66,26 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
     }
 
     public BukkitSubCommandMeta getSubCommandMeta(String input) {
+        System.out.println("getting subcommmand meta @ here for " + input);
+        System.out.println(this.activeAliases.entrySet().parallelStream().filter(entry -> entry.getValue().contains(input)).collect(Collectors.toList()));
+        BukkitSubCommandMeta meta = this.activeAliases.entrySet()
+                .parallelStream()
+                .filter(entry -> entry.getValue().contains(input))
+                .map(entry -> this.subCommandMeta2.get(entry.getKey()))
+                .flatMap(Collection::stream)
+                .findFirst()
+                .orElse(null);
+        System.out.println("META: " + meta);
+        return meta;
+        /*
         return this.activeAliases.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue().contains(input))
                 .findFirst()
                 .map(entry -> this.subCommandMeta.get(entry.getKey()))
                 .orElse(null);
+
+         */
     }
 
 
@@ -128,6 +147,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
 
     @SuppressWarnings("DuplicatedCode")
     private Map<String, BukkitSubCommandMeta> fetchSubCommands() {
+        System.out.println(fetchSubCommands2());
         Map<String, BukkitSubCommandMeta> tmpHashMap = new HashMap<>();
         Method[] methods = this.parent.getClass().getDeclaredMethods();
 
@@ -164,8 +184,56 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class, parent);
 
                 String defaultAlias = meta.getDefaultAlias();
-
+                System.out.println("defaultAlias: " + defaultAlias);
                 tmpHashMap.put(defaultAlias, meta);
+                this.activeAliases.put(defaultAlias, Arrays.asList(meta.getAliases()));
+            }
+        return tmpHashMap;
+    }
+
+    @SuppressWarnings("DuplicatedCode")
+    private Map<String, Set<BukkitSubCommandMeta>> fetchSubCommands2() {
+        Map<String, Set<BukkitSubCommandMeta>> tmpHashMap = new HashMap<>();
+        Method[] methods = this.parent.getClass().getDeclaredMethods();
+
+        for (Method method : methods)
+            if (method.isAnnotationPresent(SubCommand.class)) {
+                SubCommand subCommand = method.getAnnotation(SubCommand.class);
+
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                String[] annotationParameterTypes = StringUtils.substringsBetween(subCommand.parameters(), "{", "}");
+
+                if (parameterTypes.length == 0) continue;
+                BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
+                for (int i = 1; i < parameterTypes.length; i++) {
+                    Class<?> parameter = method.getParameterTypes()[i];
+                    if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
+                        CommandParameter parameterInfo = method.getParameters()[i].getAnnotation(CommandParameter.class);
+                        parameters[i - 1] = new BukkitParameter(parameter,
+                                annotationParameterTypes[i - 1],
+                                parameterInfo.defaultValue(),
+                                parameterInfo.wildcard(),
+                                parameterInfo.tabCompleteFlags(),
+                                method.getParameters()[i]);
+
+                    } else {
+                        parameters[i - 1] = new BukkitParameter(parameter,
+                                annotationParameterTypes[i - 1],
+                                "",
+                                false,
+                                new String[]{},
+                                method.getParameters()[i]);
+                    }
+                }
+                BukkitParameterData parameterData = new BukkitParameterData(parameters);
+                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class, parent);
+
+                String defaultAlias = meta.getDefaultAlias();
+            //    System.out.println("defaultAlias: " + defaultAlias);
+                if (!tmpHashMap.containsKey(defaultAlias)) {
+                    tmpHashMap.put(defaultAlias, new HashSet<>());
+                }
+                tmpHashMap.get(defaultAlias).add(meta);
                 this.activeAliases.put(defaultAlias, Arrays.asList(meta.getAliases()));
             }
         return tmpHashMap;

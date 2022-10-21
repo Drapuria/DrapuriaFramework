@@ -4,10 +4,6 @@
 
 package net.drapuria.framework.bukkit.uuid;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.mojang.util.UUIDTypeAdapter;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -17,21 +13,26 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
-public final class UUIDFetcher {
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.mojang.util.UUIDTypeAdapter;
+
+public class UUIDFetcher {
 
     /**
      * Date when name changes were introduced
-     *
      * @see UUIDFetcher#getUUIDAt(String, long)
      */
     public static final long FEBRUARY_2015 = 1422748800000L;
 
-    private static Gson gson = new GsonBuilder().registerTypeAdapter(
-            UUID.class, new UUIDTypeAdapter()).create();
+
+    private static Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
 
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s?at=%d";
-    private static final String NAME_URL = "https://api.mojang.com/user/profiles/%s/names";
+    private static final String NAME_URL = "https://api.mojang.com/user/profile/%s";
 
     private static Map<String, UUID> uuidCache = new HashMap<String, UUID>();
     private static Map<UUID, String> nameCache = new HashMap<UUID, String>();
@@ -44,26 +45,17 @@ public final class UUIDFetcher {
     /**
      * Fetches the uuid asynchronously and passes it to the consumer
      *
-     * @param name
-     *            The name
-     * @param action
-     *            Do what you want to do with the uuid her
+     * @param name The name
+     * @param action Do what you want to do with the uuid her
      */
-    public static void getUUID(final String name, Consumer<UUID> action) {
-        pool.execute(new Acceptor<UUID>(action) {
-
-            @Override
-            public UUID getValue() {
-                return getUUID(name);
-            }
-        });
+    public static void getUUID(String name, Consumer<UUID> action) {
+        pool.execute(() -> action.accept(getUUID(name)));
     }
 
     /**
      * Fetches the uuid synchronously and returns it
      *
-     * @param name
-     *            The name
+     * @param name The name
      * @return The uuid
      */
     public static UUID getUUID(String name) {
@@ -71,35 +63,21 @@ public final class UUIDFetcher {
     }
 
     /**
-     * Fetches the uuid synchronously for a specified name and time and passes
-     * the result to the consumer
+     * Fetches the uuid synchronously for a specified name and time and passes the result to the consumer
      *
-     * @param name
-     *            The name
-     * @param timestamp
-     *            Time when the player had this name in milliseconds
-     * @param action
-     *            Do what you want to do with the uuid her
+     * @param name The name
+     * @param timestamp Time when the player had this name in milliseconds
+     * @param action Do what you want to do with the uuid her
      */
-    public static void getUUIDAt(final String name, final long timestamp,
-                                 Consumer<UUID> action) {
-        pool.execute(new Acceptor<UUID>(action) {
-
-            @Override
-            public UUID getValue() {
-                return getUUIDAt(name, timestamp);
-            }
-
-        });
+    public static void getUUIDAt(String name, long timestamp, Consumer<UUID> action) {
+        pool.execute(() -> action.accept(getUUIDAt(name, timestamp)));
     }
 
     /**
      * Fetches the uuid synchronously for a specified name and time
      *
-     * @param name
-     *            The name
-     * @param timestamp
-     *            Time when the player had this name in milliseconds
+     * @param name The name
+     * @param timestamp Time when the player had this name in milliseconds
      * @see UUIDFetcher#FEBRUARY_2015
      */
     public static UUID getUUIDAt(String name, long timestamp) {
@@ -108,20 +86,16 @@ public final class UUIDFetcher {
             return uuidCache.get(name);
         }
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    String.format(UUID_URL, name, timestamp / 1000))
-                    .openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(String.format(UUID_URL, name, timestamp/1000)).openConnection();
             connection.setReadTimeout(5000);
-            UUIDFetcher data = gson.fromJson(new BufferedReader(
-                            new InputStreamReader(connection.getInputStream())),
-                    UUIDFetcher.class);
+            UUIDFetcher data = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher.class);
 
             uuidCache.put(name, data.id);
             nameCache.put(data.id, data.name);
 
             return data.id;
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         return null;
@@ -130,27 +104,17 @@ public final class UUIDFetcher {
     /**
      * Fetches the name asynchronously and passes it to the consumer
      *
-     * @param uuid
-     *            The uuid
-     * @param action
-     *            Do what you want to do with the name her
+     * @param uuid The uuid
+     * @param action Do what you want to do with the name her
      */
-    public static void getName(final UUID uuid, Consumer<String> action) {
-        pool.execute(new Acceptor<String>(action) {
-
-            @Override
-            public String getValue() {
-                return getName(uuid);
-            }
-
-        });
+    public static void getName(UUID uuid, Consumer<String> action) {
+        pool.execute(() -> action.accept(getName(uuid)));
     }
 
     /**
      * Fetches the name synchronously and returns it
      *
-     * @param uuid
-     *            The uuid
+     * @param uuid The uuid
      * @return The name
      */
     public static String getName(UUID uuid) {
@@ -158,44 +122,18 @@ public final class UUIDFetcher {
             return nameCache.get(uuid);
         }
         try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(
-                    String.format(NAME_URL, UUIDTypeAdapter.fromUUID(uuid)))
-                    .openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL(String.format(NAME_URL, UUIDTypeAdapter.fromUUID(uuid))).openConnection();
             connection.setReadTimeout(5000);
-            UUIDFetcher[] nameHistory = gson.fromJson(new BufferedReader(
-                            new InputStreamReader(connection.getInputStream())),
-                    UUIDFetcher[].class);
-            UUIDFetcher currentNameData = nameHistory[nameHistory.length - 1];
+            UUIDFetcher currentNameData = gson.fromJson(new BufferedReader(new InputStreamReader(connection.getInputStream())), UUIDFetcher.class);
 
             uuidCache.put(currentNameData.name.toLowerCase(), uuid);
             nameCache.put(uuid, currentNameData.name);
 
             return currentNameData.name;
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
         return null;
-    }
-
-    public static interface Consumer<T> {
-        void accept(T t);
-    }
-
-    public static abstract class Acceptor<T> implements Runnable {
-
-        private Consumer<T> consumer;
-
-        public Acceptor(Consumer<T> consumer) {
-            this.consumer = consumer;
-        }
-
-        public abstract T getValue();
-
-        @Override
-        public void run() {
-            consumer.accept(getValue());
-        }
-
     }
 }

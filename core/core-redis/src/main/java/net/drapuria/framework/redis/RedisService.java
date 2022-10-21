@@ -22,7 +22,7 @@ import org.redisson.config.Config;
 import java.io.File;
 import java.nio.file.Path;
 
-@Service(name = "redis")
+@Service(name = "redis", dependencies = {"serializer", "jackson"})
 @ServiceDependency(dependencies = {"serializer", "jackson"})
 public class RedisService {
 

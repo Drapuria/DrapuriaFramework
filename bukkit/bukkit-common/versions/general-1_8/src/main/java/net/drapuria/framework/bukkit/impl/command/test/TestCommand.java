@@ -21,7 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-@Command(names = "test", useSubCommandsOnly = true)
+@Command(names = "test", useSubCommandsOnly = false)
 public class TestCommand extends DrapuriaCommand {
 
     @DefaultCommand()

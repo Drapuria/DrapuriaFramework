@@ -8,7 +8,6 @@ import net.drapuria.framework.beans.annotation.Component;
 import java.lang.reflect.Type;
 import java.util.List;
 
-//@Component
 public class StringListSerializer implements ObjectSerializer<List<String>, String> {
 
     private static Gson gson = new Gson();

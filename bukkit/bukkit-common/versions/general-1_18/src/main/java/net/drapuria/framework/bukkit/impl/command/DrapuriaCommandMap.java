@@ -4,26 +4,29 @@
 
 package net.drapuria.framework.bukkit.impl.command;
 
-import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
+import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
+import net.drapuria.framework.command.parameter.Parameter;
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_18_R1.command.CraftCommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 // 1.18 IMPLEMENTATION
 
 @CommandMapImpl
-public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
+public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap {
 
     private final BukkitCommandProvider commandProvider;
 
@@ -61,20 +64,21 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                 final BukkitCommandMeta meta = drapuriaCommand.getCommandMeta();
                 // loop through all command aliases if we have the permission to use this command
                 for (final String command : meta.getCommandAliases()) {
+                    /*
                     if (spaceIndex < 0
                             && inputString.length() < command.length() && StringUtils.startsWithIgnoreCase(
                             command,
                             inputString)) {  //If we are in the main command (no space), we add the all commands to the completion
-                        completions.add("/" + command.toLowerCase());
+                     //   completions.add("/" + command.toLowerCase());
+                      //  player.sendMessage("added /" + command.toLowerCase());
                         continue;
                     }
-
+                     */
                     //check if our input starts with command
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;
                     }
                     if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
-
                         // check if there is paramter left to complete
                         BukkitParameterData parameterData = drapuriaCommand.getCommandMeta().getParameterData();
                         if (parameterData.getParameterCount() > 0) {
@@ -105,12 +109,14 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                     doneHere = true;
                                 }
                             }
+                        } else {
+                            doneHere = true;
+                            //continue commandLoop;
                         }
                     }
                     // loop through all subcommands and checks if player can access the sub command
                     subCommandMeta:
-                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()
-                            .values()) {
+                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMetaCollection()) {
                         if (!subCommand.canAccess(player))
                             continue;
 
@@ -127,11 +133,19 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                 if (subCommands.toLowerCase().startsWith(subCommandAlias.toLowerCase() + " ")
                                         && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
+                                 /*
                                     if (parameterIndex == subCommand.getParameterData().getParameterCount()) {
-                                        parameterIndex = parameterIndex - (1);
+                                     //   parameterIndex = parameterIndex - (1);
+                                        parameterIndex = parameterIndex - (2);
                                     } else {
-                                        parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
+                                        parameterIndex = parameterIndex > subCommand.getParameterData().getParameterCount() ? parameterIndex : parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
                                     }
+
+                                  */
+                                    //___
+                                    // KEINE AHNUNG DAS HIER KLAPPT ABER
+                                    parameterIndex =/* parameterIndex > subCommand.getParameterData().getParameterCount() ? parameterIndex :*/ parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
+
                                     if (parameterIndex < 0)
                                         parameterIndex = 0;
                                     if (parameterData.getParameterCount() <= parameterIndex
@@ -159,7 +173,7 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
-                                if (finalIndex - 1 > parameterData.getParameterCount()) {
+                                if (--finalIndex > parameterData.getParameterCount()) {
                                     if (StringUtils.contains(subCommands, subCommandAlias)) {
                                         doneHere = true;
                                         continue subCommandMeta;
@@ -181,6 +195,7 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {
                                         completions.add(m);
+                                        //  doneHere = true; // TODO CHECK IF WE NEED THIS HERE?
                                         continue subCommandMeta;
                                     }
                                 }
@@ -210,6 +225,7 @@ public class DrapuriaCommandMap extends CraftCommandMap implements ICommandMap {
                 ? (new ArrayList<>()) : commandProvider.getTypeParameter(transformTo)
                 .tabComplete(sender, ImmutableSet.copyOf(tabCompleteFlags), parameter.toLowerCase());
     }
+
 
     @Override
     public void unregisterDrapuriaCommand(Command command) {

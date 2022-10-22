@@ -148,9 +148,10 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             StringBuilder builder = new StringBuilder();
             AtomicInteger index = new AtomicInteger();
 
-            this.commandMeta.getSubCommandMeta().forEach((s, subCommandMeta) -> {
+            // TODO PREBUILD PARAMETER STRING AND REPLACE OPTIONAL (EVERYTHING WITH A DEFAULT VALUE OR EVERYTHING WITH MULTIPLE OPTIONS WHERE IT IS THE LARGER THING WITH [argument] INSTEAD OF <argument>
+            this.commandMeta.getSubCommandMetaCollection().forEach((subCommandMeta) -> {
                 builder.append("Verwendung: /")
-                        .append(this.getName())
+                        .append(label)
                         .append(" ")
                         .append(subCommandMeta.getDefaultAlias())
                         .append(" ")

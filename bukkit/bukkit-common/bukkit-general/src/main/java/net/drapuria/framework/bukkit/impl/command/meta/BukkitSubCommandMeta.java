@@ -95,14 +95,15 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
 
     public boolean isEveryArgumentPresent(final Player executor, final String[] params) {
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
-            if (i == params.length) {                 // TODO WHAT IS THIS? (SEE ABOVE TODO)
+            final Parameter parameter = this.parameterData.get(i);
+            String current = params.length == i ? parameter.getDefaultValue().isEmpty() ? null : parameter.getDefaultValue() : params[i];
+            if (current == null) {                 // TODO WHAT IS THIS? (SEE ABOVE TODO)
                 executor.sendMessage("RETURNING @ i == params.length");
                 return true;
             }
-            final Parameter parameter = this.parameterData.get(i);
             CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
-            if (commandTypeParameter == null || commandTypeParameter.parse(executor, params[i]) == null) {
-                executor.sendMessage("RETURNING false @ == null");
+            if (commandTypeParameter == null || commandTypeParameter.parse(executor, current) == null) {
+                executor.sendMessage("RETURNING FALSE @ == null");
                 return false;
             }
         }

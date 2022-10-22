@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
+import net.drapuria.framework.command.parameter.Parameter;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,6 +21,7 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 // 1.8 IMPLEMENTATION
 
@@ -76,13 +78,10 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;
                     }
-                    player.sendMessage("COMMAND");
                     if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
                         // check if there is paramter left to complete
                         BukkitParameterData parameterData = drapuriaCommand.getCommandMeta().getParameterData();
-                        player.sendMessage("" + parameterData.getParameterCount());
                         if (parameterData.getParameterCount() > 0) {
-                            player.sendMessage("hi");
                             int parameterIndex = index;
                             if (parameterIndex == parameterData.getParameterCount()
                                     || !cmdLine.endsWith(" ")) {
@@ -111,15 +110,13 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                 }
                             }
                         } else {
-                            player.sendMessage("done here x1");
                             doneHere = true;
                             //continue commandLoop;
                         }
                     }
                     // loop through all subcommands and checks if player can access the sub command
                     subCommandMeta:
-                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMeta()
-                            .values()) {
+                    for (BukkitSubCommandMeta subCommand : drapuriaCommand.getCommandMeta().getSubCommandMetaCollection()) {
                         if (!subCommand.canAccess(player))
                             continue;
 
@@ -136,11 +133,19 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                 if (subCommands.toLowerCase().startsWith(subCommandAlias.toLowerCase() + " ")
                                         && parameterData.getParameterCount() > 0) {
                                     int parameterIndex = index - argumentSplit.length;
+                                 /*
                                     if (parameterIndex == subCommand.getParameterData().getParameterCount()) {
-                                        parameterIndex = parameterIndex - (1);
+                                     //   parameterIndex = parameterIndex - (1);
+                                        parameterIndex = parameterIndex - (2);
                                     } else {
-                                        parameterIndex = parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
+                                        parameterIndex = parameterIndex > subCommand.getParameterData().getParameterCount() ? parameterIndex : parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
                                     }
+
+                                  */
+                                    //___
+                                    // KEINE AHNUNG DAS HIER KLAPPT ABER
+                                    parameterIndex =/* parameterIndex > subCommand.getParameterData().getParameterCount() ? parameterIndex :*/ parameterIndex - (cmdLine.endsWith(" ") ? 1 : 2);
+
                                     if (parameterIndex < 0)
                                         parameterIndex = 0;
                                     if (parameterData.getParameterCount() <= parameterIndex
@@ -190,7 +195,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {
                                         completions.add(m);
-                                        doneHere = true; // TODO CHECK IF WE NEED THIS HERE?
+                                      //  doneHere = true; // TODO CHECK IF WE NEED THIS HERE?
                                         continue subCommandMeta;
                                     }
                                 }
@@ -202,7 +207,6 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
 
             List<String> completionList = new ArrayList<>(completions);
             // check if we have to go through bukkit completions & check if the players has permission to go through every command
-            player.sendMessage("!DONEHERE");
             if (!doneHere && player.hasPermission("drapuria.command.tabcomplete.all")) {
                 List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine, (null));
                 if (vanillaCompletionList != null)

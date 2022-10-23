@@ -3,10 +3,12 @@ package net.drapuria.framework.bukkit.fake.entity;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.annotation.PostDestroy;
 import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
+import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.fake.entity.exceptions.FakeEntityPoolAlreadyRegisteredException;
 import net.drapuria.framework.bukkit.fake.entity.exceptions.FakeEntityPoolNotFoundException;
 import net.drapuria.framework.scheduler.Scheduler;
@@ -29,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service(name = "fakeEntityService")
 public class FakeEntityService {
 
+    private FakeEntityPool defaultPool;
     private final Map<String, FakeEntityPool> pools = new HashMap<>();
     @SuppressWarnings("SpellCheckingInspection")
     private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
@@ -43,20 +46,12 @@ public class FakeEntityService {
 
     @PreInitialize
     public void init() {
-
     }
 
-    @SuppressWarnings("unchecked")
     @SneakyThrows
     @PostInitialize
-    public void startUpdater() {
-        new SchedulerFactory<Runnable>()
-                .period(2, TickTime.MINUTE)
-                .delay(3, TickTime.SECONDS)
-                .provider((Class<? extends AbstractSchedulerProvider>) Class.forName("net.drapuria.framework.bukkit.impl.scheduler.provider.BukkitSchedulerProvider"))
-                .supplier(() -> () -> pools.values().forEach(FakeEntityPool::updateEntityCollection))
-                .repeated((aLong, runnable) -> runnable.run())
-                .build();
+    public void registerDefaultPool() {
+        this.registerPool(this.defaultPool = new FakeEntityPool(Drapuria.PLUGIN, DrapuriaCommon.METADATA_PREFIX + "POOL"));
     }
 
     @PostDestroy
@@ -74,8 +69,16 @@ public class FakeEntityService {
 
     public void registerPool(final FakeEntityPool pool) throws FakeEntityPoolAlreadyRegisteredException {
         if (this.pools.containsKey(pool.getName()))
-            throw new FakeEntityPoolAlreadyRegisteredException("FakeEntityPool with name '" + pool.getName() + "' registered!");
+            throw new FakeEntityPoolAlreadyRegisteredException("FakeEntityPool with name '" + pool.getName() + "' already registered!");
         this.pools.put(pool.getName(), pool);
+    }
+
+    public FakeEntityPool getDefaultPool() {
+        return this.defaultPool;
+    }
+
+    public void setDefaultPool(FakeEntityPool defaultPool) {
+        this.defaultPool = defaultPool;
     }
 
     public void removePool(final FakeEntityPool pool) {

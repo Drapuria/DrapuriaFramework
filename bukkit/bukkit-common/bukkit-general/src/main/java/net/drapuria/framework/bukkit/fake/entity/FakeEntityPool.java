@@ -13,6 +13,7 @@ import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.fake.entity.event.PlayerFakeEntityInteractEvent;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.player.PlayerRepository;
+import net.drapuria.framework.task.TaskAlreadyStartedException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -21,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 @Setter
@@ -41,22 +43,50 @@ public class FakeEntityPool {
     private double actionDistance = 6;
     private boolean updating = false;
     private final Queue<PlayerFakeEntityInteractEvent> eventQueue = new ConcurrentLinkedQueue<>();
+    private ScheduledFuture<?> scheduler;
 
     public FakeEntityPool(Plugin holder, String name) {
         this.holder = holder;
         this.name = name;
         this.registerInteractListener();
+        this.start();
     }
 
     public void start() {
-        entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
+        if (scheduler != null)
+            try {
+                throw new TaskAlreadyStartedException("EntityPool scheduler for " + this.name + " already running!");
+            } catch (TaskAlreadyStartedException e) {
+                throw new RuntimeException(e);
+            }
+        this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
+    }
+
+    public void shutdown() {
+        if (this.scheduler == null) return;
+        this.scheduler.cancel(false);
     }
 
     public void updateTeamForPlayer(final Player player) {
 
     }
 
-    public void updateEntityCollection() {
+    public void addEntity(final FakeEntity entity) {
+        this.entities.put(entity.getEntityId(), entity);
+        this.updateEntityCollection();
+    }
+
+    public void removeEntity(final FakeEntity entity) {
+        this.removeEntity(entity.getEntityId());
+    }
+
+    public void removeEntity(final int entityId) {
+        this.entities.remove(entityId);
+        this.updateEntityCollection();
+    }
+
+    @SuppressWarnings("UnusedAssignment")
+    private void updateEntityCollection() {
         this.updating = true;
         this.entityCollection = this.entities.values();
         this.updating = false;
@@ -64,8 +94,8 @@ public class FakeEntityPool {
 
     private void tick() {
         handleEventQueue();
-        if (this.updating) return;
         for (final Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
+            if (this.updating) return;
             if (player.isDead()) continue;
             final Optional<DrapuriaPlayer> optDrapuriaPlayer = playerRepository.findById(player.getUniqueId());
             if (!optDrapuriaPlayer.isPresent())

@@ -46,12 +46,14 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
         objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
-            if (i == params.length) {
+            /*
+            if (i == params.length) { // defaultCommand wenn vorhanden ausführen? TODO CHECK HOW TO TELL IF USAGE OR DEFAULT COMMAND
                 if (this.commandMeta != null && commandMeta.getMethod() != null) {
                     commandMeta.execute(executor, params);
                 }
                 //   return true;
             }
+             */
             final BukkitParameter parameter = this.parameterData.get(i);
             final CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
 

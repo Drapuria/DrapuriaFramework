@@ -36,7 +36,6 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
     public DrapuriaCommandMap(Server server, BukkitCommandProvider commandProvider) {
         super(server);
         this.commandProvider = commandProvider;
-
     }
 
     @Override
@@ -56,7 +55,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
             final String mainCommand = input[0] + " ";
             String subCommands = cmdLine.replaceFirst(mainCommand, "");
             final int index = input.length; //run integer to get current location of our string
-            final int spaceIndex = cmdLine.indexOf(" ");
+            //final int spaceIndex = cmdLine.indexOf(" ");
             // loop through every command
             commandLoop:
             for (final DrapuriaCommand drapuriaCommand : commandProvider.getCommandRepository().getCommands()) {
@@ -122,6 +121,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
 
                         // loop through all subcommand aliases
                         for (String subCommandAlias : subCommand.getAliases()) {
+                            final String normalizedSubCommandAlias = subCommandAlias;
                             subCommandAlias = subCommandAlias.toLowerCase();
                             //final String tmpSubCommands = subCommands.endsWith(" ") ? subCommands.index
                             String[] argumentSplit = subCommandAlias.split(" ");
@@ -184,7 +184,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                 // split missing string into parts
                                 final String[] missingParts = missing.split(" ");
                                 // get real arguments
-                                final String[] realArguments = subCommandAlias.split(" ");
+                                final String[] realArguments = normalizedSubCommandAlias.split(" ");
                                 // get the missing parts
                                 final String toComplete = missingParts[0];
                                 // get the realarguments

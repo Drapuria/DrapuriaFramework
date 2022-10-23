@@ -15,7 +15,7 @@ public @interface SubCommand {
 
     String[] names();
 
-    String parameters();
+    String parameters() default "";
 
     String permission() default "";
 

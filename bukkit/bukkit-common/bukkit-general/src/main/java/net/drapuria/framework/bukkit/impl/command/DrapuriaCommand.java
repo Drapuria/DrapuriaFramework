@@ -88,7 +88,6 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 }
             }
         } else {
-            player.sendMessage("MAYBE?");
             Map.Entry<BukkitSubCommandMeta, String[]> subCommandEntry = objects.entrySet()
                     .stream()
                     .filter(entry -> entry.getKey().isEveryArgumentPresent(player, entry.getValue()))

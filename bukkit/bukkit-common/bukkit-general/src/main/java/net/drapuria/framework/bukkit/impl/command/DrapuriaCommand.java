@@ -14,6 +14,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,17 +88,23 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 }
             }
         } else {
-
-            objects.entrySet()
+            player.sendMessage("MAYBE?");
+            Map.Entry<BukkitSubCommandMeta, String[]> subCommandEntry = objects.entrySet()
                     .stream()
                     .filter(entry -> entry.getKey().isEveryArgumentPresent(player, entry.getValue()))
                     .max(Comparator.comparingInt(value -> value.getKey().getParameterData().getParameterCount()))
-                    .ifPresent(entry -> {
-                        if (entry.getKey().isAsyncExecution()) {
-                            DrapuriaCommon.executorService.execute(() -> entry.getKey().execute(player, entry.getValue()));
-                        } else
-                            entry.getKey().execute(player, entry.getValue());
-                    });
+                    .orElse(objects.entrySet()
+                            .stream()
+                            .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
+                            .orElse(null));
+            if (subCommandEntry == null) {
+                player.sendMessage("wrong arguments todo"); // TODO DEFAULT VALUE
+                return;
+            }
+            if (subCommandEntry.getKey().isAsyncExecution()) {
+                DrapuriaCommon.executorService.execute(() -> subCommandEntry.getKey().execute(player, subCommandEntry.getValue()));
+            } else
+                    subCommandEntry.getKey().execute(player, subCommandEntry.getValue());
             /*
             objects.entrySet().stream()
                     .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))

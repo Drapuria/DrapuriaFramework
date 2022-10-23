@@ -123,6 +123,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                     annotationParameterTypes[i - 1],
                                     parameterInfo.defaultValue(),
                                     parameterInfo.wildcard(),
+                                    parameterInfo.allowNull(),
                                     parameterInfo.tabCompleteFlags(),
                                     method.getParameters()[i]);
 
@@ -130,6 +131,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                             parameters[i - 1] = new BukkitParameter(parameter,
                                     annotationParameterTypes[i - 1],
                                     "",
+                                    false,
                                     false,
                                     new String[]{},
                                     method.getParameters()[i]);
@@ -166,6 +168,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 annotationParameterTypes[i - 1],
                                 parameterInfo.defaultValue(),
                                 parameterInfo.wildcard(),
+                                parameterInfo.allowNull(),
                                 parameterInfo.tabCompleteFlags(),
                                 method.getParameters()[i]);
 
@@ -173,6 +176,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                         parameters[i - 1] = new BukkitParameter(parameter,
                                 annotationParameterTypes[i - 1],
                                 "",
+                                false,
                                 false,
                                 new String[]{},
                                 method.getParameters()[i]);
@@ -211,6 +215,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 annotationParameterTypes[i - 1],
                                 parameterInfo.defaultValue(),
                                 parameterInfo.wildcard(),
+                                parameterInfo.allowNull(),
                                 parameterInfo.tabCompleteFlags(),
                                 method.getParameters()[i]);
 
@@ -218,6 +223,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                         parameters[i - 1] = new BukkitParameter(parameter,
                                 annotationParameterTypes[i - 1],
                                 "",
+                                false,
                                 false,
                                 new String[]{},
                                 method.getParameters()[i]);

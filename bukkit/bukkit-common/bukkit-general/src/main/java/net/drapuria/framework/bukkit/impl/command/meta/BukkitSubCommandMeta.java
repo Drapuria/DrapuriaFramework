@@ -30,6 +30,7 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
     private final DrapuriaCommand parent;
     private final SubCommand subCommand;
     private final boolean useDrapuriaPlayer;
+
     public BukkitSubCommandMeta(CommandMeta<Player, ?> commandMeta, SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer, DrapuriaCommand parent) {
         super(commandMeta, parameterData, subCommand.names(), instance, method, subCommand.parameters());
         this.subCommand = subCommand;
@@ -41,17 +42,18 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
     @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
     @Override
     public boolean execute(Player executor, String[] params) {
+        boolean hasFilledEveryArgument = false;
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
         objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
             if (i == params.length) {
-                if (this.commandMeta != null && commandMeta.getMethod() != null) { // TODO WHY DO WE HAVE THIS BUT RETURN TRUE EVEN IF IT DID NOT GET EXECUTED??
+                if (this.commandMeta != null && commandMeta.getMethod() != null) {
                     commandMeta.execute(executor, params);
                 }
-                return true;
+                //   return true;
             }
-            Parameter parameter = this.parameterData.getParameters()[i];
-            CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
+            final BukkitParameter parameter = this.parameterData.get(i);
+            final CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
 
             if (commandTypeParameter == null)
                 throw new NullPointerException("Found no type parameter for class: " + parameter.getClassType());
@@ -59,31 +61,29 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
             if (parameter.getClassType() == String.class && (i + 1) >= this.parameterData.getParameterCount() && (i + 1) < params.length) {
                 String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
                 if (parameter.isWildcard()) {
-                    /*
-                    StringBuilder stringBuilder = new StringBuilder(builder);
-                    for (int index = i; index < params.length; index++) {
-                        stringBuilder.append(" ").append(params[index]);
-                    }
-                     */
                     objects[i + 1] = builder;
                     break;
                 } else
                     objects[i + 1] = builder.split(" ")[0];
             } else {
-                BukkitParameter bukkitParameter = parameterData.get(i);
-                if (bukkitParameter.getClassType() == Player.class && bukkitParameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
-                    if (bukkitParameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
-                        final Object object = commandTypeParameter.parse(executor,  params[i]);
-                        if (object == null) {
-                            parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), params[i]);
+                final String param = params.length <= i ? parameter.getDefaultValue() : params[i];
+                final Object parsedObject = commandTypeParameter.parse(executor, param);
+                hasFilledEveryArgument = parsedObject != null || parameter.isAllowNull();
+                if (parameter.getClassType() == Player.class && parameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
+                    if (parameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
+                        if (parsedObject == null) {
+                            parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), param);
                             return true;
                         }
-                        objects[i + 1] = object;
                     }
-                } else
-                    objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
-               // objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
+                }
+                objects[i + 1] = parsedObject;
+                // objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
             }
+        }
+        if (!hasFilledEveryArgument) {
+            executor.sendMessage("TODO USAGE");
+            return true;
         }
         try {
             this.method.invoke(this.instance, objects);
@@ -98,12 +98,12 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
             final Parameter parameter = this.parameterData.get(i);
             String current = params.length == i ? parameter.getDefaultValue().isEmpty() ? null : parameter.getDefaultValue() : params[i];
             if (current == null) {                 // TODO WHAT IS THIS? (SEE ABOVE TODO)
-                executor.sendMessage("RETURNING @ i == params.length");
+                // executor.sendMessage("RETURNING @ i == params.length");
                 return true;
             }
             CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
             if (commandTypeParameter == null || commandTypeParameter.parse(executor, current) == null) {
-                executor.sendMessage("RETURNING FALSE @ == null");
+                //executor.sendMessage("RETURNING FALSE @ == null");
                 return false;
             }
         }

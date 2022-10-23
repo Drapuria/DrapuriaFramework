@@ -19,4 +19,6 @@ public @interface CommandParameter {
 
     boolean wildcard() default false;
 
+    boolean allowNull() default false;
+
 }

@@ -16,6 +16,7 @@ import net.drapuria.framework.command.annotation.SubCommand;
 import net.drapuria.framework.command.meta.CommandMeta;
 import net.drapuria.framework.command.meta.SubCommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +43,7 @@ public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameter
     @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
     @Override
     public boolean execute(Player executor, String[] params) {
-        boolean hasFilledEveryArgument = false;
+        boolean hasFilledEveryArgument = true;
         Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
         objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
         for (int i = 0; i < this.parameterData.getParameterCount(); i++) {

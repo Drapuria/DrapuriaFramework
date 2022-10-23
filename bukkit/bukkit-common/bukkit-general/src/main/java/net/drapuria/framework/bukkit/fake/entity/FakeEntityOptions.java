@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.fake.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
@@ -10,6 +11,7 @@ import java.util.Set;
 
 @Getter
 @Setter
+@Builder
 public class FakeEntityOptions {
 
     private String name;

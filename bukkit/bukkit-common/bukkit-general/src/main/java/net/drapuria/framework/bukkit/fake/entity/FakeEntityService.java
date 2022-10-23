@@ -39,9 +39,6 @@ public class FakeEntityService {
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
             .setDaemon(true)
             .setNameFormat("FakeEntity-Render-Pool-%d")
-            .setUncaughtExceptionHandler((thread, exception) -> {
-                Stacktrace.print(exception.getMessage(), exception);
-            })
             .build());
 
     @PreInitialize

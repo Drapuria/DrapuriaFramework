@@ -5,6 +5,7 @@ import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityOptions;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -28,8 +29,8 @@ public class NPC extends FakeEntity {
     private NameTagType nametagType;
     private SkinType skinType;
 
-    public NPC(int entityId, FakeEntityOptions options, NPCProfile npcProfile) {
-        super(entityId, options);
+    public NPC(int entityId, FakeEntityOptions options, Location location, NPCProfile npcProfile) {
+        super(entityId, location, options);
         this.npcProfile = npcProfile;
     }
 

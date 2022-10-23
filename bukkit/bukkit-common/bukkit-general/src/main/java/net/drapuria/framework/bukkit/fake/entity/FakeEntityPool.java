@@ -102,8 +102,10 @@ public class FakeEntityPool {
                 continue;
             final DrapuriaPlayer drapuriaPlayer = optDrapuriaPlayer.get();
             if (drapuriaPlayer.getSessionJoin() > System.currentTimeMillis() - 500) continue;
-            for (final FakeEntity entity : this.entities.values()) {
+            for (final FakeEntity entity : this.entityCollection) {
+                player.sendMessage("§b" + entity);
                 if (entity.isRespawning()) continue;
+                player.sendMessage("a");
                 boolean isShownFor = entity.isShownTo(player);
                 if (!entity.getLocation().getWorld().equals(player.getWorld())) {
                     if (isShownFor) {
@@ -111,6 +113,7 @@ public class FakeEntityPool {
                     }
                     continue;
                 }
+                player.sendMessage("b");
                 final double distance = entity.getLocation().distance(player.getLocation());
                 boolean inRange = distance <= this.spawnDistance;
                 if (!inRange) {
@@ -123,6 +126,7 @@ public class FakeEntityPool {
                         entity.tickActionForPlayer(player);
                     continue;
                 }
+                player.sendMessage("c");
                 entity.show(player);
             }
         }

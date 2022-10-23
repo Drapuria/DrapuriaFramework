@@ -6,6 +6,7 @@ import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityOptions;
 import net.drapuria.framework.bukkit.fake.entity.helper.DataWatchHelper;
 import net.drapuria.framework.bukkit.fake.entity.living.modifier.LivingFakeEntityVisibilityModifier;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -15,14 +16,15 @@ public class LivingFakeEntity extends FakeEntity {
     private EntityType entityType;
     private final WrappedDataWatcher dataWatcher;
 
-    public LivingFakeEntity(int entityId, FakeEntityOptions options, final EntityType entityType) {
-        super(entityId, options);
+    public LivingFakeEntity(int entityId, FakeEntityOptions options, final Location location, final EntityType entityType) {
+        super(entityId, location, options);
         this.entityType = entityType;
         this.dataWatcher = DataWatchHelper.createDefaultWatcher(this);
     }
 
     @Override
     public void show(Player player) {
+        player.sendMessage("SHOWING?");
         super.seeingPlayers.add(player);
         new LivingFakeEntityVisibilityModifier(this)
                 .queueSpawn()

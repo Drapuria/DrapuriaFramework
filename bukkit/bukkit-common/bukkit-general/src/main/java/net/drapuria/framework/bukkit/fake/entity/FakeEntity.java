@@ -22,9 +22,10 @@ public abstract class FakeEntity {
 
     private boolean isRespawning;
 
-    protected FakeEntity(int entityId, FakeEntityOptions options) {
+    protected FakeEntity(int entityId, Location location, FakeEntityOptions options) {
         this.entityId = entityId;
         this.options = options;
+        this.location = location;
     }
 
     public boolean isShownTo(final Player player) {

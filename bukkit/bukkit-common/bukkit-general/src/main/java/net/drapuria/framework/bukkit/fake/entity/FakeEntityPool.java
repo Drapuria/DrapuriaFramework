@@ -39,6 +39,7 @@ public class FakeEntityPool {
     private Collection<FakeEntity> entityCollection = new ArrayList<>();
     private final String scoreboardTeamName = UUID.randomUUID().toString().split("-")[0];
     private long delayMillis = 300L;
+    private long tabListRemoveMillis = 1000;
     private double spawnDistance = 10;
     private double actionDistance = 6;
     private boolean updating = false;
@@ -103,9 +104,7 @@ public class FakeEntityPool {
             final DrapuriaPlayer drapuriaPlayer = optDrapuriaPlayer.get();
             if (drapuriaPlayer.getSessionJoin() > System.currentTimeMillis() - 500) continue;
             for (final FakeEntity entity : this.entityCollection) {
-                player.sendMessage("§b" + entity);
                 if (entity.isRespawning()) continue;
-                player.sendMessage("a");
                 boolean isShownFor = entity.isShownTo(player);
                 if (!entity.getLocation().getWorld().equals(player.getWorld())) {
                     if (isShownFor) {
@@ -113,7 +112,6 @@ public class FakeEntityPool {
                     }
                     continue;
                 }
-                player.sendMessage("b");
                 final double distance = entity.getLocation().distance(player.getLocation());
                 boolean inRange = distance <= this.spawnDistance;
                 if (!inRange) {
@@ -126,11 +124,9 @@ public class FakeEntityPool {
                         entity.tickActionForPlayer(player);
                     continue;
                 }
-                player.sendMessage("c");
                 entity.show(player);
             }
         }
-
     }
 
     private void handleEventQueue() {

@@ -11,12 +11,16 @@ import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.fake.entity.exceptions.FakeEntityPoolAlreadyRegisteredException;
 import net.drapuria.framework.bukkit.fake.entity.exceptions.FakeEntityPoolNotFoundException;
+import net.drapuria.framework.bukkit.listener.events.Events;
 import net.drapuria.framework.scheduler.Scheduler;
 import net.drapuria.framework.scheduler.SchedulerService;
 import net.drapuria.framework.scheduler.TickTime;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
 import net.drapuria.framework.util.Stacktrace;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -30,6 +34,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Service(name = "fakeEntityService")
 public class FakeEntityService {
+
+    private final Map<UUID, UUID> playersRandomId = new HashMap<>();
 
     private FakeEntityPool defaultPool;
     private final Map<String, FakeEntityPool> pools = new HashMap<>();
@@ -51,6 +57,18 @@ public class FakeEntityService {
         this.registerPool(this.defaultPool = new FakeEntityPool(Drapuria.PLUGIN, DrapuriaCommon.METADATA_PREFIX + "POOL"));
     }
 
+    @PostInitialize
+    public void registerEvents() {
+        Events
+                .subscribe(PlayerJoinEvent.class)
+                .priority(EventPriority.LOWEST)
+                .listen(event -> {
+                    final Player player = event.getPlayer();
+                    this.playersRandomId.put(player.getUniqueId(), UUID.randomUUID());
+                })
+                .build(Drapuria.PLUGIN);
+    }
+
     @PostDestroy
     public void stop() {
         executorService.shutdown();
@@ -62,6 +80,10 @@ public class FakeEntityService {
 
     public Collection<FakeEntityPool> getPools() {
         return this.pools.values();
+    }
+
+    public UUID getRandomIdOf(final UUID uuid) {
+        return this.playersRandomId.get(uuid);
     }
 
     public void registerPool(final FakeEntityPool pool) throws FakeEntityPoolAlreadyRegisteredException {

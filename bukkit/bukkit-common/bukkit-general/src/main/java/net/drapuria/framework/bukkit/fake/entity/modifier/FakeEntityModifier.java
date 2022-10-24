@@ -1,29 +1,31 @@
-package net.drapuria.framework.bukkit.fake.entity.living.modifier;
+package net.drapuria.framework.bukkit.fake.entity.modifier;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
-import net.drapuria.framework.bukkit.fake.entity.living.LivingFakeEntity;
+import lombok.NonNull;
+import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class LivingFakeEntityModifier {
+public class FakeEntityModifier<T extends FakeEntity> {
 
+    @SuppressWarnings("ConstantConditions")
+    @NotNull
     public static final MinecraftVersion MINECRAFT_VERSION = MinecraftVersion.getVersion();
 
     private final List<PacketContainer> packetContainerList = new CopyOnWriteArrayList<>();
 
-    protected final LivingFakeEntity fakeEntity;
+    protected final T fakeEntity;
 
-    public LivingFakeEntityModifier(@NotNull final LivingFakeEntity fakeEntity) {
+    public FakeEntityModifier(@NotNull final T fakeEntity) {
         this.fakeEntity = fakeEntity;
     }
 

@@ -112,7 +112,8 @@ public class ScoreboardService {
         Events.subscribe(ScoreboardAdapterRemovedEvent.class)
                 .priority(MONITOR)
                 .filter(event -> event.getNewAdapter() != null)
-                .listen(event -> setAdapter(event.getPlayer(), event.getNewAdapter()));
+                .listen(event -> setAdapter(event.getPlayer(), event.getNewAdapter()))
+                .build();
         new SchedulerFactory<Runnable>()
                 .provider(ScheduledExecutorSchedulerProvider.class)
                 .period(1)

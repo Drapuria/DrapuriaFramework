@@ -2,6 +2,7 @@ package net.drapuria.framework.bukkit.fake.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -17,13 +18,15 @@ public abstract class FakeEntity {
 
     private Location location;
     private final int entityId;
-    protected FakeEntityPool entityPool;
+    protected final FakeEntityPool entityPool;
     protected final FakeEntityOptions options;
+    protected FakeEntityHologram hologram;
 
     private boolean isRespawning;
 
-    protected FakeEntity(int entityId, Location location, FakeEntityOptions options) {
+    protected FakeEntity(int entityId, Location location, FakeEntityPool entityPool, FakeEntityOptions options) {
         this.entityId = entityId;
+        this.entityPool = entityPool;
         this.options = options;
         this.location = location;
     }
@@ -41,5 +44,7 @@ public abstract class FakeEntity {
     public abstract void hide(final Player player);
 
     public abstract void tickActionForPlayer(final Player player);
+
+    public abstract void respawn();
 
 }

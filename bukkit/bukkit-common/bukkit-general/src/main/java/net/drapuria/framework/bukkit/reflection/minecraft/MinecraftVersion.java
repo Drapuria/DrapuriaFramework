@@ -26,6 +26,7 @@ public class MinecraftVersion {
     private final String nmsPackage;
     private final String obcPackage;
     private final boolean nmsVersionPrefix;
+    private int simpleVersion;
 
     public MinecraftVersion(String packageName, int version, String nmsFormat, String obcFormat, boolean nmsVersionPrefix) {
         this.packageName = packageName;
@@ -35,6 +36,11 @@ public class MinecraftVersion {
         this.nmsPackage = String.format(this.nmsFormat, packageName);
         this.obcPackage = String.format(this.obcFormat, packageName);
         this.nmsVersionPrefix = nmsVersionPrefix;
+        try {
+            this.simpleVersion = Integer.parseInt(packageName.split("_")[1]);
+        } catch (Exception ignored) {
+            this.simpleVersion = -1;
+        }
     }
 
     public MinecraftVersion(String packageName, int version) {
@@ -51,6 +57,13 @@ public class MinecraftVersion {
      */
     public int version() {
         return version;
+    }
+
+    /**
+     * @return the simple version-number (8, 9, 10, 11, 12, 13, 14)
+     */
+    public int simpleVersion() {
+        return simpleVersion;
     }
 
     /**

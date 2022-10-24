@@ -3,10 +3,11 @@ package net.drapuria.framework.bukkit.fake.entity.living.modifier;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import net.drapuria.framework.bukkit.fake.entity.living.LivingFakeEntity;
+import net.drapuria.framework.bukkit.fake.entity.modifier.FakeEntityModifier;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
-public class LivingFakeEntityVisibilityModifier extends LivingFakeEntityModifier {
+public class LivingFakeEntityVisibilityModifier extends FakeEntityModifier<LivingFakeEntity> {
     public LivingFakeEntityVisibilityModifier(@NotNull LivingFakeEntity fakeEntity) {
         super(fakeEntity);
     }

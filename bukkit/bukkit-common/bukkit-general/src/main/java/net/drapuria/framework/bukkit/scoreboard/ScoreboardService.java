@@ -113,7 +113,7 @@ public class ScoreboardService {
                 .priority(MONITOR)
                 .filter(event -> event.getNewAdapter() != null)
                 .listen(event -> setAdapter(event.getPlayer(), event.getNewAdapter()))
-                .build();
+                .build(Drapuria.PLUGIN);
         new SchedulerFactory<Runnable>()
                 .provider(ScheduledExecutorSchedulerProvider.class)
                 .period(1)

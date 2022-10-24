@@ -23,10 +23,36 @@ public class FakeEntityHologram implements Hologram {
 
     public FakeEntityHologram(FakeEntity fakeEntity) {
         this.fakeEntity = fakeEntity;
+        this.location = this.fakeEntity.getLocation().clone();
+        this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
     }
 
     public Location getLocation(final Player player) {
         return this.playerDefinedLocations.getOrDefault(player, this.getLocation());
+    }
+
+    public void setPlayerLocation(final Player player, Location location) {
+        if (location == null) {
+            teleportTo(player, this.location);
+            this.playerDefinedLocations.remove(player);
+            return;
+        }
+        teleportTo(player, location);
+        this.playerDefinedLocations.put(player, location);
+    }
+
+    private void teleportTo(final Player player, final Location location) {
+        Location oldLocation = this.getLocation(player);
+        double oldCurrentY = oldLocation.getY() + getFullHologramHeight();
+        double currentY = location.getY() + getFullHologramHeight();
+        for (int i = 0; i < this.lines.size(); i++) {
+            Line line = this.lines.get(i);
+            PacketHelper.sendPackets(player, line.getTeleportPackets(player, oldLocation.getX(), oldCurrentY, oldLocation.getZ(), location.getX(), currentY, location.getZ()));
+            currentY -= line.getHeight();
+            currentY -= 0.05D;
+            oldCurrentY -= line.getHeight();
+            oldCurrentY -= 0.05D;
+        }
     }
 
     @Override
@@ -37,14 +63,14 @@ public class FakeEntityHologram implements Hologram {
 
     @Override
     public void show(Player player) {
-            double currentY = this.getLocation(player).getY() + getFullHologramHeight();
-            for (int i = 0; i < this.lines.size(); i++) {
-                final Line line = this.lines.get(i);
-                if (i != 0) {
-                    currentY -= line.getHeight();
-                    currentY -= 0.05D;
-                }
-                PacketHelper.sendPackets(player, line.getSpawnPackets(player, this.getLocation(player).getX(), currentY, this.getLocation(player).getZ()));
+        double currentY = this.getLocation(player).getY() + getFullHologramHeight();
+        for (int i = 0; i < this.lines.size(); i++) {
+            final Line line = this.lines.get(i);
+            if (i != 0) {
+                currentY -= line.getHeight();
+                currentY -= 0.05D;
+            }
+            PacketHelper.sendPackets(player, line.getSpawnPackets(player, this.getLocation(player).getX(), currentY, this.getLocation(player).getZ()));
         }
     }
 
@@ -59,6 +85,7 @@ public class FakeEntityHologram implements Hologram {
 
     @Override
     public void setLocation(Location location) {
+        location.setY(fakeEntity.getHologramHeight());
         final Location oldLocation = this.location;
         this.location = location;
         for (Player player : fakeEntity.getSeeingPlayers()) {
@@ -83,6 +110,34 @@ public class FakeEntityHologram implements Hologram {
     @Override
     public void checkHologram() {
 
+    }
+
+    public void addLine(final Line line) {
+        this.lines.add(line);
+    }
+
+    public void removeLine(final Line line) {
+        this.lines.remove(line);
+    }
+
+    public void addLine(final int index, final Line line) {
+        this.lines.add(index, line);
+    }
+
+    public void removeLine(final int index) {
+        this.lines.remove(index);
+    }
+
+    public void removePlayerLines(final Player player) {
+        this.playerLines.remove(player);
+    }
+
+    public List<Line> getLines() {
+        return lines;
+    }
+
+    public Map<Player, List<Line>> getPlayerLines() {
+        return playerLines;
     }
 
     @Override
@@ -152,6 +207,7 @@ public class FakeEntityHologram implements Hologram {
     public boolean isExcludedOrIncluded(Player player) {
         throw new UnsupportedOperationException("Included or excluded players are handled by the FakeEntity!");
     }
+
     private double getFullHologramHeight() {
         double height = 0.0D;
         for (int i = 0; i < this.lines.size(); i++) {

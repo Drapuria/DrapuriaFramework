@@ -9,8 +9,10 @@ import com.github.derklaro.requestbuilder.result.http.StatusCode;
 import com.github.derklaro.requestbuilder.types.MimeTypes;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.*;
+import net.drapuria.framework.bukkit.uuid.UUIDFetcher;
 import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.drapuria.framework.libraries.annotation.MavenRepository;
+import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -104,36 +106,8 @@ public class NPCProfile {
         }
 
         if (this.uniqueId == null) {
-            RequestBuilder builder = RequestBuilder
-                    .newBuilder(String.format(UUID_REQUEST_URL, this.name))
-                    .connectTimeout(10, TimeUnit.SECONDS)
-                    .requestMethod(RequestMethod.GET)
-                    .enableRedirectFollow()
-                    .accepts(MimeTypes.getMimeType("json"));
-
-            try (RequestResult requestResult = builder.fireAndForget()) {
-                if (requestResult.getStatus() != StatusCode.OK) {
-                    return false;
-                }
-
-                JsonElement jsonElement = new JsonParser().parse(requestResult.getResultAsString());
-
-                if (jsonElement.isJsonObject()) {
-                    JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-                    if (jsonObject.has("id")) {
-                        this.uniqueId = UUID.fromString(UNIQUE_ID_PATTERN.matcher(jsonObject.get("id").getAsString()).replaceAll("$1-$2-$3-$4-$5"));
-                    } else {
-                        return false;
-                    }
-                }
-
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                return false;
-            }
+            this.uniqueId = UUIDFetcher.getUUID(ChatColor.stripColor(this.name));
         }
-
         if ((this.name == null || this.properties == null) && propertiesAndName) {
             RequestBuilder builder = RequestBuilder
                     .newBuilder(String.format(TEXTURES_REQUEST_URL, this.uniqueId.toString().replace("-", ""), false))

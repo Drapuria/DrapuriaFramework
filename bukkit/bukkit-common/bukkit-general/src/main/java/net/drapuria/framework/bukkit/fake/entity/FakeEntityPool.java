@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.fake.entity.event.PlayerFakeEntityInteractEvent;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.player.PlayerRepository;
@@ -37,7 +38,6 @@ public class FakeEntityPool {
 
     private final Map<Integer, FakeEntity> entities = new ConcurrentHashMap<>();
     private Collection<FakeEntity> entityCollection = new ArrayList<>();
-    private final String scoreboardTeamName = UUID.randomUUID().toString().split("-")[0];
     private long delayMillis = 300L;
     private long tabListRemoveMillis = 1000;
     private double spawnDistance = 10;
@@ -60,7 +60,15 @@ public class FakeEntityPool {
             } catch (TaskAlreadyStartedException e) {
                 throw new RuntimeException(e);
             }
-        this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
+     //   this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
+
+        new BukkitRunnable() { // DEV MODE
+            @Override
+            public void run() {
+                tick();
+            }
+        }.runTaskTimer(Drapuria.PLUGIN, 20, 1);
+
     }
 
     public void shutdown() {
@@ -69,7 +77,7 @@ public class FakeEntityPool {
     }
 
     public void updateTeamForPlayer(final Player player) {
-
+        entityService.updateTeamForPlayer(player);
     }
 
     public void addEntity(final FakeEntity entity) {

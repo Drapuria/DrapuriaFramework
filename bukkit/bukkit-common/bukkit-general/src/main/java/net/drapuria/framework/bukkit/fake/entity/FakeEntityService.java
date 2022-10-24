@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.fake.entity;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -9,28 +10,25 @@ import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.bukkit.Drapuria;
-import net.drapuria.framework.bukkit.fake.entity.exceptions.FakeEntityPoolAlreadyRegisteredException;
-import net.drapuria.framework.bukkit.fake.entity.exceptions.FakeEntityPoolNotFoundException;
+import net.drapuria.framework.bukkit.fake.entity.exception.FakeEntityPoolAlreadyRegisteredException;
+import net.drapuria.framework.bukkit.fake.entity.exception.FakeEntityPoolNotFoundException;
+import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
+import net.drapuria.framework.bukkit.fake.entity.npc.NameTagType;
 import net.drapuria.framework.bukkit.listener.events.Events;
-import net.drapuria.framework.scheduler.Scheduler;
-import net.drapuria.framework.scheduler.SchedulerService;
-import net.drapuria.framework.scheduler.TickTime;
-import net.drapuria.framework.scheduler.factory.SchedulerFactory;
-import net.drapuria.framework.scheduler.provider.AbstractSchedulerProvider;
-import net.drapuria.framework.util.Stacktrace;
+import net.drapuria.framework.bukkit.protocol.ProtocolService;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Service(name = "fakeEntityService")
 public class FakeEntityService {
@@ -41,6 +39,8 @@ public class FakeEntityService {
     private final Map<String, FakeEntityPool> pools = new HashMap<>();
     @SuppressWarnings("SpellCheckingInspection")
     private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+    private final Map<Player, WrappedPacketOutScoreboardTeam> scoreboardTeamRegistry = new ConcurrentHashMap<>();
+    private final String scoreboardTeamName = UUID.randomUUID().toString().split("-")[0];
     @Getter
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
             .setDaemon(true)
@@ -64,13 +64,22 @@ public class FakeEntityService {
                 .priority(EventPriority.LOWEST)
                 .listen(event -> {
                     final Player player = event.getPlayer();
+                    cooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 3000L);
                     this.playersRandomId.put(player.getUniqueId(), UUID.randomUUID());
+                    this.executorService.submit(() -> {
+                        WrappedPacketOutScoreboardTeam wrappedPacketOutScoreboardTeam = new WrappedPacketOutScoreboardTeam();
+                        wrappedPacketOutScoreboardTeam.setName(scoreboardTeamName);
+                        wrappedPacketOutScoreboardTeam.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
+                        scoreboardTeamRegistry.put(player, wrappedPacketOutScoreboardTeam);
+                        updateTeamForPlayer(player);
+                    });
                 })
                 .build(Drapuria.PLUGIN);
     }
 
     @PostDestroy
     public void stop() {
+        pools.values().forEach(FakeEntityPool::shutdown);
         executorService.shutdown();
     }
 
@@ -108,6 +117,26 @@ public class FakeEntityService {
         return this.cooldowns.containsKey(player) && this.cooldowns.get(player) > System.currentTimeMillis();
     }
 
+    public WrappedPacketOutScoreboardTeam getScoreboardTeamPacket(final Player player) {
+        return this.scoreboardTeamRegistry.get(player);
+    }
+
+    public void updateTeamForPlayer(Player player) {
+        if (!this.scoreboardTeamRegistry.containsKey(player)) return;
+        List<String> namesToAdd = new ArrayList<>();
+        for (FakeEntity entity : getPools().stream().flatMap(entityPool -> entityPool.getEntities().values().stream()).collect(Collectors.toSet())) {
+            if (entity instanceof NPC && (((NPC) entity).getNpcOptions().getNameTagType() == NameTagType.HOLOGRAM || ((NPC) entity).getNpcOptions().getNameTagType().isHideHologram()) && !namesToAdd.contains(((NPC) entity).getGameProfile().getName())) {
+                namesToAdd.add(((NPC) entity).getGameProfile().getName());
+            }
+        }
+        if (!namesToAdd.isEmpty())
+            executorService.submit(() -> {
+                WrappedPacketOutScoreboardTeam packet = getScoreboardTeamPacket(player);
+                packet.setNameSet(namesToAdd);
+                ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
+            });
+    }
+
     public void removeCooldown(final UUID player) {
         this.cooldowns.remove(player);
     }
@@ -129,5 +158,4 @@ public class FakeEntityService {
         } while (this.pools.values().stream().anyMatch(pool -> pool.getEntities().containsKey(id.get())));
         return id.get();
     }
-
 }

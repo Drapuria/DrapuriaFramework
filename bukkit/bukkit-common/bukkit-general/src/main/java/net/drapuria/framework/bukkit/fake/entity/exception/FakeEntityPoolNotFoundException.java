@@ -1,4 +1,4 @@
-package net.drapuria.framework.bukkit.fake.entity.exceptions;
+package net.drapuria.framework.bukkit.fake.entity.exception;
 
 public class FakeEntityPoolNotFoundException extends Exception {
 

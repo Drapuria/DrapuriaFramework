@@ -26,7 +26,9 @@ public class NPCVisibilityModifier extends FakeEntityModifier<NPC> {
         final PacketContainer packetContainer = super.newContainer(PacketType.Play.Server.PLAYER_INFO, false);
         packetContainer.getPlayerInfoAction().write(0, action);
 
-        final WrappedGameProfile profile = super.fakeEntity.getNpcOptions().getSkinType() == SkinType.OWN ? WrappedGameProfile.fromPlayer(player).withName("§r" + player.getUniqueId().toString().substring(0, 6)).withId(SERVICE.getRandomIdOf(player.getUniqueId()).toString()) : super.fakeEntity.getGameProfile();
+        final WrappedGameProfile profile = super.fakeEntity.getNpcOptions().getSkinType() == SkinType.OWN ?
+                WrappedGameProfile.fromPlayer(player).withName("§r" + player.getUniqueId().toString().substring(0, 6)).withId(SERVICE.getRandomIdOf(player.getUniqueId()).toString()) :
+                super.fakeEntity.getGameProfile();
         if (super.fakeEntity.getNpcOptions().getSkinType() == SkinType.OWN) {
             profile.getProperties().put("textures", WrappedSignedProperty.fromHandle(player.getProfile().getProperties().get("textures").stream().findFirst().orElse(null)));
         }

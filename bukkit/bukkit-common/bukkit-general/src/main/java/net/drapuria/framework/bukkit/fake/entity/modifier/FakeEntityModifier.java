@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import lombok.NonNull;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -20,6 +21,7 @@ public class FakeEntityModifier<T extends FakeEntity> {
     @SuppressWarnings("ConstantConditions")
     @NotNull
     public static final MinecraftVersion MINECRAFT_VERSION = MinecraftVersion.getVersion();
+    private static ProtocolLibService protocolService = ProtocolLibService.getService;
 
     private final List<PacketContainer> packetContainerList = new CopyOnWriteArrayList<>();
 
@@ -62,13 +64,8 @@ public class FakeEntityModifier<T extends FakeEntity> {
         if (this.packetContainerList.isEmpty())
             return;
         players.forEach(player ->
-                packetContainerList.forEach(packetContainer -> {
-                    try {
-                        ProtocolLibrary.getProtocolManager().sendServerPacket(player, createClone ? packetContainer.shallowClone() : packetContainer);
-                    } catch (InvocationTargetException e) {
-                        throw new RuntimeException(e);
-                    }
-                }));
+                packetContainerList.forEach(packetContainer ->
+                        protocolService.sendPacket(player, createClone ? packetContainer.shallowClone() : packetContainer)));
     }
 
     public void send(@NotNull Player... players) {

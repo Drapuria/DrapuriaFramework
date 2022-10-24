@@ -3,6 +3,7 @@ package net.drapuria.framework.bukkit.fake.entity.npc;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.google.common.collect.ImmutableSet;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.DrapuriaCommon;
@@ -10,23 +11,19 @@ import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityOptions;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityPool;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityService;
-import net.drapuria.framework.bukkit.fake.entity.npc.modifier.NPCAnimationModifier;
-import net.drapuria.framework.bukkit.fake.entity.npc.modifier.NPCMetadataModifier;
-import net.drapuria.framework.bukkit.fake.entity.npc.modifier.NPCRotationModifier;
-import net.drapuria.framework.bukkit.fake.entity.npc.modifier.NPCVisibilityModifier;
+import net.drapuria.framework.bukkit.fake.entity.npc.inventory.NPCInventory;
+import net.drapuria.framework.bukkit.fake.entity.npc.modifier.*;
 import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.TextLine;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +34,8 @@ public class NPC extends FakeEntity {
 
     private static ProtocolLibService protocolService = ProtocolLibService.getService;
     private static final FakeEntityService SERVICE = DrapuriaCommon.getBean(FakeEntityService.class);
-    private static final Map<EnumWrappers.ItemSlot, Integer> SLOT_CONVERTER = new HashMap<>();
+    public static final Map<EnumWrappers.ItemSlot, Integer> SLOT_CONVERTER = new HashMap<>();
+
 
     static {
         SLOT_CONVERTER.put(EnumWrappers.ItemSlot.HEAD, 4);
@@ -50,6 +48,7 @@ public class NPC extends FakeEntity {
     @Setter
     private WrappedGameProfile gameProfile;
     private final NPCOptions npcOptions;
+    private final NPCInventory inventory = new NPCInventory(this);
 
     public NPC(int entityId, FakeEntityOptions options, Location location, final FakeEntityPool entityPool, NPCOptions npcOptions) {
         super(entityId, location, entityPool, options);
@@ -64,6 +63,10 @@ public class NPC extends FakeEntity {
             super.hologram = new FakeEntityHologram(this);
             super.hologram.addLine(new TextLine(HologramHelper.newId(), this.options.getDisplayName()));
         }
+    }
+
+    public NPCInventory getInventory() {
+        return inventory;
     }
 
     private void updateName() {
@@ -174,6 +177,10 @@ public class NPC extends FakeEntity {
 
     public NPCRotationModifier rotationModifier() {
         return new NPCRotationModifier(this);
+    }
+
+    public NPCEquipmentModifier equipmentModifier() {
+        return new NPCEquipmentModifier(this);
     }
 
 }

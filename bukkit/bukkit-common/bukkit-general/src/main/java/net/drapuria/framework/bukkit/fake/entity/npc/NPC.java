@@ -49,7 +49,8 @@ public class NPC extends FakeEntity {
     @Setter
     private WrappedGameProfile gameProfile;
     private final NPCOptions npcOptions;
-    private final NPCInventory inventory = new NPCInventory(this);
+    @Setter
+    private NPCInventory inventory = new NPCInventory(this);
 
     public NPC(int entityId, FakeEntityOptions options, Location location, final FakeEntityPool entityPool, NPCOptions npcOptions) {
         super(entityId, location, entityPool, options);

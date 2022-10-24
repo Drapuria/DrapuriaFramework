@@ -18,6 +18,7 @@ import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.TextLine;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
+import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -127,7 +128,7 @@ public class NPC extends FakeEntity {
         metadataModifier().queue(NPCMetadataModifier.EntityMetadata.SNEAKING, sneaking)
                 .send(player);
         if (sneaking)
-            hologram.setPlayerLocation(player, location.clone().add(0, getHologramHeight() - 0.4, 0));
+            hologram.setPlayerLocation(player, location.clone().add(0, getHologramHeight() - (MinecraftVersion.VERSION.simpleVersion() < 9 ? 0.4 : 0.5), 0));
         else
             hologram.setPlayerLocation(player, null);
     }

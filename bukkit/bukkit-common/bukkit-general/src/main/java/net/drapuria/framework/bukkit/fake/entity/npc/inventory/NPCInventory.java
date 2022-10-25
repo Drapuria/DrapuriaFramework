@@ -11,7 +11,7 @@ public class NPCInventory {
 
     private static final ItemStack NONE = new ItemStack(Material.AIR);
 
-    private final NPC holder;
+    private final transient NPC holder;
 
     private ItemStack[] armor = new ItemStack[4];
     private ItemStack[] contents = new ItemStack[36];

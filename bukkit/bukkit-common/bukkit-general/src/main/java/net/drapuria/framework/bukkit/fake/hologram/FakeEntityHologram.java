@@ -17,11 +17,11 @@ import java.util.Map;
 @NoArgsConstructor
 public class FakeEntityHologram implements Hologram {
 
-    private FakeEntity fakeEntity;
+    private transient FakeEntity fakeEntity;
     private List<Line> lines = new ArrayList<>();
     private transient final Map<Player, List<Line>> playerLines = new HashMap<>(); // ??
     private transient final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneaks etc
-    private Location location;
+    private transient Location location;
 
     public FakeEntityHologram(FakeEntity fakeEntity) {
         this.fakeEntity = fakeEntity;
@@ -31,6 +31,12 @@ public class FakeEntityHologram implements Hologram {
 
     public Location getLocation(final Player player) {
         return this.playerDefinedLocations.getOrDefault(player, this.getLocation());
+    }
+
+    public void setFakeEntity(FakeEntity fakeEntity) {
+        this.fakeEntity = fakeEntity;
+        this.location = this.fakeEntity.getLocation().clone();
+        this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
     }
 
     public void setPlayerLocation(final Player player, Location location) {

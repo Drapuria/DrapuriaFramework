@@ -74,7 +74,7 @@ public class NPC extends FakeEntity {
     private void updateName() {
         if (this.npcOptions.getNameTagType().isHideHologram()) {
             Bukkit.broadcastMessage("preparing to hide..?");
-            npcOptions.getNpcProfile().setName("§r" + npcOptions.getNpcProfile().getName());
+            npcOptions.getNpcProfile().setName((!npcOptions.getNpcProfile().getName().startsWith("§r") ? "§r" : "") + npcOptions.getNpcProfile().getName());
         }
         if (npcOptions.getNpcProfile().isComplete())
             npcOptions.getNpcProfile().complete();
@@ -88,7 +88,6 @@ public class NPC extends FakeEntity {
         final CraftPlayer craftPlayer = (CraftPlayer) player;
         visibilityModifier.queuePlayerListChange(craftPlayer, EnumWrappers.PlayerInfoAction.ADD_PLAYER)
                 .send(player);
-        // SKIN TYPE OWN
         if (this.npcOptions.getSkinType() == SkinType.OWN || this.npcOptions.getNameTagType().isHideHologram()) {
             WrappedPacketOutScoreboardTeam packet = SERVICE.getScoreboardTeamPacket(player);
             packet.setNameSet(Collections.singletonList(this.npcOptions.getSkinType() == SkinType.OWN ? ("§r" + player.getUniqueId().toString().substring(0, 6)) : this.gameProfile.getName()));
@@ -97,7 +96,6 @@ public class NPC extends FakeEntity {
         SERVICE.getExecutorService().schedule(() -> {
             if (!player.isOnline()) return;
             visibilityModifier.queueSpawn(craftPlayer).send(player);
-
             if (super.hologram != null && this.npcOptions.getNameTagType() == NameTagType.HOLOGRAM)
                 super.hologram.show(player);
             SERVICE.getExecutorService().schedule(() -> {

@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 @Service(name = "fakeEntityService")
 public class FakeEntityService {
 
+    public static FakeEntityService getService;
+
     private final Map<UUID, UUID> playersRandomId = new HashMap<>();
 
     private FakeEntityPool defaultPool;
@@ -49,6 +51,7 @@ public class FakeEntityService {
 
     @PreInitialize
     public void init() {
+        getService = this;
     }
 
     @SneakyThrows
@@ -124,8 +127,12 @@ public class FakeEntityService {
     public void updateTeamForPlayer(Player player) {
         if (!this.scoreboardTeamRegistry.containsKey(player)) return;
         List<String> namesToAdd = new ArrayList<>();
-        for (FakeEntity entity : getPools().stream().flatMap(entityPool -> entityPool.getEntities().values().stream()).collect(Collectors.toSet())) {
-            if (entity instanceof NPC && (((NPC) entity).getNpcOptions().getNameTagType() == NameTagType.HOLOGRAM || ((NPC) entity).getNpcOptions().getNameTagType().isHideHologram()) && !namesToAdd.contains(((NPC) entity).getGameProfile().getName())) {
+        for (FakeEntity entity : getPools().stream().flatMap(entityPool -> entityPool.getEntities().values().stream())
+                .collect(Collectors.toSet())) {
+            if (entity instanceof NPC &&
+                    (((NPC) entity).getNpcOptions().getNameTagType() == NameTagType.HOLOGRAM ||
+                            ((NPC) entity).getNpcOptions().getNameTagType().isHideHologram()) &&
+                    !namesToAdd.contains(((NPC) entity).getGameProfile().getName())) {
                 namesToAdd.add(((NPC) entity).getGameProfile().getName());
             }
         }
@@ -133,6 +140,7 @@ public class FakeEntityService {
             executorService.submit(() -> {
                 WrappedPacketOutScoreboardTeam packet = getScoreboardTeamPacket(player);
                 packet.setNameSet(namesToAdd);
+                System.out.println("names to add");
                 ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
             });
     }

@@ -21,8 +21,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Setter
 public abstract class FakeEntity {
 
-    protected final Collection<Player> seeingPlayers = new CopyOnWriteArrayList<>();
-    protected final Collection<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
+    protected transient final Collection<Player> seeingPlayers = new CopyOnWriteArrayList<>();
+    protected transient final Collection<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
 
     protected Location location;
     private final int entityId;

@@ -21,7 +21,7 @@ public class FakeEntityOptions {
     private boolean editable;
     private boolean handleEventAsync = false;
     @Setter(AccessLevel.NONE)
-    private final Set<FakeEntitySpawnHandler> spawnHandlers = new HashSet<>();
+    private transient final Set<FakeEntitySpawnHandler> spawnHandlers = new HashSet<>();
 
 
     public void addSpawnHandler(final FakeEntitySpawnHandler handler) {

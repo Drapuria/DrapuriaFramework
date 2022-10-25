@@ -16,7 +16,7 @@ import java.util.Collections;
 
 public class NPCVisibilityModifier extends FakeEntityModifier<NPC> {
 
-    private static final FakeEntityService SERVICE = DrapuriaCommon.getBean(FakeEntityService.class);
+    private static final FakeEntityService SERVICE = FakeEntityService.getService;
 
     public NPCVisibilityModifier(@NotNull NPC fakeEntity) {
         super(fakeEntity);

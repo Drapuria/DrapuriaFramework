@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
+import lombok.NoArgsConstructor;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
@@ -13,12 +14,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@NoArgsConstructor
 public class FakeEntityHologram implements Hologram {
 
-    private final FakeEntity fakeEntity;
+    private FakeEntity fakeEntity;
     private final List<Line> lines = new ArrayList<>();
-    private final Map<Player, List<Line>> playerLines = new HashMap<>(); // ??
-    private final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneaks etc
+    private transient final Map<Player, List<Line>> playerLines = new HashMap<>(); // ??
+    private transient final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneaks etc
     private Location location;
 
     public FakeEntityHologram(FakeEntity fakeEntity) {

@@ -18,7 +18,7 @@ import java.util.Map;
 public class FakeEntityHologram implements Hologram {
 
     private FakeEntity fakeEntity;
-    private final List<Line> lines = new ArrayList<>();
+    private List<Line> lines = new ArrayList<>();
     private transient final Map<Player, List<Line>> playerLines = new HashMap<>(); // ??
     private transient final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneaks etc
     private Location location;

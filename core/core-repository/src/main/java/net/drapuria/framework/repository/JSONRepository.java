@@ -63,19 +63,7 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
             }
         }
         initGson();
-        try {
-            FileReader reader = new FileReader(jsonFile);
-            Class clazzArray = Class.forName("[L" + daoType.getName() + ";");
-            T[] array =  gson.fromJson(reader, TypeToken.get(clazzArray).getType());
-            final List<T> list = array == null ? null : new ArrayList<>(Arrays.asList(array));
-            reader.close();
-            if (list != null)
-                list.forEach(this::save);
-        } catch (FileNotFoundException e) {
-            Stacktrace.print(e.getMessage(), e);
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        this.loadJsonFile();
     }
 
     @PostDestroy
@@ -88,6 +76,22 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
             fileWriter.close();
         } catch (IOException e) {
             Stacktrace.print(e.getMessage(), e);
+        }
+    }
+
+    private void loadJsonFile() {
+        try {
+            FileReader reader = new FileReader(jsonFile);
+            Class clazzArray = Class.forName("[L" + daoType.getName() + ";");
+            T[] array =  gson.fromJson(reader, TypeToken.get(clazzArray).getType());
+            final List<T> list = array == null ? null : new ArrayList<>(Arrays.asList(array));
+            reader.close();
+            if (list != null)
+                list.forEach(this::save);
+        } catch (FileNotFoundException e) {
+            Stacktrace.print(e.getMessage(), e);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 

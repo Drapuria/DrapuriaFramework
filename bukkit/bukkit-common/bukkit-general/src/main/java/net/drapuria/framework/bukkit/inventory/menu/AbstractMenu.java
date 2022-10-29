@@ -148,5 +148,4 @@ public abstract class AbstractMenu implements IMenu {
     }
 
     protected abstract void updateButtons(Player player);
-
 }

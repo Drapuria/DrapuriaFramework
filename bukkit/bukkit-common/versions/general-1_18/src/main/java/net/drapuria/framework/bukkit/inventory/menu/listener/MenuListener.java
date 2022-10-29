@@ -9,6 +9,7 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.bukkit.inventory.menu.IMenu;
 import net.drapuria.framework.bukkit.inventory.menu.MenuService;
+import net.drapuria.framework.bukkit.inventory.menu.MenuUpdatePolicy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -59,13 +60,13 @@ public class MenuListener implements Listener {
         final IButton currentButton = buttons.get(slot);
         if (currentButton == null) {
 
-                if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
-                    currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
-                }
-                if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
-                    currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
-                }
-                return;
+            if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
+                currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
+            }
+            if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
+                currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
+            }
+            return;
         }
         if (!event.isCancelled() && currentButton.shouldCancel(player, slot, clickType))
             event.setCancelled(true);
@@ -76,8 +77,12 @@ public class MenuListener implements Listener {
         }
         currentButton.onClick(player, slot, clickType, event.getHotbarButton());
         final boolean shouldUpdate = currentButton.shouldUpdate(player, slot, clickType);
-        if (shouldUpdate)
-            currentMenu.updateMenu(player);
+        if (shouldUpdate) {
+            if (currentMenu.getUpdatePolicy(player) == MenuUpdatePolicy.ALL)
+                currentMenu.updateMenu(player);
+            else
+                currentMenu.updateButton(player, slot, currentButton);
+        }
     }
 
     @EventHandler

@@ -10,6 +10,7 @@ import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.inventory.menu.IButton;
 import net.drapuria.framework.bukkit.inventory.menu.IMenu;
 import net.drapuria.framework.bukkit.inventory.menu.MenuService;
+import net.drapuria.framework.bukkit.inventory.menu.MenuUpdatePolicy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -77,6 +78,13 @@ public class MenuListener implements Listener {
             }
         }
         currentButton.onClick(player, slot, clickType, event.getHotbarButton());
+        final boolean shouldUpdate = currentButton.shouldUpdate(player, slot, clickType);
+        if (shouldUpdate) {
+            if (currentMenu.getUpdatePolicy(player) == MenuUpdatePolicy.ALL)
+                currentMenu.updateMenu(player);
+            else
+                currentMenu.updateButton(player, slot, currentButton);
+        }
     }
 
     private void handleItemRemoveOrInsert(InventoryClickEvent event, Player player, IMenu currentMenu, Inventory clickedInventory, Inventory menuInventory) {

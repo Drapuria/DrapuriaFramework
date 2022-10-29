@@ -91,4 +91,10 @@ public abstract class Menu extends AbstractMenu {
         } else
             openMenu(player);
     }
+
+    @Override
+    public void updateButton(Player player, int slot, IButton button) {
+        final Inventory inventory = this.getInventory(player);
+        inventory.setItem(slot, button.getIcon(player));
+    }
 }

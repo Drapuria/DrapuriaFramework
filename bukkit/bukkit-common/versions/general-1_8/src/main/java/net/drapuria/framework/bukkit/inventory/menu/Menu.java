@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -33,15 +34,18 @@ public abstract class Menu extends AbstractMenu {
 
     @Override
     public void openMenu(Player player) {
+        if (player instanceof DrapuriaPlayer)
+            player = player.getPlayer();
         final Map<Integer, IButton> buttons = getButtons(player);
         final int size = getSize(player);
         final String title = getTitle(player);
+        Player finalPlayer = player;
         buildInventory(player, getBukkitInventoryType(player), size, title, buttons, (inventory, aBoolean) -> {
-            this.inventories.put(player, inventory);
+            this.inventories.put(finalPlayer, inventory);
             if (!aBoolean)
-                player.openInventory(inventory);
-            setCachedButtons(player, buttons);
-            MenuService.getService.addOpenedMenu(player.getName(), this);
+                finalPlayer.openInventory(inventory);
+            setCachedButtons(finalPlayer, buttons);
+            MenuService.getService.addOpenedMenu(finalPlayer.getName(), this);
         });
         onOpen(player);
     }

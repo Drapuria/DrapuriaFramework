@@ -144,10 +144,10 @@ public class NPC extends FakeEntity {
         super.setRespawning(true);
         DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> {
             ImmutableSet.copyOf(this.seeingPlayers).forEach(this::hide);
+            for (final Player online : Bukkit.getOnlinePlayers()) {
+                super.entityPool.updateTeamForPlayer(online);
+            }
             DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> {
-                for (final Player online : Bukkit.getOnlinePlayers()) {
-                    super.entityPool.updateTeamForPlayer(online);
-                }
                 DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> super.setRespawning(false), 20);
             }, 100);
         }, 20L);

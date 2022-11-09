@@ -153,6 +153,10 @@ public class NPC extends FakeEntity {
         }, 20L);
     }
 
+    public void refreshNpcProfile() {
+        this.gameProfile = convertProfile(this.npcOptions.getNpcProfile());
+    }
+
     private WrappedGameProfile convertProfile(NPCProfile npcProfile) {
         WrappedGameProfile gameProfile = new WrappedGameProfile(npcProfile.getUniqueId(),
                 npcProfile.getName());

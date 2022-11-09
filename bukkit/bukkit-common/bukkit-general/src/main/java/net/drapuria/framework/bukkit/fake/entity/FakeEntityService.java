@@ -140,7 +140,6 @@ public class FakeEntityService {
             executorService.submit(() -> {
                 WrappedPacketOutScoreboardTeam packet = getScoreboardTeamPacket(player);
                 packet.setNameSet(namesToAdd);
-                player.sendMessage("should hide " + Arrays.toString(namesToAdd.stream().map(s -> s.replace("§r", "&r")).toArray()));
                 ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
             });
     }

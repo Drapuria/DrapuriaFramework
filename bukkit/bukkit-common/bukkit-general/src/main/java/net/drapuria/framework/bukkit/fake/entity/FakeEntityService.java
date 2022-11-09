@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service(name = "fakeEntityService")
+@SuppressWarnings("SpellCheckingInspection")
 public class FakeEntityService {
 
     public static FakeEntityService getService;
@@ -39,7 +40,6 @@ public class FakeEntityService {
 
     private FakeEntityPool defaultPool;
     private final Map<String, FakeEntityPool> pools = new HashMap<>();
-    @SuppressWarnings("SpellCheckingInspection")
     private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
     private final Map<Player, WrappedPacketOutScoreboardTeam> scoreboardTeamRegistry = new ConcurrentHashMap<>();
     private final String scoreboardTeamName = UUID.randomUUID().toString().split("-")[0];
@@ -140,6 +140,7 @@ public class FakeEntityService {
             executorService.submit(() -> {
                 WrappedPacketOutScoreboardTeam packet = getScoreboardTeamPacket(player);
                 packet.setNameSet(namesToAdd);
+                player.sendMessage("should hide " + Arrays.toString(namesToAdd.toArray()));
                 ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
             });
     }

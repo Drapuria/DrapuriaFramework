@@ -148,7 +148,7 @@ public class NPC extends FakeEntity {
                 for (final Player online : Bukkit.getOnlinePlayers()) {
                     super.entityPool.updateTeamForPlayer(online);
                 }
-                super.setRespawning(false);
+                DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> super.setRespawning(false), 20);
             }, 100);
         }, 20L);
     }

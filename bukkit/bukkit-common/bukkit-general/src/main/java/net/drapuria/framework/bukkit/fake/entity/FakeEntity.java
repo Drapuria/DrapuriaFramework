@@ -5,14 +5,11 @@ import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.entity.living.LivingFakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
-import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.ItemLine;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
-import net.drapuria.framework.bukkit.fake.hologram.line.TextLine;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import javax.xml.soap.Text;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;

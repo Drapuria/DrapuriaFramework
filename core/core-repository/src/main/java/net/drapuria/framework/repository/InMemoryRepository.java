@@ -20,6 +20,8 @@ import java.util.stream.Stream;
 public abstract class InMemoryRepository<T, ID extends Serializable> implements CrudRepository<T, ID> {
 
     private final Map<String, Field> fieldCache = new HashMap<>();
+    private boolean isExtendedFieldCache = false;
+    private final Map<String, Map<Object, T>> extendedFieldCache = new HashMap<>();
 
     protected final Map<ID, T> storage = new HashMap<>();
     private Field keyField;
@@ -81,9 +83,23 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
         throw new UnsupportedOperationException("Cannot delete by query in in memory repository.");
     }
 
+    public void enableExtendedFieldCache() {
+        this.isExtendedFieldCache = true;
+    }
+
+    public void disableExtendedFieldCache() {
+        this.isExtendedFieldCache = false;
+        this.extendedFieldCache.clear();
+    }
+
+    public void refreshExtendedFieldCache() {
+        this.extendedFieldCache.clear();
+    }
+
     @Override
     public void deleteAll() {
         this.storage.clear();
+        this.extendedFieldCache.clear();
     }
 
     @Override
@@ -109,6 +125,11 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
     @SneakyThrows
     @Override
     public Optional<T> findBy(String field, Object key) {
+        if (this.isExtendedFieldCache && this.extendedFieldCache.containsKey(field)) {
+            final Map<Object, T> fieldCache = new HashMap<>();
+            if (fieldCache.containsKey(key))
+                return Optional.of(fieldCache.get(key));
+        }
         Field declaredField;
         if (!fieldCache.containsKey(field)) {
             declaredField = daoType.getDeclaredField(field);
@@ -119,6 +140,11 @@ public abstract class InMemoryRepository<T, ID extends Serializable> implements 
         }
         for (T deo : storage.values()) {
             if (declaredField.get(deo).equals(key)) {
+                if (this.isExtendedFieldCache) {
+                    if (!this.extendedFieldCache.containsKey(field))
+                        this.extendedFieldCache.put(field, new HashMap<>());
+                    this.extendedFieldCache.get(field).put(key, deo);
+                }
                 return Optional.of(deo);
             }
         }

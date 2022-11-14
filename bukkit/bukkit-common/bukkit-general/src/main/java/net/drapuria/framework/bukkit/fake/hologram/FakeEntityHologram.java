@@ -33,6 +33,11 @@ public class FakeEntityHologram implements Hologram {
         return this.playerDefinedLocations.getOrDefault(player, this.getLocation());
     }
 
+    public void updateLocation() {
+        this.location = this.fakeEntity.getLocation().clone();
+        this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
+    }
+
     public void setFakeEntity(FakeEntity fakeEntity) {
         this.fakeEntity = fakeEntity;
         this.location = this.fakeEntity.getLocation().clone();

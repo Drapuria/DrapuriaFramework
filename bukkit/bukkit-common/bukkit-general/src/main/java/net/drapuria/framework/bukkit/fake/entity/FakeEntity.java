@@ -47,6 +47,8 @@ public abstract class FakeEntity {
     public void setLocation(Location location) {
         respawn();
         this.location = location;
+        if (this.hologram != null)
+            this.hologram.updateLocation();
     }
 
     public abstract void show(final Player player);

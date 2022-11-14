@@ -3,7 +3,6 @@ package net.drapuria.framework.bukkit.fake.entity.npc;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.google.common.collect.ImmutableSet;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.DrapuriaCommon;
@@ -105,7 +104,7 @@ public class NPC extends FakeEntity {
                 if (!super.options.isPlayerLook())
                     animationModifier().queue(NPCAnimationModifier.EntityAnimation.SWING_MAIN_ARM).send(player);
                 else
-                    rotationModifier().queueLookAt(player.getLocation())
+                    positionModifier().queueLookAt(player.getLocation())
                             .send(player);
             }, entityPool.getTabListRemoveMillis(), TimeUnit.MILLISECONDS);
         }, 500, TimeUnit.MILLISECONDS);
@@ -136,7 +135,7 @@ public class NPC extends FakeEntity {
     public void tickActionForPlayer(Player player) {
         if (isRespawning()) return;
         if (options.isPlayerLook())
-            rotationModifier().queueLookAt(player.getLocation()).send(player);
+            positionModifier().queueLookAt(player.getLocation()).send(player);
     }
 
     @Override
@@ -167,6 +166,13 @@ public class NPC extends FakeEntity {
         return finalGameProfile;
     }
 
+    @Override
+    public void moveTo(Location location) {
+        this.location = location;
+        this.hologram.updateLocation();
+        this.positionModifier().queuePositionUpdate().send(this.seeingPlayers);
+    }
+
     public NPCVisibilityModifier visibilityModifier() {
         return new NPCVisibilityModifier(this);
     }
@@ -179,8 +185,8 @@ public class NPC extends FakeEntity {
         return new NPCAnimationModifier(this);
     }
 
-    public NPCRotationModifier rotationModifier() {
-        return new NPCRotationModifier(this);
+    public NPCPositionModifier positionModifier() {
+        return new NPCPositionModifier(this);
     }
 
     public NPCEquipmentModifier equipmentModifier() {

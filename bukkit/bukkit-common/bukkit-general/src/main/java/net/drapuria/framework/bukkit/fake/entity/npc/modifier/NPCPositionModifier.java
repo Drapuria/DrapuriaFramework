@@ -8,12 +8,13 @@ import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
-public class NPCRotationModifier extends FakeEntityModifier<NPC> {
+@SuppressWarnings("unused")
+public class NPCPositionModifier extends FakeEntityModifier<NPC> {
 
-    public NPCRotationModifier(@NotNull NPC fakeEntity) {
+    public NPCPositionModifier(@NotNull NPC fakeEntity) {
         super(fakeEntity);
     }
-    public NPCRotationModifier queueRotate(float yaw, float pitch) {
+    public NPCPositionModifier queueRotate(float yaw, float pitch) {
         byte yawAngle = (byte) (yaw * 256F / 360F);
         byte pitchAngle = (byte) (pitch * 256F / 360F);
 
@@ -49,7 +50,7 @@ public class NPCRotationModifier extends FakeEntityModifier<NPC> {
     }
 
     @NotNull
-    public NPCRotationModifier queueBodyRotation(float yaw, float pitch) {
+    public NPCPositionModifier queueBodyRotation(float yaw, float pitch) {
         byte yawAngle = (byte) (int) (yaw * 256F / 360F);
         byte pitchAngle = (byte) (int) (pitch * 256F / 360F);
 
@@ -72,7 +73,17 @@ public class NPCRotationModifier extends FakeEntityModifier<NPC> {
         return this;
     }
 
-    public NPCRotationModifier queueLookAt(@NotNull Location location) {
+    public NPCPositionModifier queuePositionUpdate() {
+        final PacketContainer packetContainer = super.newContainer(PacketType.Play.Server.ENTITY_TELEPORT);
+        packetContainer.getIntegers().write(1, (int) Math.floor(fakeEntity.getLocation().getX() * 32));
+        packetContainer.getIntegers().write(2, (int) Math.floor((fakeEntity.getLocation().getY() + 0.001D) * 32));
+        packetContainer.getIntegers().write(3, (int) Math.floor(fakeEntity.getLocation().getZ() * 32));
+        packetContainer.getBytes().write(0, (byte) (int) (this.fakeEntity.getLocation().getYaw() * 256.0F / 360.0F));
+        packetContainer.getBytes().write(1, (byte) (int) (this.fakeEntity.getLocation().getPitch() * 256.0F / 360.0F));
+        return this;
+    }
+
+    public NPCPositionModifier queueLookAt(@NotNull Location location) {
         final double xDifference = location.getX() - super.fakeEntity.getLocation().getX();
         final double yDifference = location.getY() - super.fakeEntity.getLocation().getY();
         final double zDifference = location.getZ() - super.fakeEntity.getLocation().getZ();

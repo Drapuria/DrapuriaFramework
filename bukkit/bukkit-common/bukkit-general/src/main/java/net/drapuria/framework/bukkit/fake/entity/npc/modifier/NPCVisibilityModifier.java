@@ -10,6 +10,8 @@ import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.SkinType;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -83,6 +85,13 @@ public class NPCVisibilityModifier extends FakeEntityModifier<NPC> {
                 .write(3, yawData)
                 .write(4, (byte) (super.npc.getLocation().getPitch() * 256.0F / 360.0));
          */
+        return this;
+    }
+
+    public NPCVisibilityModifier queueShowHalfVisible(final Player player) {
+        final PacketContainer teamPacket = super.newContainer(PacketType.Play.Server.SCOREBOARD_TEAM);
+       // Team pTeam = player.getScoreboard().getEntryTeam(player.getName());
+
         return this;
     }
 

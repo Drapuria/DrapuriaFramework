@@ -51,6 +51,8 @@ public abstract class FakeEntity {
             this.hologram.updateLocation();
     }
 
+    public abstract void moveTo(Location location);
+
     public abstract void show(final Player player);
 
     public abstract void hide(final Player player);

@@ -4,16 +4,18 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketContainer;
 import net.drapuria.framework.bukkit.fake.entity.living.LivingFakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.modifier.FakeEntityModifier;
+import net.drapuria.framework.bukkit.fake.entity.npc.modifier.NPCPositionModifier;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
 
-public class LivingFakeEntityRotationModifier extends FakeEntityModifier<LivingFakeEntity> {
-    public LivingFakeEntityRotationModifier(@NotNull LivingFakeEntity fakeEntity) {
+@SuppressWarnings("DuplicatedCode")
+public class LivingFakeEntityPositionModifier extends FakeEntityModifier<LivingFakeEntity> {
+    public LivingFakeEntityPositionModifier(@NotNull LivingFakeEntity fakeEntity) {
         super(fakeEntity);
     }
 
-    public LivingFakeEntityRotationModifier queueRotation(float yaw, float pitch) {
+    public LivingFakeEntityPositionModifier queueRotation(float yaw, float pitch) {
         byte yawAngle = (byte) (int) (yaw * 256F / 360F);
         byte pitchAngle = (byte) (int) (pitch * 256F / 360F);
         PacketContainer headLookContainer = super
@@ -39,7 +41,7 @@ public class LivingFakeEntityRotationModifier extends FakeEntityModifier<LivingF
         return this;
     }
 
-    public LivingFakeEntityRotationModifier queueBodyRotation(float yaw, float pitch) {
+    public LivingFakeEntityPositionModifier queueBodyRotation(float yaw, float pitch) {
         byte yawAngle = (byte) (int) (yaw * 256F / 360F);
         byte pitchAngle = (byte) (int) (pitch * 256F / 360F);
 
@@ -66,7 +68,17 @@ public class LivingFakeEntityRotationModifier extends FakeEntityModifier<LivingF
         return this;
     }
 
-    public LivingFakeEntityRotationModifier queueLookAt(@NotNull Location location) {
+    public LivingFakeEntityPositionModifier queuePositionUpdate() {
+        final PacketContainer packetContainer = super.newContainer(PacketType.Play.Server.ENTITY_TELEPORT);
+        packetContainer.getIntegers().write(1, (int) Math.floor(fakeEntity.getLocation().getX() * 32)); //X
+        packetContainer.getIntegers().write(2, (int) Math.floor((fakeEntity.getLocation().getY() + 0.001D) * 32)); //Y
+        packetContainer.getIntegers().write(3, (int) Math.floor(fakeEntity.getLocation().getZ() * 32)); //Z
+        packetContainer.getBytes().write(0, (byte) (int) (this.fakeEntity.getLocation().getYaw() * 256.0F / 360.0F)); //Yaw
+        packetContainer.getBytes().write(1, (byte) (int) (this.fakeEntity.getLocation().getPitch() * 256.0F / 360.0F)); //Pitch
+        return this;
+    }
+
+    public LivingFakeEntityPositionModifier queueLookAt(@NotNull Location location) {
         double xDifference = location.getX() - super.fakeEntity.getLocation().getX();
         double yDifference = location.getY() - super.fakeEntity.getLocation().getY();
         double zDifference = location.getZ() - super.fakeEntity.getLocation().getZ();

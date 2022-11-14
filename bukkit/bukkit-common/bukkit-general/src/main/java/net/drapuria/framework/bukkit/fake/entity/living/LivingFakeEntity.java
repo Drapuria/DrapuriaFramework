@@ -2,7 +2,6 @@ package net.drapuria.framework.bukkit.fake.entity.living;
 
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.WrappedDataWatcher;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import lombok.Getter;
 import net.drapuria.framework.DrapuriaCommon;
@@ -11,7 +10,7 @@ import net.drapuria.framework.bukkit.fake.entity.FakeEntityOptions;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityPool;
 import net.drapuria.framework.bukkit.fake.entity.helper.DataWatchHelper;
 import net.drapuria.framework.bukkit.fake.entity.living.modifier.LivingFakeEntityEquipmentModifier;
-import net.drapuria.framework.bukkit.fake.entity.living.modifier.LivingFakeEntityRotationModifier;
+import net.drapuria.framework.bukkit.fake.entity.living.modifier.LivingFakeEntityPositionModifier;
 import net.drapuria.framework.bukkit.fake.entity.living.modifier.LivingFakeEntityVisibilityModifier;
 import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
@@ -34,6 +33,13 @@ public class LivingFakeEntity extends FakeEntity {
         this.dataWatcher = DataWatchHelper.createDefaultWatcher(this);
         super.hologram = new FakeEntityHologram(this);
         super.hologram.addLine(new TextLine(HologramHelper.newId(), this.options.getDisplayName()));
+    }
+
+    @Override
+    public void moveTo(Location location) {
+        this.location = location;
+        this.hologram.updateLocation();
+        this.positionModifier().queuePositionUpdate().send(this.seeingPlayers);
     }
 
     @Override
@@ -73,8 +79,8 @@ public class LivingFakeEntity extends FakeEntity {
         return new LivingFakeEntityVisibilityModifier(this);
     }
 
-    public LivingFakeEntityRotationModifier rotationModifier() {
-        return new LivingFakeEntityRotationModifier(this);
+    public LivingFakeEntityPositionModifier positionModifier() {
+        return new LivingFakeEntityPositionModifier(this);
     }
 
     public LivingFakeEntityEquipmentModifier equipmentModifier() {
@@ -83,7 +89,7 @@ public class LivingFakeEntity extends FakeEntity {
 
     @Override
     public void tickActionForPlayer(Player player) {
-        rotationModifier().queueLookAt(player.getLocation())
+        positionModifier().queueLookAt(player.getLocation())
                 .send(player);
     }
 

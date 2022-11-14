@@ -1,6 +1,5 @@
 package net.drapuria.framework.bukkit.fake.entity;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -15,14 +14,19 @@ import net.drapuria.framework.bukkit.fake.entity.exception.FakeEntityPoolNotFoun
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.NameTagType;
 import net.drapuria.framework.bukkit.listener.events.Events;
-import net.drapuria.framework.bukkit.protocol.ProtocolService;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -42,7 +46,9 @@ public class FakeEntityService {
     private final Map<String, FakeEntityPool> pools = new HashMap<>();
     private final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
     private final Map<Player, WrappedPacketOutScoreboardTeam> scoreboardTeamRegistry = new ConcurrentHashMap<>();
+    private final Map<Player, WrappedPacketOutScoreboardTeam> halfScoreboardTeamRegistry = new ConcurrentHashMap<>();
     private final String scoreboardTeamName = UUID.randomUUID().toString().split("-")[0];
+    private final String halfInvisibileScoreboardTeamName = UUID.randomUUID().toString().split("-")[0];
     @Getter
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
             .setDaemon(true)
@@ -73,9 +79,21 @@ public class FakeEntityService {
                         WrappedPacketOutScoreboardTeam wrappedPacketOutScoreboardTeam = new WrappedPacketOutScoreboardTeam();
                         wrappedPacketOutScoreboardTeam.setName(scoreboardTeamName);
                         wrappedPacketOutScoreboardTeam.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
+
+                        WrappedPacketOutScoreboardTeam halfVisibilityWrappedPacketOutScoreboardTeam = new WrappedPacketOutScoreboardTeam();
+                        wrappedPacketOutScoreboardTeam.setName(halfInvisibileScoreboardTeamName);
+                        wrappedPacketOutScoreboardTeam.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
+                        wrappedPacketOutScoreboardTeam.setSeeFriendlyInvisibles(true);
                         scoreboardTeamRegistry.put(player, wrappedPacketOutScoreboardTeam);
                         updateTeamForPlayer(player);
                     });
+                })
+                .build(Drapuria.PLUGIN);
+        Events
+                .subscribe(PlayerQuitEvent.class)
+                .priority(EventPriority.MONITOR)
+                .listen(event -> {
+                    this.scoreboardTeamRegistry.remove(event.getPlayer());
                 })
                 .build(Drapuria.PLUGIN);
     }

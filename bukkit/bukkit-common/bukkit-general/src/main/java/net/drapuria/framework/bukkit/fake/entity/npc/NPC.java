@@ -170,7 +170,10 @@ public class NPC extends FakeEntity {
     public void moveTo(Location location) {
         this.location = location;
         this.hologram.updateLocation();
-        this.positionModifier().queuePositionUpdate().send(this.seeingPlayers);
+        this.positionModifier()
+                .queuePositionUpdate()
+                .queueRotate(this.location.getYaw(), this.location.getPitch())
+                .send(this.seeingPlayers);
     }
 
     public NPCVisibilityModifier visibilityModifier() {

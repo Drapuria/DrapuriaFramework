@@ -38,8 +38,8 @@ public class LivingFakeEntity extends FakeEntity {
     @Override
     public void moveTo(Location location) {
         this.location = location;
-        this.hologram.updateLocation();
         this.positionModifier().queuePositionUpdate().send(this.seeingPlayers);
+        super.hologram.updateLocation();
     }
 
     @Override

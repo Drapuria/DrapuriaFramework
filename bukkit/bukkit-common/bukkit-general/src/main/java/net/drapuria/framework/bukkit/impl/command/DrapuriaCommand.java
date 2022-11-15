@@ -61,7 +61,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 }
             }
         }
-        System.out.println("ACTUAL COMMAND: " + actualCommand.toString());
+        //System.out.println("ACTUAL COMMAND: " + actualCommand.toString());
         /*
         actualCommand = new StringBuilder();
         for (final String argument : arguments) {

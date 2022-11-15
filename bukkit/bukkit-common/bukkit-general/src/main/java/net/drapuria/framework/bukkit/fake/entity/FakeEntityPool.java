@@ -110,13 +110,14 @@ public class FakeEntityPool {
             if (!optDrapuriaPlayer.isPresent())
                 continue;
             final DrapuriaPlayer drapuriaPlayer = optDrapuriaPlayer.get();
-            if (drapuriaPlayer.getSessionJoin() > System.currentTimeMillis() - 500) continue;
+            if (drapuriaPlayer.getSessionJoin() > System.currentTimeMillis() - 600) continue;
             for (final FakeEntity entity : this.entityCollection) {
                 if (entity.isRespawning()) continue;
                 boolean isShownFor = entity.isShownTo(player);
                 if (!entity.getLocation().getWorld().equals(player.getWorld())) {
                     if (isShownFor) {
-                        entity.hide(player);
+                        entity.getSeeingPlayers().remove(player);
+                        //entity.hide(player);
                     }
                     continue;
                 }

@@ -27,8 +27,7 @@ public class FakeEntityHologram implements Hologram {
     public FakeEntityHologram(FakeEntity fakeEntity) {
         this.fakeEntity = fakeEntity;
         this.location = this.fakeEntity.getLocation().clone();
-        //this.location.setY(this.location.getY() + fakeEntity.getHologramY(this.lines));
-        this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
+        this.location.setY(this.location.getY() + fakeEntity.getHologramY(this.lines));
     }
 
     public Location getLocation(final Player player) {
@@ -37,14 +36,14 @@ public class FakeEntityHologram implements Hologram {
 
     public void updateLocation() {
         this.location = this.fakeEntity.getLocation().clone();
-        this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
+        this.location.setY(this.location.getY() + fakeEntity.getHologramY(this.lines));
         this.fakeEntity.getSeeingPlayers().forEach(player -> teleportTo(player, this.location));
     }
 
     public void setFakeEntity(FakeEntity fakeEntity) {
         this.fakeEntity = fakeEntity;
         this.location = this.fakeEntity.getLocation().clone();
-        this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
+        this.location.setY(this.location.getY() + fakeEntity.getHologramY(this.lines));
     }
 
     public void setPlayerLocation(final Player player, Location location) {

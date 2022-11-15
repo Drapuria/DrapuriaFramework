@@ -182,10 +182,15 @@ public class NPC extends FakeEntity {
         }
     }
 
+    public void setHalfInvisible(boolean halfInvisible) {
+
+    }
+
     @Override
     public void moveTo(Location location) {
         this.location = location;
-        this.hologram.updateLocation();
+        if (this.hologram != null)
+            this.hologram.updateLocation();
         this.positionModifier()
                 .queuePositionUpdate()
                 .queueRotate(this.location.getYaw(), this.location.getPitch())

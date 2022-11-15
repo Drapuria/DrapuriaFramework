@@ -18,14 +18,16 @@ import java.util.Map;
 public class FakeEntityHologram implements Hologram {
 
     private transient FakeEntity fakeEntity;
+    @SuppressWarnings("FieldMayBeFinal")
     private List<Line> lines = new ArrayList<>();
     private transient final Map<Player, List<Line>> playerLines = new HashMap<>(); // ??
-    private transient final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneaks etc
+    private transient final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneak etc
     private transient Location location;
 
     public FakeEntityHologram(FakeEntity fakeEntity) {
         this.fakeEntity = fakeEntity;
         this.location = this.fakeEntity.getLocation().clone();
+        //this.location.setY(this.location.getY() + fakeEntity.getHologramY(this.lines));
         this.location.setY(this.location.getY() + fakeEntity.getHologramHeight());
     }
 
@@ -99,8 +101,8 @@ public class FakeEntityHologram implements Hologram {
 
     @Override
     public void setLocation(Location location) {
-        location.setY(fakeEntity.getHologramHeight());
-        final Location oldLocation = this.location;
+        location.setY(location.getY() + fakeEntity.getHologramY(lines));
+        final Location oldLocation = this.location.clone();
         this.location = location;
         for (Player player : fakeEntity.getSeeingPlayers()) {
             if (!HologramHelper.isInRange(player.getLocation(), this.getLocation(player))) hide(player);
@@ -127,23 +129,33 @@ public class FakeEntityHologram implements Hologram {
     }
 
     public void addLine(final Line line) {
+        this.fakeEntity.getSeeingPlayers().forEach(this::hide);
         this.lines.add(line);
+        this.fakeEntity.getSeeingPlayers().forEach(this::show);
     }
 
     public void removeLine(final Line line) {
+        this.fakeEntity.getSeeingPlayers().forEach(this::hide);
         this.lines.remove(line);
+        this.fakeEntity.getSeeingPlayers().forEach(this::show);
     }
 
     public void addLine(final int index, final Line line) {
+        this.fakeEntity.getSeeingPlayers().forEach(this::hide);
         this.lines.add(index, line);
+        this.fakeEntity.getSeeingPlayers().forEach(this::show);
     }
 
     public void removeLine(final int index) {
+        this.fakeEntity.getSeeingPlayers().forEach(this::hide);
         this.lines.remove(index);
+        this.fakeEntity.getSeeingPlayers().forEach(this::show);
     }
 
     public void removePlayerLines(final Player player) {
+        this.fakeEntity.getSeeingPlayers().forEach(this::hide);
         this.playerLines.remove(player);
+        this.fakeEntity.getSeeingPlayers().forEach(this::show);
     }
 
     public List<Line> getLines() {

@@ -6,6 +6,7 @@ package net.drapuria.framework.bukkit.player;
 
 import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.impl.metadata.Metadata;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import net.md_5.bungee.api.ChatColor;
@@ -31,7 +32,8 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_18_2(player, System.currentTimeMillis());
+        Metadata.provideForPlayer(player);
+        final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_19(player, System.currentTimeMillis());
         playerRepository.save(drapuriaPlayer);
     }
 

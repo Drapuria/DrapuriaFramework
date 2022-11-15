@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class NPC extends FakeEntity {
 
-    private static ProtocolLibService protocolService = ProtocolLibService.getService;
+    private static final ProtocolLibService protocolService = ProtocolLibService.getService;
     private static final FakeEntityService SERVICE = DrapuriaCommon.getBean(FakeEntityService.class);
     public static final Map<EnumWrappers.ItemSlot, Integer> SLOT_CONVERTER = new HashMap<>();
 
@@ -50,6 +50,7 @@ public class NPC extends FakeEntity {
     private final NPCOptions npcOptions;
     @Setter
     private NPCInventory inventory = new NPCInventory(this);
+    private transient boolean invisible = false;
 
     public NPC(int entityId, FakeEntityOptions options, Location location, final FakeEntityPool entityPool, NPCOptions npcOptions) {
         super(entityId, location, entityPool, options);
@@ -72,7 +73,6 @@ public class NPC extends FakeEntity {
 
     private void updateName() {
         if (this.npcOptions.getNameTagType().isHideHologram()) {
-            Bukkit.broadcastMessage("preparing to hide..?");
             npcOptions.getNpcProfile().setName((!npcOptions.getNpcProfile().getName().startsWith("§r") ? "§r" : "") + npcOptions.getNpcProfile().getName());
         }
         if (npcOptions.getNpcProfile().isComplete())
@@ -164,6 +164,18 @@ public class NPC extends FakeEntity {
         WrappedGameProfile finalGameProfile = gameProfile;
         npcProfile.getProperties().forEach(property -> finalGameProfile.getProperties().put(property.getName(), property.asWrapped()));
         return finalGameProfile;
+    }
+
+    @Override
+    public void setInvisible(boolean invisible) {
+        if (this.invisible != invisible) {
+            this.invisible = invisible;
+            metadataModifier().queue(NPCMetadataModifier.EntityMetadata.INVISIBILITY, this.invisible).send(seeingPlayers.toArray(new Player[0]));
+            if (this.invisible)
+                seeingPlayers.forEach(player -> visibilityModifier().queueShowHalfVisible(player).send(player));
+            else
+                seeingPlayers.forEach(player -> visibilityModifier().queueHideHalfVisible(player).send(player));
+        }
     }
 
     @Override

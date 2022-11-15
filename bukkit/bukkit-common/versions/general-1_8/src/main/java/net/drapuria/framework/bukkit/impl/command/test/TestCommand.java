@@ -23,7 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.HashMap;
 import java.util.Map;
 
-//@Command(names = {"drapuriatest"}, description = "Drapuria Test Command")
+@Command(names = {"drapuriatest"}, description = "Drapuria Test Command")
 public class TestCommand extends DrapuriaCommand {
 
     @SubCommand(names = "arguments", parameters = "{Integer} {Text}")

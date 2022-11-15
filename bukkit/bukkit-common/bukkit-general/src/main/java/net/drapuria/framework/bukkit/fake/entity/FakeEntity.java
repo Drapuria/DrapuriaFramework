@@ -51,6 +51,8 @@ public abstract class FakeEntity {
             this.hologram.updateLocation();
     }
 
+    public abstract void setInvisible(boolean invisible);
+
     public abstract void moveTo(Location location);
 
     public abstract void show(final Player player);
@@ -61,7 +63,7 @@ public abstract class FakeEntity {
 
     public abstract void respawn();
 
-    protected double getHologramY(final List<Line> lines) {
+    public double getHologramY(final List<Line> lines) {
         double i = getHologramHeight();
         for (Line line : lines) {
             if (line instanceof ItemLine) {

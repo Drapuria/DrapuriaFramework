@@ -7,6 +7,7 @@ import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import net.drapuria.framework.bukkit.fake.entity.modifier.FakeEntityModifier;
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -67,6 +68,13 @@ public class NPCMetadataModifier extends FakeEntityModifier<NPC> {
                 Byte.class,
                 Arrays.asList(9, 9, 10, 14, 14, 15),
                 input -> (byte) (input ? 0xff : 0)
+        );
+
+        public static final EntityMetadata<Boolean, Byte> INVISIBILITY = new EntityMetadata<>(
+                0,
+                Byte.class,
+                Collections.emptyList(),
+                input -> (byte) (input ? 0x20 : 0)
         );
 
         private final int baseIndex;

@@ -15,6 +15,7 @@
         <module>bukkit-1_8</module>
         <module>bukkit-1_18</module>
         <module>bukkit-1_18_2</module>
+        <module>bukkit-1_19_2</module>
     </modules>
 
     <properties>

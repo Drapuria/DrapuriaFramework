@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.bukkit.event.EventPriority.MONITOR;
+import static org.bukkit.event.EventPriority.*;
 
 @Service(name = "sidebar")
 @Setter
@@ -83,17 +84,20 @@ public class ScoreboardService {
                             list.remove(player);
                     });
                     metadataMap.get(SCOREBOARD_KEY).ifPresent(DrapuriaBoard::remove);
+                    metadataMap.remove(ADAPTER_KEY);
+                    metadataMap.remove(SCOREBOARD_KEY);
                 }).build(Drapuria.PLUGIN);
 
         Events.subscribe(PlayerJoinEvent.class)
                 .priority(MONITOR)
                 .listen((subscription, event) -> {
+
                     final Player player = event.getPlayer();
                     if (boardImplementationConstructor == null)
                         return;
                     try {
                         DrapuriaBoard board;
-                        Metadata.provideForPlayer(player)
+                        Metadata.players().provide(player)
                                 .put(SCOREBOARD_KEY, board = (DrapuriaBoard) boardImplementationConstructor
                                         .newInstance(SidebarOptions.defaultOptions(),
                                                 player,
@@ -104,7 +108,7 @@ public class ScoreboardService {
                                 .put(ADAPTER_KEY, defaultAdapter);
                         board.setLines(defaultAdapter.getLines(player));
                         board.setTitle(defaultAdapter.getTitle(player));
-                        this.adapters.get(defaultAdapter).add(player);
+                        adapters.get(defaultAdapter).add(player);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
@@ -158,9 +162,11 @@ public class ScoreboardService {
             long ticks = this.ticksDown.get(adapter);
             if (--ticks == 0) {
                 entry.getValue().forEach(player -> {
+
                     Metadata.get(player)
                             .flatMap(metadataMap -> metadataMap.get(SCOREBOARD_KEY))
-                            .ifPresent(drapuriaBoard -> {
+                            .ifPresent(drapuriaBoard ->
+                            {
                                 drapuriaBoard.setLines(adapter.getLines(player));
                                 drapuriaBoard.setTitle(adapter.getTitle(player));
                             });

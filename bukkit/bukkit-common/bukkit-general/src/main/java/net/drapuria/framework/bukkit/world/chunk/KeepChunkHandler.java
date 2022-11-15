@@ -6,13 +6,12 @@ package net.drapuria.framework.bukkit.world.chunk;
 
 import net.drapuria.framework.beans.annotation.PostDestroy;
 import net.drapuria.framework.beans.annotation.PostInitialize;
-import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.listener.events.EventSubscription;
 import net.drapuria.framework.bukkit.listener.events.Events;
+import net.drapuria.framework.util.LongHash;
 import org.bukkit.Chunk;
-import org.bukkit.craftbukkit.v1_8_R3.util.LongHash;
 import org.bukkit.event.world.ChunkUnloadEvent;
 
 import java.util.HashSet;

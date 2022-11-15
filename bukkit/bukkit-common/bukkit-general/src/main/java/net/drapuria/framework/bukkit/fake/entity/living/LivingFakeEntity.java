@@ -36,6 +36,11 @@ public class LivingFakeEntity extends FakeEntity {
     }
 
     @Override
+    public void setInvisible(boolean invisible) {
+        //..
+    }
+
+    @Override
     public void moveTo(Location location) {
         this.location = location;
         this.positionModifier().queuePositionUpdate().send(this.seeingPlayers);
@@ -45,7 +50,6 @@ public class LivingFakeEntity extends FakeEntity {
     @Override
     public void show(Player player) {
         super.seeingPlayers.add(player);
-        player.sendMessage("spawning?");
         visibilityModifier()
                 .queueSpawn()
                 .send(player);

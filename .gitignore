@@ -5,6 +5,8 @@
 *.ipr
 *.iws
 
+*.bat
+
 # IntelliJ
 out/
 

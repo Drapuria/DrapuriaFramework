@@ -35,6 +35,7 @@ public class HologramService {
     private boolean isUseEventsForHologramHandling = true, oldUseEventsForHologramHandling = isUseEventsForHologramHandling;
     private final Set<EventSubscription<?>> subscribedEvents = new HashSet<>();
     private ScheduledFuture<?> scheduledFuture;
+    private boolean destroying = false;
 
     @Getter
     private final HologramRepository hologramRepository = new HologramRepository();
@@ -64,6 +65,7 @@ public class HologramService {
     private long delay = 500;
 
     private void initScheduler() {
+        if (this.destroying) return;
         scheduledFuture = executorService.scheduleWithFixedDelay(this::checkLoadableHolograms, 500, delay, TimeUnit.MILLISECONDS);
     }
 
@@ -110,6 +112,7 @@ public class HologramService {
 
     @PostDestroy
     public void destroy() {
+        this.destroying = true;
         setUseEventsForHologramHandling(false);
     }
 

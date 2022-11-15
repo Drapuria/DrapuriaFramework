@@ -20,6 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +72,7 @@ public class FakeEntityService {
     public void registerEvents() {
         Events
                 .subscribe(PlayerJoinEvent.class)
-                .priority(EventPriority.LOWEST)
+                .priority(EventPriority.MONITOR)
                 .listen(event -> {
                     final Player player = event.getPlayer();
                     cooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 3000L);
@@ -81,9 +83,18 @@ public class FakeEntityService {
                         wrappedPacketOutScoreboardTeam.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
 
                         WrappedPacketOutScoreboardTeam halfVisibilityWrappedPacketOutScoreboardTeam = new WrappedPacketOutScoreboardTeam();
-                        wrappedPacketOutScoreboardTeam.setName(halfInvisibileScoreboardTeamName);
-                        wrappedPacketOutScoreboardTeam.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
-                        wrappedPacketOutScoreboardTeam.setSeeFriendlyInvisibles(true);
+                        final Scoreboard playerScoreboard = player.getScoreboard();
+                        final Team playerScoreboardTeam = playerScoreboard == null ? null : playerScoreboard.getEntryTeam(player.getName());
+                        final String halfVisibleTeamName = playerScoreboardTeam == null ? halfInvisibileScoreboardTeamName : playerScoreboardTeam.getName();
+                        halfVisibilityWrappedPacketOutScoreboardTeam.setName(halfVisibleTeamName);
+                        halfVisibilityWrappedPacketOutScoreboardTeam.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
+                        halfVisibilityWrappedPacketOutScoreboardTeam.setSeeFriendlyInvisibles(true);
+                        if (playerScoreboardTeam != null) {
+                            halfVisibilityWrappedPacketOutScoreboardTeam.setDisplayName(playerScoreboardTeam.getDisplayName());
+                            halfVisibilityWrappedPacketOutScoreboardTeam.setPrefix(playerScoreboardTeam.getPrefix());
+                            halfVisibilityWrappedPacketOutScoreboardTeam.setSuffix(playerScoreboardTeam.getSuffix());
+                        }
+                        halfScoreboardTeamRegistry.put(player, halfVisibilityWrappedPacketOutScoreboardTeam);
                         scoreboardTeamRegistry.put(player, wrappedPacketOutScoreboardTeam);
                         updateTeamForPlayer(player);
                     });
@@ -140,6 +151,10 @@ public class FakeEntityService {
 
     public WrappedPacketOutScoreboardTeam getScoreboardTeamPacket(final Player player) {
         return this.scoreboardTeamRegistry.get(player);
+    }
+
+    public WrappedPacketOutScoreboardTeam getHalfVisibleScoreboardTeamPacket(final Player player) {
+        return this.halfScoreboardTeamRegistry.get(player);
     }
 
     public void updateTeamForPlayer(Player player) {

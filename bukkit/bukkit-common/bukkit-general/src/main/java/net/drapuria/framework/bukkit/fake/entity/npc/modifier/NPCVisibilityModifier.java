@@ -1,19 +1,24 @@
 package net.drapuria.framework.bukkit.fake.entity.npc.modifier;
 
 import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.*;
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.bukkit.fake.entity.FakeEntityPool;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityService;
 import net.drapuria.framework.bukkit.fake.entity.modifier.FakeEntityModifier;
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.SkinType;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 public class NPCVisibilityModifier extends FakeEntityModifier<NPC> {
@@ -88,12 +93,72 @@ public class NPCVisibilityModifier extends FakeEntityModifier<NPC> {
         return this;
     }
 
-    public NPCVisibilityModifier queueShowHalfVisible(final Player player) {
-        final PacketContainer teamPacket = super.newContainer(PacketType.Play.Server.SCOREBOARD_TEAM);
-       // Team pTeam = player.getScoreboard().getEntryTeam(player.getName());
 
+    public NPCVisibilityModifier queueShowHalfVisible(final Player player) {
+        WrappedPacketOutScoreboardTeam teamPacket = setupTeamScoreboard(player);
+        teamPacket.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
+        teamPacket.setAction(2);
+        ProtocolLibService.getService.sendPacket(player, teamPacket.asProtocolLibPacketContainer());
+        teamPacket.setAction(3);
+        teamPacket.setNameSet(Collections.singletonList(this.fakeEntity.getGameProfile().getName()));
+        add(teamPacket.asProtocolLibPacketContainer());
         return this;
     }
+
+    public NPCVisibilityModifier queueHideHalfVisible(final Player player) {
+
+        WrappedPacketOutScoreboardTeam teamPacket = setupTeamScoreboard(player);;
+        teamPacket.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.ALWAYS);
+        teamPacket.setAction(2);
+        ProtocolLibService.getService.sendPacket(player, teamPacket.asProtocolLibPacketContainer());
+        teamPacket.setNameSet(Collections.singletonList(this.fakeEntity.getGameProfile().getName()));
+        teamPacket.setAction(4);
+        ProtocolLibService.getService.sendPacket(player, teamPacket.asProtocolLibPacketContainer());
+        WrappedPacketOutScoreboardTeam realTeam = FakeEntityService.getService.getScoreboardTeamPacket(player);
+        realTeam.setAction(3);
+        realTeam.setNameSet(Collections.singletonList(this.fakeEntity.getGameProfile().getName()));
+        add(realTeam.asProtocolLibPacketContainer());
+        return this;
+    }
+
+    private WrappedPacketOutScoreboardTeam setupTeamScoreboard(Player player) {
+        Team pTeam = player.getScoreboard().getEntryTeam(player.getName());
+        WrappedPacketOutScoreboardTeam teamPacket = new WrappedPacketOutScoreboardTeam();
+        teamPacket.setDisplayName(pTeam.getDisplayName());
+        teamPacket.setName(pTeam.getName());
+        teamPacket.setPrefix(pTeam.getPrefix());
+        teamPacket.setSuffix(pTeam.getSuffix());
+        return teamPacket;
+    }
+
+
+
+    /*
+    public NPCVisibilityModifier queueShowHalfVisible(final Player player) {
+      //  final PacketContainer teamPacket = super.newContainer(PacketType.Play.Server.SCOREBOARD_TEAM);
+       // Team pTeam = player.getScoreboard().getEntryTeam(player.getName());
+        WrappedPacketOutScoreboardTeam teamPacket = FakeEntityService.getService.getHalfVisibleScoreboardTeamPacket(player);
+        teamPacket.setAction(2);
+        teamPacket.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.NEVER);
+        ProtocolLibService.getService.sendPacket(player, teamPacket.asProtocolLibPacketContainer());
+        teamPacket.setAction(3);
+        teamPacket.setNameSet(Arrays.asList(player.getName(), this.fakeEntity.getGameProfile().getName()));
+        add(teamPacket.asProtocolLibPacketContainer());
+        return this;
+    }
+
+    public NPCVisibilityModifier queueHideHalfVisible(final Player player) {
+        WrappedPacketOutScoreboardTeam teamPacket = FakeEntityService.getService.getHalfVisibleScoreboardTeamPacket(player);
+        teamPacket.setAction(4);
+      //  teamPacket.setNameSet(Collections.singletonList(this.fakeEntity.getGameProfile().getName()));
+        teamPacket.setNameSet(Arrays.asList(player.getName(), this.fakeEntity.getGameProfile().getName()));
+        ProtocolLibService.getService.sendPacket(player, teamPacket.asProtocolLibPacketContainer());
+        teamPacket.setVisibility(WrappedPacketOutScoreboardTeam.NameTagVisibility.ALWAYS);
+        teamPacket.setAction(2);
+        add(teamPacket.asProtocolLibPacketContainer());
+        return this;
+    }
+     */
 
     public NPCVisibilityModifier queueDestroy() {
         final PacketContainer packetContainer = super.newContainer(PacketType.Play.Server.ENTITY_DESTROY, false);

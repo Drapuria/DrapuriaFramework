@@ -15,6 +15,7 @@
         <module>general-1_8</module>
         <module>general-1_18</module>
         <module>1_18</module>
+        <module>general-1_19</module>
     </modules>
 
     <properties>

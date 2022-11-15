@@ -5,7 +5,7 @@
 package net.drapuria.framework.bukkit.java;
 
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.VarHandle; // if class not found, just ignore. It will build anyways
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 

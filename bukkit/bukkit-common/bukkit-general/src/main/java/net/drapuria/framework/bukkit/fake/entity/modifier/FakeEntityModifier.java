@@ -68,6 +68,10 @@ public class FakeEntityModifier<T extends FakeEntity> {
                         protocolService.sendPacket(player, createClone ? packetContainer.shallowClone() : packetContainer)));
     }
 
+    protected void add(final PacketContainer packetContainer) {
+        this.packetContainerList.add(packetContainer);
+    }
+
     public void send(@NotNull Player... players) {
         this.send(Arrays.asList(players));
     }

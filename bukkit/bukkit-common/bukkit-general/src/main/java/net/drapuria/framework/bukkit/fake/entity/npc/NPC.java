@@ -94,7 +94,11 @@ public class NPC extends FakeEntity {
         }
         SERVICE.getExecutorService().schedule(() -> {
             if (!player.isOnline()) return;
-            visibilityModifier.queueSpawn(craftPlayer).send(player);
+            visibilityModifier.queueSpawn(craftPlayer);
+            if (this.invisible) {
+                metadataModifier().queue(NPCMetadataModifier.EntityMetadata.INVISIBILITY, true).send(player);
+                visibilityModifier().queueHideHalfVisible(player).send(player);
+            }
             if (super.hologram != null && this.npcOptions.getNameTagType() == NameTagType.HOLOGRAM)
                 super.hologram.show(player);
             SERVICE.getExecutorService().schedule(() -> {

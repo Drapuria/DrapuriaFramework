@@ -66,6 +66,7 @@ public class FakeEntityModifier<T extends FakeEntity> {
         players.forEach(player ->
                 packetContainerList.forEach(packetContainer ->
                         protocolService.sendPacket(player, createClone ? packetContainer.shallowClone() : packetContainer)));
+        packetContainerList.clear();
     }
 
     protected void add(final PacketContainer packetContainer) {

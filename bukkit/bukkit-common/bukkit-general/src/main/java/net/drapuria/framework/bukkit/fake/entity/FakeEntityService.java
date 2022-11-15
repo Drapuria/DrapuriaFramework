@@ -104,7 +104,12 @@ public class FakeEntityService {
                 .subscribe(PlayerQuitEvent.class)
                 .priority(EventPriority.MONITOR)
                 .listen(event -> {
-                    this.scoreboardTeamRegistry.remove(event.getPlayer());
+                    final Player player = event.getPlayer();
+                    this.scoreboardTeamRegistry.remove(player);
+                    this.halfScoreboardTeamRegistry.remove(player);
+                    this.getPools().stream().flatMap(fakeEntityPool -> fakeEntityPool.getEntityCollection().stream())
+                            .filter(fakeEntity -> fakeEntity.getSeeingPlayers().contains(player))
+                            .forEach(fakeEntity -> fakeEntity.getSeeingPlayers().remove(player));
                 })
                 .build(Drapuria.PLUGIN);
     }

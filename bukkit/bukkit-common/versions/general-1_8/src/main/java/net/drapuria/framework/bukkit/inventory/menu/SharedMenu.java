@@ -6,6 +6,7 @@ package net.drapuria.framework.bukkit.inventory.menu;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
@@ -44,5 +45,11 @@ public abstract class SharedMenu extends AbstractSharedMenu {
         for (Map.Entry<Integer, IButton> entry : buttons.entrySet()) {
             inventory.setItem(entry.getKey(), entry.getValue().getIcon(null));
         }
+    }
+
+    @Override
+    public void updateButton(Player player, int slot, IButton button) {
+        final Inventory inventory = this.getInventory(player);
+        inventory.setItem(slot, button.getIcon(player));
     }
 }

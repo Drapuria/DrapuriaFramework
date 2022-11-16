@@ -21,6 +21,10 @@ public class AbstractMetadataRegistry<T> implements MetadataRegistry<T> {
         return (CacheLoader) LOADER;
     }
 
+    public AbstractMetadataRegistry() {
+        cache().cleanUp();
+    }
+
     @Nonnull
     protected final LoadingCache<T, MetadataMap> cache = Caffeine.newBuilder().build(getLoader());
 
@@ -32,7 +36,7 @@ public class AbstractMetadataRegistry<T> implements MetadataRegistry<T> {
     @Override
     public MetadataMap provide(@Nonnull T id) {
         Objects.requireNonNull(id, "id");
-        return this.cache.get(id);
+        return this.cache.get(id, t -> MetadataMap.create());
     }
 
     @Nonnull

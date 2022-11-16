@@ -62,11 +62,14 @@ public class FakeEntityHologram implements Hologram {
         double currentY = location.getY() + getFullHologramHeight();
         for (int i = 0; i < this.lines.size(); i++) {
             Line line = this.lines.get(i);
+            if (i != 0) {
+                currentY -= line.getHeight();
+                currentY -= 0.05D;
+                oldCurrentY -= line.getHeight();
+                oldCurrentY -= 0.05D;
+            }
             PacketHelper.sendPackets(player, line.getTeleportPackets(player, oldLocation.getX(), oldCurrentY, oldLocation.getZ(), location.getX(), currentY, location.getZ()));
-            currentY -= line.getHeight();
-            currentY -= 0.05D;
-            oldCurrentY -= line.getHeight();
-            oldCurrentY -= 0.05D;
+
         }
     }
 

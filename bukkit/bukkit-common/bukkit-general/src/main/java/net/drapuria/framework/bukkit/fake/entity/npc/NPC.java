@@ -89,6 +89,7 @@ public class NPC extends FakeEntity {
                 .send(player);
         if (this.npcOptions.getSkinType() == SkinType.OWN || this.npcOptions.getNameTagType().isHideHologram()) {
             WrappedPacketOutScoreboardTeam packet = SERVICE.getScoreboardTeamPacket(player);
+            packet.setAction(3);
             packet.setNameSet(Collections.singletonList(this.npcOptions.getSkinType() == SkinType.OWN ? ("§r" + player.getUniqueId().toString().substring(0, 6)) : this.gameProfile.getName()));
             protocolService.sendPacket(player, packet.asProtocolLibPacketContainer());
         }

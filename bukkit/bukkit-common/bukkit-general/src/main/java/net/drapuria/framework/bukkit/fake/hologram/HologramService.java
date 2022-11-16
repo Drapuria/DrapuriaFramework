@@ -11,6 +11,8 @@ import net.drapuria.framework.bukkit.fake.entity.FakeEntityService;
 import net.drapuria.framework.bukkit.fake.hologram.repository.HologramRepository;
 import net.drapuria.framework.bukkit.listener.events.EventSubscription;
 import net.drapuria.framework.bukkit.listener.events.Events;
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
+import net.drapuria.framework.bukkit.player.PlayerRepository;
 import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -22,7 +24,9 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -39,6 +43,9 @@ public class HologramService {
 
     @Getter
     private final HologramRepository hologramRepository = new HologramRepository();
+
+    @Autowired
+    private PlayerRepository playerRepository;
 
     private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
             .setDaemon(true)
@@ -179,6 +186,7 @@ public class HologramService {
 
     private void checkLoadableHolograms() {
         for (final Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
+
             for (Hologram hologram : this.hologramRepository.getHolograms(player)) {
                 if (hologram.isLocationBoundToPlayer())
                     hologram.updateBound();
@@ -202,6 +210,19 @@ public class HologramService {
     }
 
     private void checkLoadableHolograms(final Player player) {
+        final Optional<DrapuriaPlayer> drapuriaPlayer = this.playerRepository.findById(player.getUniqueId());
+        if (!drapuriaPlayer.isPresent() || drapuriaPlayer.get().getSessionJoin() < System.currentTimeMillis() - 800) {
+            if (isUseEventsForHologramHandling) {
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (player.isOnline())
+                            checkLoadableHolograms(player);
+                    }
+                }.runTaskLater(Drapuria.PLUGIN, 15);
+            }
+            return;
+        }
         for (Hologram hologram : this.hologramRepository.getHolograms(player)) {
             hologram.checkHologram();
         }

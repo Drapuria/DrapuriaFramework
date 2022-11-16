@@ -54,7 +54,8 @@ public class LivingFakeEntity extends FakeEntity {
                 .queueSpawn()
                 .send(player);
         if (this.options.isPlayerLook()) this.tickActionForPlayer(player);
-        if (this.itemInHand != null) equipmentModifier().queue(EnumWrappers.ItemSlot.MAINHAND, this.itemInHand).send(player);
+        if (this.itemInHand != null)
+            equipmentModifier().queue(EnumWrappers.ItemSlot.MAINHAND, this.itemInHand).send(player);
         if (super.hologram != null)
             super.hologram.show(player);
     }
@@ -93,8 +94,10 @@ public class LivingFakeEntity extends FakeEntity {
 
     @Override
     public void tickActionForPlayer(Player player) {
-        positionModifier().queueLookAt(player.getLocation())
-                .send(player);
+        if (isRespawning()) return;
+        if (options.isPlayerLook())
+            positionModifier().queueLookAt(player.getLocation())
+                    .send(player);
     }
 
     @Override

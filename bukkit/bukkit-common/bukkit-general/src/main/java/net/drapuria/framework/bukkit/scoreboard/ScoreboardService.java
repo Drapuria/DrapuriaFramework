@@ -97,21 +97,22 @@ public class ScoreboardService {
                         return;
                     try {
                         DrapuriaBoard board;
-                        Metadata.players().provide(player)
-                                .put(SCOREBOARD_KEY, board = (DrapuriaBoard) boardImplementationConstructor
-                                        .newInstance(SidebarOptions.defaultOptions(),
-                                                player,
-                                                defaultAdapter == null ? null : defaultAdapter.getTitle(player)));
+                        final MetadataMap metadataMap = Metadata.provideForPlayer(player);
+
+                        metadataMap.put(SCOREBOARD_KEY, board = (DrapuriaBoard) boardImplementationConstructor
+                                .newInstance(SidebarOptions.defaultOptions(),
+                                        player,
+                                        defaultAdapter == null ? null : defaultAdapter.getTitle(player)));
                         if (defaultAdapter == null)
                             return;
-                        Metadata.provideForPlayer(player)
-                                .put(ADAPTER_KEY, defaultAdapter);
+                        metadataMap.put(ADAPTER_KEY, defaultAdapter);
                         board.setLines(defaultAdapter.getLines(player));
                         board.setTitle(defaultAdapter.getTitle(player));
                         adapters.get(defaultAdapter).add(player);
                     } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
+
                 }).build(Drapuria.PLUGIN);
         Events.subscribe(ScoreboardAdapterRemovedEvent.class)
                 .priority(MONITOR)

@@ -16,6 +16,7 @@ import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.drapuria.framework.bukkit.configuration.BukkitDrapuriaConfiguration;
 import net.drapuria.framework.bukkit.impl.*;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
+import net.drapuria.framework.bukkit.impl.metadata.Metadata;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
 import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
@@ -39,6 +40,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * The Bukkit Framework Main class
@@ -98,6 +100,7 @@ public class Drapuria {
         }));
         if (drapuriaConfiguration.getDevelopmentConfiguration().getRestartIfUpdateFolderNotEmpty().isEnabled())
             startUpdateFolderChecker();
+        Metadata.provideForPlayer(UUID.randomUUID());
     }
 
     @SneakyThrows
@@ -129,7 +132,11 @@ public class Drapuria {
                 Drapuria.LOGGER.error("The plugin is not enabled but trying to register listener.");
                 return;
             }
-            plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+            try {
+                plugin.getServer().getPluginManager().registerEvents(listener, plugin);
+            } catch (Exception e) {
+                Stacktrace.print("Could not fully register " + listener.getClass().getName(), e);
+            }
         }
     }
 

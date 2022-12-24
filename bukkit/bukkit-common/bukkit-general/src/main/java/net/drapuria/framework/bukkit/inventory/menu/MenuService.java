@@ -5,6 +5,7 @@
 package net.drapuria.framework.bukkit.inventory.menu;
 
 import net.drapuria.framework.beans.annotation.Service;
+import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -19,6 +19,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -211,7 +212,7 @@ public class HologramService {
 
     private void checkLoadableHolograms(final Player player) {
         final Optional<DrapuriaPlayer> drapuriaPlayer = this.playerRepository.findById(player.getUniqueId());
-        if (!drapuriaPlayer.isPresent() || drapuriaPlayer.get().getSessionJoin() < System.currentTimeMillis() - 800) {
+        if (!drapuriaPlayer.isPresent() || drapuriaPlayer.get().getSessionJoin() > System.currentTimeMillis() - 800) {
             if (isUseEventsForHologramHandling) {
                 new BukkitRunnable() {
                     @Override
@@ -261,6 +262,13 @@ public class HologramService {
                                 || event.getFrom().getChunk().getZ() != event.getTo().getChunk().getZ()))
                         .priority(EventPriority.MONITOR)
                         .listen(event -> DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> this.checkLoadableHolograms(event.getPlayer()), 10L))
+                        .build(Drapuria.PLUGIN)
+        );
+        this.subscribedEvents.add(
+                Events.subscribe(PlayerJoinEvent.class)
+                        .listen(event -> {
+                            DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> this.checkLoadableHolograms(event.getPlayer()), 18L);
+                        })
                         .build(Drapuria.PLUGIN)
         );
     }

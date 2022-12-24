@@ -13,6 +13,7 @@ import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.entity.RelativeTeleportFlag;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.util.TriState;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -77,6 +78,7 @@ public record DrapuriaPlayer1_19(Player player, long sessionJoin) implements Dra
         player.sendActionBar(Component.text(text));
     }
 
+
     @Override
     public void sendTitle(String text, int fadein, int showtime, int fadeout) {
 
@@ -113,6 +115,7 @@ public record DrapuriaPlayer1_19(Player player, long sessionJoin) implements Dra
             getInventory().addItem(item);
         }
     }
+
 
     @Override
     public long getSessionJoin() {
@@ -682,6 +685,41 @@ public record DrapuriaPlayer1_19(Player player, long sessionJoin) implements Dra
     @Override
     public void showElderGuardian(boolean b) {
         player.showElderGuardian(b);
+    }
+
+    @Override
+    public int getWardenWarningCooldown() {
+        return player.getWardenWarningCooldown();
+    }
+
+    @Override
+    public void setWardenWarningCooldown(int i) {
+        player.setWardenWarningCooldown(i);
+    }
+
+    @Override
+    public int getWardenTimeSinceLastWarning() {
+        return player.getWardenTimeSinceLastWarning();
+    }
+
+    @Override
+    public void setWardenTimeSinceLastWarning(int i) {
+        player.setWardenTimeSinceLastWarning(i);
+    }
+
+    @Override
+    public int getWardenWarningLevel() {
+        return player.getWardenWarningLevel();
+    }
+
+    @Override
+    public void setWardenWarningLevel(int i) {
+        player.setWardenWarningLevel(i);
+    }
+
+    @Override
+    public void increaseWardenWarningLevel() {
+        player.increaseWardenWarningLevel();
     }
 
     @Override
@@ -2215,6 +2253,26 @@ public record DrapuriaPlayer1_19(Player player, long sessionJoin) implements Dra
     }
 
     @Override
+    public void broadcastSlotBreak(@NotNull EquipmentSlot equipmentSlot) {
+
+    }
+
+    @Override
+    public void broadcastSlotBreak(@NotNull EquipmentSlot equipmentSlot, @NotNull Collection<Player> collection) {
+
+    }
+
+    @Override
+    public @NotNull ItemStack damageItemStack(@NotNull ItemStack itemStack, int i) {
+        return null;
+    }
+
+    @Override
+    public void damageItemStack(@NotNull EquipmentSlot equipmentSlot, int i) {
+
+    }
+
+    @Override
     public @Nullable ItemStack getItemInUse() {
         return player.getItemInUse();
     }
@@ -2757,6 +2815,16 @@ public record DrapuriaPlayer1_19(Player player, long sessionJoin) implements Dra
     @Override
     public <T extends Projectile> @NotNull T launchProjectile(@NotNull Class<? extends T> aClass, @Nullable Vector vector, @Nullable Consumer<T> consumer) {
         return player.launchProjectile(aClass, vector, consumer);
+    }
+
+    @Override
+    public @NotNull TriState getFrictionState() {
+        return null;
+    }
+
+    @Override
+    public void setFrictionState(@NotNull TriState triState) {
+
     }
 }
 

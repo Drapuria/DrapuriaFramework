@@ -213,6 +213,14 @@ public class PlayerDefinedHologram implements Hologram {
     }
 
     @Override
+    public void updateLine(Line line) {
+        for (Player player : this.shownFor) {
+            if (this.playerLines.containsKey(player) && this.playerLines.get(player).contains(line))
+                PacketHelper.sendPackets(player, line.getUpdatePackets(player));
+        }
+    }
+
+    @Override
     public List<Player> getIncludedOrExcludedPlayers() {
         return this.includedOrExcludedPlayers;
     }

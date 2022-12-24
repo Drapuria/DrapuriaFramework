@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
+import com.comphenix.protocol.events.PacketContainer;
 import lombok.NoArgsConstructor;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +22,7 @@ public class FakeEntityHologram implements Hologram {
     private transient FakeEntity fakeEntity;
     @SuppressWarnings("FieldMayBeFinal")
     private List<Line> lines = new ArrayList<>();
+    private final List<Line> clientSynchronized = new ArrayList<>();
     private transient final Map<Player, List<Line>> playerLines = new HashMap<>(); // ??
     private transient final Map<Player, Location> playerDefinedLocations = new HashMap<>(); // to handle sneak etc
     private transient Location location;
@@ -214,6 +217,15 @@ public class FakeEntityHologram implements Hologram {
     }
 
     @Override
+    public void updateLine(Line line) {
+        for (Player seeingPlayer : this.fakeEntity.getSeeingPlayers()) {
+            if (this.playerLines.containsKey(seeingPlayer) && !this.playerLines.get(seeingPlayer).contains(line))
+                continue;
+            PacketHelper.sendPackets(seeingPlayer, line.getUpdatePackets(seeingPlayer));
+        }
+    }
+
+    @Override
     public List<Player> getIncludedOrExcludedPlayers() {
         throw new UnsupportedOperationException("Included or excluded players are handled by the FakeEntity!");
 
@@ -234,6 +246,38 @@ public class FakeEntityHologram implements Hologram {
     @Override
     public boolean isExcludedOrIncluded(Player player) {
         throw new UnsupportedOperationException("Included or excluded players are handled by the FakeEntity!");
+    }
+
+    private double getAlignmentAdjustmentHeight() { // TODO?
+        return 0.0D;
+    }
+
+    public void synchronizeLines() {
+        double currentY = this.location.getY() + this.getFullHologramHeight() + this.getAlignmentAdjustmentHeight();
+        for (int lineIndex = 0; lineIndex < this.lines.size(); ++lineIndex) {
+            final Line line2 = this.lines.get(lineIndex);
+            currentY -= line2.getHeight();
+            currentY -= 0.05;
+            final int syncedBefore = this.clientSynchronized.indexOf(line2);
+            if (syncedBefore == -1) {
+                for (final Player loaded : this.fakeEntity.getSeeingPlayers()) {
+                    PacketHelper.sendPackets(loaded, line2.getSpawnPackets(loaded, this.location.getX(), currentY, this.location.getZ()));
+                }
+            } else if (syncedBefore != lineIndex) {
+                for (final Player loaded : this.fakeEntity.getSeeingPlayers()) {
+                    final PacketContainer[] packets = line2.getTeleportPackets(loaded, 0.0, 0.0, 0.0, this.location.getX(), currentY, this.location.getZ());
+                    PacketHelper.sendPackets(loaded, packets);
+                }
+            }
+        }
+        this.clientSynchronized.stream().filter(l -> !this.lines.contains(l)).forEach(line -> {
+            PacketContainer[] despawnPackets = line.getDestroyPackets();
+            for (Player player : this.fakeEntity.getSeeingPlayers()) {
+                PacketHelper.sendPackets(player, despawnPackets);
+            }
+        });
+        this.clientSynchronized.clear();
+        this.clientSynchronized.addAll(this.lines);
     }
 
     private double getFullHologramHeight() {

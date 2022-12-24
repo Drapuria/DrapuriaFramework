@@ -10,6 +10,7 @@ import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityOptions;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityPool;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityService;
+import net.drapuria.framework.bukkit.fake.entity.FakeEntitySpawnHandler;
 import net.drapuria.framework.bukkit.fake.entity.npc.inventory.NPCInventory;
 import net.drapuria.framework.bukkit.fake.entity.npc.modifier.*;
 import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
@@ -111,6 +112,9 @@ public class NPC extends FakeEntity {
                 else
                     positionModifier().queueLookAt(player.getLocation())
                             .send(player);
+                for (FakeEntitySpawnHandler spawnHandler : options.getSpawnHandlers()) {
+                    spawnHandler.onSpawn(player);
+                }
             }, entityPool.getTabListRemoveMillis(), TimeUnit.MILLISECONDS);
         }, 500, TimeUnit.MILLISECONDS);
     }

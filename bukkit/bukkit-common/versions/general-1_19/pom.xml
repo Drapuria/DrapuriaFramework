@@ -48,6 +48,13 @@
             <systemPath>${project.basedir}/../../../../lib/paper-server-1.19.2-R0.1-SNAPSHOT.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>craftbukkit</artifactId>
+            <version>1.18</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/../../../../lib/paper-server-1.19.2-R0.1-SNAPSHOT-old.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>

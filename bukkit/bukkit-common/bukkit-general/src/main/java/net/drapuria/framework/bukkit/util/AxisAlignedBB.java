@@ -1,7 +1,10 @@
 package net.drapuria.framework.bukkit.util;
 
 import net.minecraft.server.v1_8_R3.Vec3D;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+
+import java.util.Objects;
 
 public class AxisAlignedBB
 {
@@ -376,5 +379,13 @@ public class AxisAlignedBB
     public String toString()
     {
         return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AxisAlignedBB that = (AxisAlignedBB) o;
+        return Double.compare(that.minX, minX) == 0 && Double.compare(that.minY, minY) == 0 && Double.compare(that.minZ, minZ) == 0 && Double.compare(that.maxX, maxX) == 0 && Double.compare(that.maxY, maxY) == 0 && Double.compare(that.maxZ, maxZ) == 0;
     }
 }

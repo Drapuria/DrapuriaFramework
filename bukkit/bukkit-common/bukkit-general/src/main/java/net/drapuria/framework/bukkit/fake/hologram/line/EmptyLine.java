@@ -1,12 +1,25 @@
 package net.drapuria.framework.bukkit.fake.hologram.line;
 
 import com.comphenix.protocol.events.PacketContainer;
+import lombok.NoArgsConstructor;
 import org.bukkit.entity.Player;
 
 public class EmptyLine implements Line {
+
+
+    private final double height;
+
+    public EmptyLine(double height) {
+        this.height = height;
+    }
+
+    public EmptyLine() {
+        this.height = 0.23D;
+    }
+
     @Override
     public double getHeight() {
-        return .23D;
+        return this.height;
     }
 
     @Override

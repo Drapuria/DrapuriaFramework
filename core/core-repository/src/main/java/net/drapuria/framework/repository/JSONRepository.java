@@ -63,7 +63,8 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
             }
         }
         initGson();
-        this.loadJsonFile();
+        if (loadInstant())
+            this.loadJsonFile();
     }
 
     @PostDestroy
@@ -79,11 +80,11 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
         }
     }
 
-    private void loadJsonFile() {
+    protected void loadJsonFile() {
         try {
             FileReader reader = new FileReader(jsonFile);
             Class clazzArray = Class.forName("[L" + daoType.getName() + ";");
-            T[] array =  gson.fromJson(reader, TypeToken.get(clazzArray).getType());
+            T[] array = gson.fromJson(reader, TypeToken.get(clazzArray).getType());
             final List<T> list = array == null ? null : new ArrayList<>(Arrays.asList(array));
             reader.close();
             if (list != null)
@@ -184,4 +185,9 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
     public void init() {
 
     }
+
+    public boolean loadInstant() {
+        return true;
+    }
+
 }

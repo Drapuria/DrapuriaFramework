@@ -5,6 +5,8 @@
 package net.drapuria.framework.bukkit.inventory.menu;
 
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
+import net.drapuria.framework.bukkit.util.inventory.TitleUpdater;
+import org.apache.logging.log4j.util.TriConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -58,6 +60,7 @@ public abstract class Menu extends AbstractMenu {
     @Override
     public void removePlayerButtons(Player player) {
         this.playerButtons.remove(player);
+        this.inventories.remove(player);
     }
 
     private void buildInventory(final Player player, final InventoryType inventoryType, int size, final String title,
@@ -76,6 +79,8 @@ public abstract class Menu extends AbstractMenu {
                 inventory.setContents(new ItemStack[inventory.getSize()]);
                 if (player.getOpenInventory().getTopInventory().equals(inventory))
                     update = true;
+               // else
+                //    TitleUpdater.update(player, getTitle(player));
             }
         }
 
@@ -90,8 +95,15 @@ public abstract class Menu extends AbstractMenu {
                         inventory = player.getOpenInventory().getTopInventory();
                         inventory.setContents(new ItemStack[inventory.getSize()]);
                         update = true;
+                        previousMenu.setClosedByMenu(true);
+                        previousMenu.onClose(player);
+                        previousMenu.removePlayerButtons(player);
+                        if (!previousMenu.getTitle(player).equals(getTitle(player))) {
+                            TitleUpdater.update(player, getTitle(player));
+                        }
                     } else {
                         previousMenu.setClosedByMenu(true);
+                        previousMenu.onClose(player);
                         MenuService.getService.removePlayer(player.getName());
                     }
                 }

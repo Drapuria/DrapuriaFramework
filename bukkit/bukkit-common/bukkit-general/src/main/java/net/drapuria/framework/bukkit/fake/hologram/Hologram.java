@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.fake.hologram;
 
 import net.drapuria.framework.bukkit.fake.FakeShowType;
+import net.drapuria.framework.bukkit.fake.hologram.line.Line;
 import net.drapuria.framework.bukkit.util.BukkitUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -110,6 +111,14 @@ public interface Hologram {
      * @param fakeShowType the new {@link FakeShowType}.
      */
     void setType(final FakeShowType fakeShowType);
+
+    /**
+     * Update the content of a {@link Line}
+     *
+     * @param line the {@link Line} to update
+     */
+
+    void updateLine(Line line);
 
     /**
      * A {@link List} of excluded or included {@link Player players}

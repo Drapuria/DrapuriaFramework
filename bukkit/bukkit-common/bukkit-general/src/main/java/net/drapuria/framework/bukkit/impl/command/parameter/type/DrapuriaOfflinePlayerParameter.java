@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 @Component
 public class DrapuriaOfflinePlayerParameter extends CommandTypeParameter<DrapuriaOfflinePlayer> {
 
+    public static final String SELF_PLAYER = "§SELF";
+
+
     private final Map<String, DrapuriaOfflinePlayer> playerCache = new HashMap<>();
 
     @Override
@@ -43,6 +46,7 @@ public class DrapuriaOfflinePlayerParameter extends CommandTypeParameter<Drapuri
 
     @Override
     public DrapuriaOfflinePlayer parse(Player sender, String source) {
+        if (source.equals(SELF_PLAYER)) source = sender.getName();
         if (playerCache.containsKey(source)) {
             return playerCache.get(source);
         }

@@ -142,7 +142,7 @@ public class SqlService {
         }
 
         if (!AbstractSqlConfiguration.class.isAssignableFrom(type)) {
-            throw new IllegalArgumentException("The type " + type.getSimpleName() + " wasn't implemented on AbstractMongoConfiguration!");
+            throw new IllegalArgumentException("The type " + type.getSimpleName() + " wasn't implemented on AbstractSqlConfiguration!");
         }
 
         if (this.connectionFactories == null) {

@@ -21,17 +21,18 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@NoArgsConstructor
 public class GlobalHologram implements Hologram {
 
     private final List<Line> lines = new ArrayList<>();
+    private final List<Line> clientSynchronized = new ArrayList<>();
     private Location location;
     private transient final Set<Player> shownFor = new HashSet<>();
     private boolean isBoundToPlayer = false;
     private Player boundTo = null;
     private double boundYOffset = 0.8;
-    private FakeShowType fakeShowType;
+    private FakeShowType fakeShowType = FakeShowType.ALL;
     private final List<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
+    private final HologramAlignment alignment;
 
     @Override
     public Location getLocation() {
@@ -39,13 +40,22 @@ public class GlobalHologram implements Hologram {
     }
 
     public GlobalHologram(final Location location) {
+        this(location, HologramAlignment.STACK_UP);
+    }
+
+    public GlobalHologram(final Location location, final HologramAlignment alignment) {
         this.location = location;
+        this.alignment = alignment;
+    }
+
+    public GlobalHologram() {
+        this.alignment = HologramAlignment.STACK_UP;
     }
 
     @Override
     public void show(Player player) {
         if (player.getWorld().equals(this.location.getWorld()) && shownFor.add(player)) {
-            double currentY = this.location.getY() + getFullHologramHeight();
+            double currentY = this.location.getY() + getFullHologramHeight() + getAlignmentAdjustmentHeight();
             for (int i = 0; i < this.lines.size(); i++) {
                 final Line line = this.lines.get(i);
                 if (i != 0) {
@@ -79,8 +89,8 @@ public class GlobalHologram implements Hologram {
             if (!HologramHelper.isInRange(player.getLocation(), this.location)) hide(player);
         }
 
-        double oldCurrentY = oldLocation.getY() + getFullHologramHeight();
-        double currentY = this.location.getY() + getFullHologramHeight();
+        double oldCurrentY = oldLocation.getY() + getFullHologramHeight() + getAlignmentAdjustmentHeight();
+        double currentY = this.location.getY() + getFullHologramHeight() + getAlignmentAdjustmentHeight();
         for (int i = 0; i < this.lines.size(); i++) {
             Line line = this.lines.get(i);
             for (Player player : this.shownFor) {
@@ -96,11 +106,59 @@ public class GlobalHologram implements Hologram {
 
     public void addLine(final Line line) {
         this.lines.add(line);
+        synchronizeLines();
     }
 
     public void removeLine(final Line line) {
         this.lines.remove(line);
         broadcastPackets(line.getDestroyPackets());
+        synchronizeLines();
+    }
+
+    public void removeLines() {
+        for (final Line line : ImmutableList.copyOf(this.lines)) {
+            this.lines.remove(line);
+            this.broadcastPackets(line.getDestroyPackets());
+        }
+    }
+
+    private double getAlignmentAdjustmentHeight() {
+        final double height = this.getFullHologramHeight();
+        if (this.alignment == HologramAlignment.STACK_UP) {
+            return 0.0;
+        }
+        if (this.alignment == HologramAlignment.STACK_DOWN) {
+            return -height;
+        }
+        return -height / 2.0;
+    }
+
+    public void synchronizeLines() {
+        double currentY = this.location.getY() + this.getFullHologramHeight() + this.getAlignmentAdjustmentHeight();
+        for (int lineIndex = 0; lineIndex < this.lines.size(); ++lineIndex) {
+            final Line line2 = this.lines.get(lineIndex);
+            currentY -= line2.getHeight();
+            currentY -= 0.05;
+            final int syncedBefore = this.clientSynchronized.indexOf(line2);
+            if (syncedBefore == -1) {
+                for (final Player loaded : this.shownFor) {
+                    PacketHelper.sendPackets(loaded, line2.getSpawnPackets(loaded, this.location.getX(), currentY, this.location.getZ()));
+                }
+            } else if (syncedBefore != lineIndex) {
+                for (final Player loaded : this.shownFor) {
+                    final PacketContainer[] packets = line2.getTeleportPackets(loaded, 0.0, 0.0, 0.0, this.location.getX(), currentY, this.location.getZ());
+                    PacketHelper.sendPackets(loaded, packets);
+                }
+            }
+        }
+        this.clientSynchronized.stream().filter(l -> !this.lines.contains(l)).forEach(line -> {
+            PacketContainer[] despawnPackets = line.getDestroyPackets();
+            for (Player player : this.shownFor) {
+                PacketHelper.sendPackets(player, despawnPackets);
+            }
+        });
+        this.clientSynchronized.clear();
+        this.clientSynchronized.addAll(this.lines);
     }
 
     public void addLine(final int index, final Line line) {
@@ -109,8 +167,10 @@ public class GlobalHologram implements Hologram {
 
     public void removeLine(final int index) {
         final Line line = this.lines.remove(index);
-        if (line != null)
+        if (line != null) {
             broadcastPackets(line.getDestroyPackets());
+            synchronizeLines();
+        }
     }
 
     public void updateLine(final Line line) {
@@ -136,7 +196,7 @@ public class GlobalHologram implements Hologram {
                 PacketHelper.sendPackets(player, destroyPacket);
             }
         }
-        double currentY = this.location.getY() + getFullHologramHeight();
+        double currentY = this.location.getY() + getFullHologramHeight() + getAlignmentAdjustmentHeight();
         for (int i = 0; i < this.lines.size(); i++) {
             final Line line = this.lines.get(i);
 
@@ -239,15 +299,18 @@ public class GlobalHologram implements Hologram {
     public void checkHologram(final Player player) {
         if (this.fakeShowType != FakeShowType.ALL
                 && ((this.fakeShowType == FakeShowType.INCLUDING && !this.isExcludedOrIncluded(player)) ||
-                (this.fakeShowType == FakeShowType.EXCLUDING && this.isExcludedOrIncluded(player)))) return;
+                (this.fakeShowType == FakeShowType.EXCLUDING && this.isExcludedOrIncluded(player)))) {
+            return;
+        }
 
         final boolean isInRange = HologramHelper.isInRange(player.getLocation(), this.location);
         if (!isInRange && this.isLoaded(player)) {
             hide(player);
             return;
         }
-        if (isInRange && !this.isLoaded(player))
+        if (isInRange && !this.isLoaded(player)) {
             show(player);
+        }
     }
 
     public List<Line> getLines() {

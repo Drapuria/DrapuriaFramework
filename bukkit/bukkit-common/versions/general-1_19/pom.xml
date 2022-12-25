@@ -52,7 +52,7 @@
             <artifactId>craftbukkit</artifactId>
             <version>1.18</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/../../../../lib/paper-server-1.19.2-R0.1-SNAPSHOT-old.jar</systemPath>
+            <systemPath>${project.basedir}/../../../../lib/paper-server-1.19.2-R0.1-SNAPSHOT-with-adventure.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.comphenix.protocol</groupId>

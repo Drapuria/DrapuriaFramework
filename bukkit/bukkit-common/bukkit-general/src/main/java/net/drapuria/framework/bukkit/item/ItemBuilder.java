@@ -87,8 +87,7 @@ public class ItemBuilder {
     public ItemBuilder addLore(List<String> lore) {
         List<String> oldLore = this.itemMeta.hasLore() ? this.itemMeta.getLore() : new ArrayList<>();
         oldLore.addAll(lore);
-        this.itemMeta.setLore(oldLore);
-        return this;
+        return setLore(oldLore);
     }
 
     public ItemBuilder setLore(String... lore) {

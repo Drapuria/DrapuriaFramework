@@ -24,6 +24,7 @@
         <module>core-yaml</module>
         <module>core-config</module>
         <module>core-scheduler</module>
+        <module>core-language</module>
     </modules>
 
     <properties>

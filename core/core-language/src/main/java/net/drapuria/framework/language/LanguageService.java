@@ -7,6 +7,8 @@ import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.beans.component.ComponentRegistry;
 
 import java.util.HashSet;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 @Service(name = "languageService")
@@ -21,7 +23,7 @@ public class LanguageService {
     }
 
     @PostInitialize
-    public void loadInternal() {
+    public void loadInternals() {
 
     }
 

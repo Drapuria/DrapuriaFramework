@@ -6,16 +6,13 @@ import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.beans.component.ComponentRegistry;
 
-import java.util.HashSet;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 @Service(name = "languageService")
 public class LanguageService {
 
 
-    private final Set<LanguageHolder<?>> languageHolders = new HashSet<>();
+    private final Set<LanguageContainer> containers = new HashSet<>();
 
     @PreInitialize
     public void init() {
@@ -27,11 +24,23 @@ public class LanguageService {
 
     }
 
+    public Optional<LanguageContainer> findContainer(final LanguageHolder<?> holder) {
+        return this.containers.stream()
+                .filter(languageContainer -> languageContainer.getHolder().equals(holder))
+                .findFirst();
+    }
+
+    public Optional<LanguageContainer> findContainer(final Object holder) {
+        return this.containers.stream()
+                .filter(languageContainer -> languageContainer.getHolder().holder().equals(holder))
+                .findFirst();
+    }
+
     private void registerComponentHolder() {
         ComponentRegistry.registerComponentHolder(new ComponentHolder() {
             @Override
             public void onEnable(Object instance) {
-                languageHolders.add((LanguageHolder<?>) instance);
+                containers.add(new LanguageContainer((LanguageHolder<?>) instance));
             }
 
             @Override

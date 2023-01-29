@@ -7,6 +7,7 @@ import org.apache.logging.log4j.core.util.FileUtils;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -46,7 +47,7 @@ public class LanguageContainer {
                 .filter(file -> !file.isDirectory()
                         && file.getName().endsWith(".properties")
                         && LANG_FILE.matcher(file.getName().split(".")[0]).matches())
-                .forEach(file -> this.languageFiles.add(new LanguageFile(file.getName().split(".")[0], file)));
+                .forEach(file -> this.languageFiles.add(new LanguageFile(file.getName().split("\\.")[0], file)));
         try {
             this.migrateLanguageResources();
         } catch (IOException e) {
@@ -57,7 +58,7 @@ public class LanguageContainer {
     private void migrateLanguageResources() throws IOException {
         final List<File> resources = this.findLanguageResources();
         for (final File languageResource : resources) {
-            final String isoCode = languageResource.getName().split(".")[0];
+            final String isoCode = languageResource.getName().split("\\.")[0];
             final Optional<LanguageFile> savedLanguage = this.findLanguageFileByIsoCode(isoCode);
             if (!savedLanguage.isPresent()) {
                 this.copyResourceAndCreateLanguageFile(languageResource, isoCode);
@@ -70,7 +71,7 @@ public class LanguageContainer {
     private void copyResourceAndCreateLanguageFile(final File languageResource, final String isoCode) {
         final File generatedLanguageFile = new File(this.holder.languageFolder(), isoCode + ".properties");
         try {
-            Files.copy(languageResource.toPath(), new FileOutputStream(generatedLanguageFile));
+            Files.copy(languageResource.toPath(), Files.newOutputStream(generatedLanguageFile.toPath()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -80,8 +81,8 @@ public class LanguageContainer {
     private void addMissingStrings(final File languageResource, final LanguageFile savedLanguageFile) throws IOException {
         final Properties resourceProperties = new Properties();
         final Properties savedProperties = new Properties();
-        resourceProperties.load(new FileInputStream(languageResource.getAbsolutePath()));
-        savedProperties.load(new FileInputStream(savedLanguageFile.getFile().getAbsolutePath()));
+        resourceProperties.load(Files.newInputStream(Paths.get(languageResource.getAbsolutePath())));
+        savedProperties.load(Files.newInputStream(Paths.get(savedLanguageFile.getFile().getAbsolutePath())));
         boolean edited = false;
         for (String resourceKey : resourceProperties.keySet().stream().map(o -> (String) o).collect(Collectors.toSet())) {
             if (savedProperties.keySet().stream()
@@ -92,7 +93,7 @@ public class LanguageContainer {
             }
         }
         if (edited) {
-            savedProperties.store(new FileOutputStream(savedLanguageFile.getFile()), savedLanguageFile.getIsoCode());
+            savedProperties.store(Files.newOutputStream(savedLanguageFile.getFile().toPath()), savedLanguageFile.getIsoCode());
         }
         resourceProperties.clear();
         languageFiles.clear();
@@ -101,12 +102,12 @@ public class LanguageContainer {
     private List<File> findLanguageResources() {
         try {
             final File file = new File(this.holder.holder().getClass().getResource("").toURI());
-            if (file == null)
+            if (!file.exists())
                 throw new FileNotFoundException("Cannot find resources.");
             return Arrays.stream(file.listFiles())
                     .filter(listedFile -> listedFile.getName().endsWith(".properties"))
                     .filter(listedFile -> !listedFile.isDirectory())
-                    .filter(listedFile -> LANG_FILE.matcher(listedFile.getName().split(".")[0]).matches())
+                    .filter(listedFile -> LANG_FILE.matcher(listedFile.getName().split("\\.")[0]).matches())
                     .collect(Collectors.toList());
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);

@@ -46,7 +46,7 @@ public class LanguageContainer {
         Arrays.stream(languageFolder.listFiles())
                 .filter(file -> !file.isDirectory()
                         && file.getName().endsWith(".properties")
-                        && LANG_FILE.matcher(file.getName().split(".")[0]).matches())
+                        && LANG_FILE.matcher(file.getName().split("\\.")[0]).matches())
                 .forEach(file -> this.languageFiles.add(new LanguageFile(file.getName().split("\\.")[0], file)));
         try {
             this.migrateLanguageResources();
@@ -78,13 +78,15 @@ public class LanguageContainer {
         this.languageFiles.add(new LanguageFile(isoCode, generatedLanguageFile));
     }
 
-    private void addMissingStrings(final File languageResource, final LanguageFile savedLanguageFile) throws IOException {
+    private void addMissingStrings(final File languageResource, final LanguageFile savedLanguageFile)
+            throws IOException {
         final Properties resourceProperties = new Properties();
         final Properties savedProperties = new Properties();
         resourceProperties.load(Files.newInputStream(Paths.get(languageResource.getAbsolutePath())));
         savedProperties.load(Files.newInputStream(Paths.get(savedLanguageFile.getFile().getAbsolutePath())));
         boolean edited = false;
-        for (String resourceKey : resourceProperties.keySet().stream().map(o -> (String) o).collect(Collectors.toSet())) {
+        for (String resourceKey : resourceProperties.keySet().stream().map(o -> (String) o)
+                .collect(Collectors.toSet())) {
             if (savedProperties.keySet().stream()
                     .map(o -> (String) o)
                     .noneMatch(s -> s.equals(resourceKey))) {

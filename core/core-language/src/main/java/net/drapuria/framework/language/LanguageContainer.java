@@ -1,15 +1,18 @@
 package net.drapuria.framework.language;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
-import org.apache.logging.log4j.core.util.FileUtils;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -98,7 +101,7 @@ public class LanguageContainer {
             savedProperties.store(Files.newOutputStream(savedLanguageFile.getFile().toPath()), savedLanguageFile.getIsoCode());
         }
         resourceProperties.clear();
-        languageFiles.clear();
+        savedProperties.clear();
     }
 
     private List<File> findLanguageResources() {

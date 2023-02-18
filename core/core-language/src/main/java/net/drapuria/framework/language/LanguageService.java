@@ -11,17 +11,19 @@ import java.util.*;
 @Service(name = "languageService")
 public class LanguageService {
 
+    public static LanguageService getService;
 
     private final Set<LanguageContainer> containers = new HashSet<>();
+    private final Set<Locale> registeredLocales = new HashSet<>();
 
     @PreInitialize
     public void init() {
-       this.registerComponentHolder();
+        getService = this;
+        this.registerComponentHolder();
     }
 
     @PostInitialize
     public void loadInternals() {
-
     }
 
     public Optional<LanguageContainer> findContainer(final LanguageHolder<?> holder) {
@@ -34,6 +36,10 @@ public class LanguageService {
         return this.containers.stream()
                 .filter(languageContainer -> languageContainer.getHolder().holder().equals(holder))
                 .findFirst();
+    }
+
+    public String getTranslatedString(final Locale locale, final String key) {
+
     }
 
     private void registerComponentHolder() {
@@ -49,5 +55,4 @@ public class LanguageService {
             }
         });
     }
-
 }

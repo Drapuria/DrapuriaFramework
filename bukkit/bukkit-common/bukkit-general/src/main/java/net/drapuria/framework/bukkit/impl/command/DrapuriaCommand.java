@@ -157,7 +157,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             // TODO PREBUILD PARAMETER STRING AND REPLACE OPTIONAL (EVERYTHING WITH A DEFAULT VALUE OR EVERYTHING WITH MULTIPLE OPTIONS WHERE IT IS THE LARGER THING WITH [argument] INSTEAD OF <argument>
             this.commandMeta.getSubCommandMetaCollection().forEach((subCommandMeta) -> {
                 builder.append("Verwendung: /")
-                        .append(label)
+                        .append(this.getName())
                         .append(" ")
                         .append(subCommandMeta.getDefaultAlias())
                         .append(" ")

@@ -39,7 +39,7 @@ public class LanguageService {
     }
 
     public String getTranslatedString(final Locale locale, final String key) {
-
+        return null;
     }
 
     private void registerComponentHolder() {

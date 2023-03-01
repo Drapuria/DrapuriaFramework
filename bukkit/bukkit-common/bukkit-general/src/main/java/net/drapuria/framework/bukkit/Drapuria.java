@@ -8,6 +8,7 @@ package net.drapuria.framework.bukkit;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
+import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import net.drapuria.framework.BootstrapInvoke;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.BeanContext;
@@ -20,6 +21,7 @@ import net.drapuria.framework.bukkit.impl.metadata.Metadata;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
 import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
+import net.drapuria.framework.bukkit.item.skull.impl.HDBRepository;
 import net.drapuria.framework.bukkit.messaging.BungeeMessaging;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
 import net.drapuria.framework.command.service.CommandService;
@@ -31,7 +33,10 @@ import net.drapuria.framework.util.MethodAnnotationScanner;
 import net.drapuria.framework.util.Stacktrace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -117,6 +122,16 @@ public class Drapuria {
                 .eventHandler(new BukkitEventHandler())
                 .taskScheduler(new BukkitTaskScheduler(PLUGIN))
                 .init();
+        try {
+            Bukkit.getPluginManager().registerEvents(new Listener() {
+                @EventHandler
+                public void onDatabaseLoad(final DatabaseLoadEvent event) {
+                    DrapuriaCommon.getBean(HDBRepository.class).processQueuedIds();
+                }
+            }, PLUGIN);
+        } catch (Exception ignored) {
+            LOGGER.warn("HDB repository will not work. No HeadDatabase Plugin installed!");
+        }
     }
 
     public static void registerEvents(Listener... listeners) {

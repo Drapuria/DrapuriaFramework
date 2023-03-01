@@ -7,7 +7,6 @@ import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
-import org.apache.http.MethodNotSupportedException;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -172,8 +171,8 @@ public class PlayerHologram implements Hologram {
     @Override
     public void setType(FakeShowType fakeShowType) {
         try {
-            throw new MethodNotSupportedException("You cannot set the FakeShowType of a PlayerHologram!");
-        } catch (MethodNotSupportedException e) {
+            throw new NoSuchMethodException("You cannot set the FakeShowType of a PlayerHologram!");
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

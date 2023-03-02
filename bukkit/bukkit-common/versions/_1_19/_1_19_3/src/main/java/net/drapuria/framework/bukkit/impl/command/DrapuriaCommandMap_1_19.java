@@ -170,11 +170,17 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
+                                /*
                                 if (--finalIndex > parameterData.getParameterCount()) {
+                                    player.sendMessage("huh");
                                     if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                        player.sendMessage("done here");
                                         doneHere = true;
                                         continue subCommandMeta;
                                     }
+                                } else */if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                    doneHere = true;
+                                    continue subCommandMeta;
                                 }
                                 // get missing aliases
                                 final String missing = subCommandAlias.replaceFirst(subCommands, "");

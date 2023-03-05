@@ -11,10 +11,10 @@ public class LanguageString {
     private final String key;
     private String string;
 
-    public LanguageString(LanguageContainer container, Locale locale, String definition, String string) {
+    public LanguageString(LanguageContainer container, Locale locale, String key, String string) {
         this.container = container;
         this.locale = locale;
-        this.key = definition;
+        this.key = key;
         this.string = string;
     }
 

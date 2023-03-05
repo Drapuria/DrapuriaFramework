@@ -11,5 +11,4 @@ public interface LanguageHolder<ID extends Serializable> {
 
     ID recognizer();
 
-
 }

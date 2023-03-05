@@ -1,6 +1,7 @@
 package net.drapuria.framework.language;
 
 import net.drapuria.framework.language.resource.LanguageResource;
+import net.drapuria.framework.language.resource.LanguageString;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,6 +19,17 @@ public class ResourceRepository {
     protected void init() {
         if (findResource(this.service.getDefaultLocale()) == null) {
             this.resources.put(this.service.getDefaultLocale(), new LanguageResource(this.service, this.service.getDefaultLocale()));
+        }
+        for (LanguageContainer container : this.service.getContainers()) {
+            for (LanguageFile languageFile : container.getLanguageFiles()) {
+                final Locale locale = Locale.forLanguageTag(languageFile.getIsoCode());
+                LanguageResource resource = this.findResource(locale);
+                if (resource == null)
+                    this.addResource(resource = new LanguageResource(service, locale ));
+                for (Map.Entry<String, String> entry : languageFile.readProperties().entrySet()) {
+                    resource.add(entry.getKey(), new LanguageString(container, locale, entry.getKey(), entry.getValue()));
+                }
+            }
         }
     }
 

@@ -5,17 +5,21 @@ import lombok.Getter;
 import net.drapuria.framework.util.entry.Entry;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 
-@Getter
 public final class LanguageFile {
 
     private final LanguageContainer container;
+    @Getter
     private final String isoCode;
+    @Getter
     private final File file;
     private Properties properties;
     public LanguageFile(LanguageContainer container, String isoCode, File file) {
@@ -30,9 +34,15 @@ public final class LanguageFile {
         final Locale defaultLocale = this.container.getService().getDefaultLocale();
         final String defaultIso = defaultLocale.toLanguageTag().replace("-", "_");
         final Optional<LanguageFile> defaultLanguageFile = this.container.findLanguageFileByIsoCode(defaultIso);
-        return defaultLanguageFile.isPresent() && defaultLanguageFile.get() != this
-                ? (this.properties = new Properties(defaultLanguageFile.get().toProperties()))
-                : (this.properties = new Properties());
+        this.properties = defaultLanguageFile.isPresent() && defaultLanguageFile.get() != this
+                ? new Properties(defaultLanguageFile.get().toProperties())
+                : new Properties();
+        try {
+            this.properties.load(Files.newInputStream(file.toPath()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return this.properties;
     }
 
     public Map<String, String> readProperties() {

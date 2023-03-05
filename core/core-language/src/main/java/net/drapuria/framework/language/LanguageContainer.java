@@ -122,4 +122,8 @@ public class LanguageContainer {
             throw new RuntimeException(e);
         }
     }
+
+    public Set<LanguageFile> getLanguageFiles() {
+        return languageFiles;
+    }
 }

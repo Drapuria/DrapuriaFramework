@@ -1,6 +1,8 @@
 package net.drapuria.framework.language;
 
 
+import lombok.Getter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -23,15 +25,17 @@ public class LanguageContainer {
 
     private static final Pattern LANG_FILE = Pattern.compile("^[^-]{2,3}-[^-]{2,3}(-[^-]{2,3})?$");
 
-    private final LanguageHolder<?> holder;
+    @Getter private final LanguageService service;
+    private final ILanguageComponent<?> holder;
     private final Set<LanguageFile> languageFiles = new HashSet<>();
 
-    public LanguageContainer(LanguageHolder<?> holder) {
+    public LanguageContainer(final LanguageService service, ILanguageComponent<?> holder) {
         this.holder = holder;
+        this.service = service;
         this.initContainer();
     }
 
-    public LanguageHolder<?> getHolder() {
+    public ILanguageComponent<?> getHolder() {
         return holder;
     }
 
@@ -50,7 +54,7 @@ public class LanguageContainer {
                 .filter(file -> !file.isDirectory()
                         && file.getName().endsWith(".properties")
                         && LANG_FILE.matcher(file.getName().split("\\.")[0]).matches())
-                .forEach(file -> this.languageFiles.add(new LanguageFile(file.getName().split("\\.")[0], file)));
+                .forEach(file -> this.languageFiles.add(new LanguageFile(this, file.getName().split("\\.")[0], file)));
         try {
             this.migrateLanguageResources();
         } catch (IOException e) {
@@ -78,7 +82,7 @@ public class LanguageContainer {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.languageFiles.add(new LanguageFile(isoCode, generatedLanguageFile));
+        this.languageFiles.add(new LanguageFile(this, isoCode, generatedLanguageFile));
     }
 
     private void addMissingStrings(final File languageResource, final LanguageFile savedLanguageFile)

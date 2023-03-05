@@ -2,7 +2,7 @@ package net.drapuria.framework.language;
 
 import java.io.File;
 
-public interface LanguageHolder<T> {
+public interface ILanguageComponent<T> {
 
     T holder();
 

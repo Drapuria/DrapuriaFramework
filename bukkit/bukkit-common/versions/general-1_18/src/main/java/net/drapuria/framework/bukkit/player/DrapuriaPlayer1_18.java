@@ -9,19 +9,10 @@ import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.block.TargetBlockInfo;
 import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import net.drapuria.framework.language.LanguageService;
+import net.drapuria.framework.language.Translateable;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayInUseItem;
-import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
-import net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore;
-import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.level.EntityPlayer;
-import net.minecraft.server.network.PlayerConnection;
-import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -34,10 +25,17 @@ import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftHumanEntity;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityCategory;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Firework;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.SpawnCategory;
+import org.bukkit.entity.Villager;
 import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -45,7 +43,14 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.*;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.MainHand;
+import org.bukkit.inventory.Merchant;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
@@ -63,9 +68,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 public record DrapuriaPlayer1_18(Player player, long sessionJoin) implements DrapuriaPlayer {
+
+    private static final LanguageService languageService = LanguageService.getService;
 
     @Override
     public void sendActionBar(String text) {
@@ -1413,8 +1425,9 @@ public record DrapuriaPlayer1_18(Player player, long sessionJoin) implements Dra
 
     @Override
     public @NotNull String getLocale() {
-        return player.getLocale();
+        return locale().toLanguageTag();
     }
+
 
     @Override
     public boolean getAffectsSpawning() {
@@ -2589,6 +2602,24 @@ public record DrapuriaPlayer1_18(Player player, long sessionJoin) implements Dra
     @Override
     public <T extends Projectile> @NotNull T launchProjectile(@NotNull Class<? extends T> aClass, @Nullable Vector vector) {
         return player.launchProjectile(aClass, vector);
+    }
+
+    @Override
+    public Locale getLocalization() {
+        return player.locale();
+    }
+
+    @Override
+    public void setLocalization(Locale locale) {
+        throw new UnsupportedOperationException("Cannot set locale");
+    }
+
+    @Override
+    public void sendLocalizedMessage(String messageKey, Translateable<?>... translateables) {
+        String str = languageService.getTranslatedString(this.player.locale(), messageKey);
+        for (Translateable<?> translateable : translateables)
+            str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());
+        this.sendMessage(str);
     }
 }
 

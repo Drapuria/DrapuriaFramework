@@ -32,4 +32,5 @@ public class LanguageResource {
     public void add(final String key, final LanguageString languageString) {
         this.strings.put(key, languageString);
     }
+}
 

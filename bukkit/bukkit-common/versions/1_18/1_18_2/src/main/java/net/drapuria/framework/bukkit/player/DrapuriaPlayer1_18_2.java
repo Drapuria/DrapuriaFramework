@@ -9,6 +9,8 @@ import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.block.TargetBlockInfo;
 import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.destroystokyo.paper.profile.PlayerProfile;
+import net.drapuria.framework.language.LanguageService;
+import net.drapuria.framework.language.Translateable;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
@@ -52,6 +54,8 @@ import java.net.InetSocketAddress;
 import java.util.*;
 
 public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements DrapuriaPlayer {
+
+    private static final LanguageService languageService = LanguageService.getService;
 
     @Override
     public void sendActionBar(String text) {
@@ -2696,6 +2700,24 @@ public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements D
     @Override
     public <T extends Projectile> @NotNull T launchProjectile(@NotNull Class<? extends T> aClass, @Nullable Vector vector) {
         return player.launchProjectile(aClass, vector);
+    }
+
+    @Override
+    public Locale getLocalization() {
+        return this.player.locale();
+    }
+
+    @Override
+    public void setLocalization(Locale locale) {
+        throw new UnsupportedOperationException("Cannot set locale of player.");
+    }
+
+    @Override
+    public void sendLocalizedMessage(String messageKey, Translateable<?>... translateables) {
+        String str = languageService.getTranslatedString(this.locale(), messageKey);
+        for (Translateable<?> translateable : translateables)
+            str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());
+        this.sendMessage(str);
     }
 }
 

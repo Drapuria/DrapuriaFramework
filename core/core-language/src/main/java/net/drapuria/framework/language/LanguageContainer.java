@@ -65,7 +65,9 @@ public class LanguageContainer {
     private void migrateLanguageResources() throws IOException {
         final List<File> resources = this.findLanguageResources();
         for (final File languageResource : resources) {
-            final String isoCode = languageResource.getName().split("\\.")[0];
+            String isoCode = languageResource.getName().split("\\.")[0];
+            if (component.langFilePrefix() != null)
+                isoCode = isoCode.replaceFirst(component.langFilePrefix(), "");
             final Optional<LanguageFile> savedLanguage = this.findLanguageFileByIsoCode(isoCode);
             if (!savedLanguage.isPresent()) {
                 this.copyResourceAndCreateLanguageFile(languageResource, isoCode);

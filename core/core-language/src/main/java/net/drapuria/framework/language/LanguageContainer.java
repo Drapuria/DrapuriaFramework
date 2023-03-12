@@ -26,17 +26,17 @@ public class LanguageContainer {
     private static final Pattern LANG_FILE = Pattern.compile("^[^-]{2,3}-[^-]{2,3}(-[^-]{2,3})?$");
 
     @Getter private final LanguageService service;
-    private final ILanguageComponent<?> holder;
+    private final ILanguageComponent<?> component;
     private final Set<LanguageFile> languageFiles = new HashSet<>();
 
-    public LanguageContainer(final LanguageService service, ILanguageComponent<?> holder) {
-        this.holder = holder;
+    public LanguageContainer(final LanguageService service, ILanguageComponent<?> component) {
+        this.component = component;
         this.service = service;
         this.initContainer();
     }
 
-    public ILanguageComponent<?> getHolder() {
-        return holder;
+    public ILanguageComponent<?> getComponent() {
+        return component;
     }
 
     public Optional<LanguageFile> findLanguageFileByIsoCode(final String isoCode) {
@@ -46,7 +46,7 @@ public class LanguageContainer {
     }
 
     private void initContainer() {
-        final File languageFolder = this.holder.languageFolder();
+        final File languageFolder = this.component.languageFolder();
         if (!languageFolder.exists())
             languageFolder.mkdirs();
 
@@ -76,7 +76,7 @@ public class LanguageContainer {
     }
 
     private void copyResourceAndCreateLanguageFile(final File languageResource, final String isoCode) {
-        final File generatedLanguageFile = new File(this.holder.languageFolder(), isoCode + ".properties");
+        final File generatedLanguageFile = new File(this.component.languageFolder(), isoCode + ".properties");
         try {
             Files.copy(languageResource.toPath(), Files.newOutputStream(generatedLanguageFile.toPath()));
         } catch (IOException e) {
@@ -110,13 +110,14 @@ public class LanguageContainer {
 
     private List<File> findLanguageResources() {
         try {
-            final File file = new File(this.holder.holder().getClass().getResource("").toURI());
+            final File file = new File(this.component.holder().getClass().getResource("").toURI());
             if (!file.exists())
                 throw new FileNotFoundException("Cannot find resources.");
             return Arrays.stream(file.listFiles())
                     .filter(listedFile -> listedFile.getName().endsWith(".properties"))
                     .filter(listedFile -> !listedFile.isDirectory())
                     .filter(listedFile -> LANG_FILE.matcher(listedFile.getName().split("\\.")[0]).matches())
+                    .filter(listedFile -> component.langFilePrefix() == null || listedFile.getName().startsWith(component.langFilePrefix()))
                     .collect(Collectors.toList());
         } catch (URISyntaxException | FileNotFoundException e) {
             throw new RuntimeException(e);

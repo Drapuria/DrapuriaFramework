@@ -45,7 +45,7 @@ public class LanguageService {
 
     public Optional<LanguageContainer> findContainer(final Object component) {
         return this.containers.values().stream()
-                .filter(languageContainer -> languageContainer.getHolder().holder().equals(component))
+                .filter(languageContainer -> languageContainer.getComponent().holder().equals(component))
                 .findFirst();
     }
 

@@ -8,4 +8,7 @@ public interface ILanguageComponent<T> {
 
     File languageFolder();
 
+    default String langFilePrefix() {
+        return null;
+    }
 }

@@ -26,8 +26,6 @@ public class ResourceRepository {
         System.out.println("loading container..");
         for (LanguageFile languageFile : container.getLanguageFiles()) {
             final Locale locale = Locale.forLanguageTag(languageFile.getIsoCode().replaceAll("_", "-"));
-            System.out.println("iso: " + languageFile.getIsoCode());
-            System.out.println("LOCALE: " + locale.getDisplayName());
             LanguageResource resource = this.findResource(locale);
             if (resource == null) {
                 System.out.println("adding new resource for " + locale);

@@ -55,7 +55,6 @@ public class LanguageService {
     }
 
     public String getTranslatedString(final Locale locale, final String key) {
-        System.out.println("locale: " + locale);
         final LanguageResource resource = this.resourceRepository.findResource(locale);
         if (resource == null) {
             if (!locale.equals(defaultLocale))

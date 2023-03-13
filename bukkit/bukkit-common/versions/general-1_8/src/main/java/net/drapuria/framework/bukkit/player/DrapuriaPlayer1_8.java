@@ -1554,7 +1554,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     }
 
     @Override
-    public void sendLoalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
+    public void sendLocalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
         String str = languageService.getTranslatedString(this.locale, messageKey);
         for (Translateable<?> translateable : translateables)
             str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());

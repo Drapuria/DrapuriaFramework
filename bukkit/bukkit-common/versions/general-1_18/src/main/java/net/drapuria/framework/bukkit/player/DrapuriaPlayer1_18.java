@@ -2623,7 +2623,7 @@ public record DrapuriaPlayer1_18(Player player, long sessionJoin) implements Dra
     }
 
     @Override
-    public void sendLoalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
+    public void sendLocalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
         String str = languageService.getTranslatedString(this.player.locale(), messageKey);
         for (Translateable<?> translateable : translateables)
             str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());

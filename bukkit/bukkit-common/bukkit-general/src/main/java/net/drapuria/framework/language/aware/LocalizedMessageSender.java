@@ -6,6 +6,6 @@ public interface LocalizedMessageSender extends LanguageAware {
 
     void sendLocalizedMessage(final String messageKey, Translateable<?>... translateables);
 
-    void sendLoalizedMessage(final String messageKey, final boolean itemBar, Translateable<?>... translateables);
+    void sendLocalizedMessage(final String messageKey, final boolean itemBar, Translateable<?>... translateables);
 
 }

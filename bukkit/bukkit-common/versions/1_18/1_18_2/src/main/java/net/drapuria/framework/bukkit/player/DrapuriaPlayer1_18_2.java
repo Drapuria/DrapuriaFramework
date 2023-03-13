@@ -2720,7 +2720,7 @@ public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements D
         this.sendMessage(str);
     }
     @Override
-    public void sendLoalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
+    public void sendLocalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
         String str = languageService.getTranslatedString(this.player.locale(), messageKey);
         for (Translateable<?> translateable : translateables)
             str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());

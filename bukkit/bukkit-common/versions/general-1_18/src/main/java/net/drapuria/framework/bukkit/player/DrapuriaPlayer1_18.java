@@ -2621,5 +2621,16 @@ public record DrapuriaPlayer1_18(Player player, long sessionJoin) implements Dra
             str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());
         this.sendMessage(str);
     }
+
+    @Override
+    public void sendLoalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
+        String str = languageService.getTranslatedString(this.player.locale(), messageKey);
+        for (Translateable<?> translateable : translateables)
+            str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());
+        if (itemBar)
+            this.sendActionBar(str);
+        else
+            this.sendMessage(str);
+    }
 }
 

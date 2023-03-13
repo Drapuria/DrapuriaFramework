@@ -2,6 +2,7 @@ package net.drapuria.framework.language;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
@@ -26,17 +27,21 @@ public class LanguageService {
 
     @Getter
     @Setter
-    private Locale defaultLocale = Locale.US;
+    private Locale defaultLocale = Locale.UK;
+
+    @Getter
+    private boolean isBukkit;
 
     @PreInitialize
     public void init() {
         getService = this;
+        this.isBukkit = checkIsBukkit();
         this.registerComponentHolder();
     }
 
     @PostInitialize
     public void loadInternals() {
-
+        this.resourceRepository.init();
     }
 
     public Optional<LanguageContainer> findContainer(final ILanguageComponent<?> holder) {
@@ -50,9 +55,13 @@ public class LanguageService {
     }
 
     public String getTranslatedString(final Locale locale, final String key) {
+        System.out.println("locale: " + locale);
         final LanguageResource resource = this.resourceRepository.findResource(locale);
-        if (resource == null)
+        if (resource == null) {
+            if (!locale.equals(defaultLocale))
+                return getTranslatedString(defaultLocale, key);
             return "lang-not-defined";
+        }
         final LanguageString string = resource.find(key);
         return string == null ? "key-not-found" : string.string();
     }
@@ -79,4 +88,14 @@ public class LanguageService {
             }
         });
     }
+
+    private boolean checkIsBukkit() {
+        try {
+            Class.forName("net.drapuria.framework.bukkit.Drapuria");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
 }

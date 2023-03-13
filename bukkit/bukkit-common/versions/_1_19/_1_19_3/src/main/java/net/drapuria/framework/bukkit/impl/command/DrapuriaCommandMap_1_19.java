@@ -51,7 +51,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
             final String inputString = cmdLine.toLowerCase();
             final String[] input = cmdLine.split(" ");
             final String mainCommand = input[0] + " ";
-            String subCommands = cmdLine.replaceFirst(mainCommand, "");
+            String subCommands = cmdLine.replaceFirst("["+ mainCommand + "]", "");
             final int index = input.length; //run integer to get current location of our string
             final int spaceIndex = cmdLine.indexOf(" ");
             // loop through every command

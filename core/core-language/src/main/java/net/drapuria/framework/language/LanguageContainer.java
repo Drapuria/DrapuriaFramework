@@ -6,15 +6,21 @@ import lombok.Getter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.CodeSource;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -23,7 +29,7 @@ import java.util.stream.Collectors;
  */
 public class LanguageContainer {
 
-    private static final Pattern LANG_FILE = Pattern.compile("^[^-]{2,3}-[^-]{2,3}(-[^-]{2,3})?$");
+    private static final Pattern LANG_FILE = Pattern.compile("[a-z]{2}_[A-Z]{2}");
 
     @Getter private final LanguageService service;
     private final ILanguageComponent<?> component;
@@ -32,7 +38,9 @@ public class LanguageContainer {
     public LanguageContainer(final LanguageService service, ILanguageComponent<?> component) {
         this.component = component;
         this.service = service;
+        System.out.println("loading language container for " + component.holder().getClass().getName());
         this.initContainer();
+        this.service.getResourceRepository().loadContainer(this);
     }
 
     public ILanguageComponent<?> getComponent() {
@@ -66,7 +74,7 @@ public class LanguageContainer {
         final List<File> resources = this.findLanguageResources();
         for (final File languageResource : resources) {
             String isoCode = languageResource.getName().split("\\.")[0];
-            if (component.langFilePrefix() != null)
+            if (component.langFilePrefix() != null && !component.langFilePrefix().isEmpty())
                 isoCode = isoCode.replaceFirst(component.langFilePrefix(), "");
             final Optional<LanguageFile> savedLanguage = this.findLanguageFileByIsoCode(isoCode);
             if (!savedLanguage.isPresent()) {
@@ -79,8 +87,11 @@ public class LanguageContainer {
 
     private void copyResourceAndCreateLanguageFile(final File languageResource, final String isoCode) {
         final File generatedLanguageFile = new File(this.component.languageFolder(), isoCode + ".properties");
+        System.out.println("jar path: " + getJarPath());
+        System.out.println(languageResource.getPath().replaceFirst(getJarPath() + "/", ""));
+        System.out.println("RESOURCE: " + component.getClass().getClassLoader().getResource(languageResource.getPath().replaceFirst(getJarPath() + "/", "")));
         try {
-            Files.copy(languageResource.toPath(), Files.newOutputStream(generatedLanguageFile.toPath()));
+            Files.copy(Objects.requireNonNull(component.getClass().getClassLoader().getResourceAsStream(languageResource.getPath().replaceFirst(getJarPath() + "/", ""))), generatedLanguageFile.toPath());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +102,7 @@ public class LanguageContainer {
             throws IOException {
         final Properties resourceProperties = new Properties();
         final Properties savedProperties = new Properties();
-        resourceProperties.load(Files.newInputStream(Paths.get(languageResource.getAbsolutePath())));
+        resourceProperties.load(Objects.requireNonNull(component.getClass().getClassLoader().getResourceAsStream(languageResource.getPath().replaceFirst(getJarPath() + "/", ""))));
         savedProperties.load(Files.newInputStream(Paths.get(savedLanguageFile.getFile().getAbsolutePath())));
         boolean edited = false;
         for (String resourceKey : resourceProperties.keySet().stream().map(o -> (String) o)
@@ -112,18 +123,43 @@ public class LanguageContainer {
 
     private List<File> findLanguageResources() {
         try {
-            final File file = new File(this.component.holder().getClass().getResource("").toURI());
+            final File file = new File(this.getJarPath());
+            System.out.println(file.getPath());
+            System.out.println("CHANGED");
             if (!file.exists())
                 throw new FileNotFoundException("Cannot find resources.");
-            return Arrays.stream(file.listFiles())
-                    .filter(listedFile -> listedFile.getName().endsWith(".properties"))
-                    .filter(listedFile -> !listedFile.isDirectory())
-                    .filter(listedFile -> LANG_FILE.matcher(listedFile.getName().split("\\.")[0]).matches())
-                    .filter(listedFile -> component.langFilePrefix() == null || listedFile.getName().startsWith(component.langFilePrefix()))
-                    .collect(Collectors.toList());
-        } catch (URISyntaxException | FileNotFoundException e) {
+            final List<File> files = new ArrayList<>();
+            final String resPath = this.getResPath();
+            try (final JarFile jarFile = new JarFile(file)) {
+                JarEntry entry;
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while ((entry = entries.nextElement()) != null) {
+                    final String[] splitted = entry.getName().split("/");
+                    final String fileName = splitted[splitted.length - 1];
+                    if (fileName.endsWith(".properties") && LANG_FILE.matcher(fileName).find()) {
+                        files.add(new File(resPath.replaceFirst("file:",  ""), entry.getName()));
+                    }
+                    if (!entries.hasMoreElements())
+                        break;
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return files;
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private String getJarPath() {
+        String resPath = this.getResPath();
+        return resPath.replaceFirst("[.]jar[!].*", ".jar").replaceFirst("file:", "");
+    }
+
+    private String getResPath() {
+        final CodeSource codeSource = this.component.holder().getClass().getProtectionDomain().getCodeSource();
+        URL resource = codeSource.getLocation();
+        return resource.getPath().replace("%20", " ");
     }
 
     public Set<LanguageFile> getLanguageFiles() {

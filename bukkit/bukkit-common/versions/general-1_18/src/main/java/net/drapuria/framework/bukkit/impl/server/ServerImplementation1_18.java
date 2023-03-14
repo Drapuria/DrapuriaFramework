@@ -15,6 +15,9 @@ import net.drapuria.framework.bukkit.protocol.ProtocolService;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.bukkit.util.Skin;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
+import net.kyori.adventure.util.Ticks;
 import net.minecraft.server.level.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -75,6 +78,18 @@ public class ServerImplementation1_18 implements ServerImplementation {
     @Override
     public void sendActionBar(Player player, String message) {
         player.sendActionBar(Component.text(message));
+    }
+
+    @Override
+    public void sendTitle(Player player, String message, int fadeIn, int showTime, int fadeOut) {
+        player.sendTitlePart(TitlePart.TIMES, Title.Times.of(Ticks.duration(fadeIn), Ticks.duration(showTime), Ticks.duration(fadeOut)));
+        player.sendTitlePart(TitlePart.TITLE, Component.text(message));
+    }
+
+    @Override
+    public void sendSubTitle(Player player, String message, int fadeIn, int showTime, int fadeOut) {
+        player.sendTitlePart(TitlePart.TIMES, Title.Times.of(Ticks.duration(fadeIn), Ticks.duration(showTime), Ticks.duration(fadeOut)));
+        player.sendTitlePart(TitlePart.SUBTITLE, Component.text(message));
     }
 
     @Override

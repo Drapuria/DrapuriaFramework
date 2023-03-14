@@ -10,7 +10,7 @@ import com.destroystokyo.paper.block.TargetBlockInfo;
 import com.destroystokyo.paper.entity.TargetEntityInfo;
 import com.destroystokyo.paper.profile.PlayerProfile;
 import net.drapuria.framework.language.LanguageService;
-import net.drapuria.framework.language.Translateable;
+import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
@@ -2713,21 +2713,8 @@ public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements D
     }
 
     @Override
-    public void sendLocalizedMessage(String messageKey, Translateable<?>... translateables) {
-        String str = languageService.getTranslatedString(this.locale(), messageKey);
-        for (Translateable<?> translateable : translateables)
-            str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());
-        this.sendMessage(str);
-    }
-    @Override
-    public void sendLocalizedMessage(String messageKey, boolean itemBar, Translateable<?>... translateables) {
-        String str = languageService.getTranslatedString(this.player.locale(), messageKey);
-        for (Translateable<?> translateable : translateables)
-            str = str.replace("{" + translateable.getToTranslate() + "}", translateable.translateObject());
-        if (itemBar)
-            this.sendActionBar(str);
-        else
-            this.sendMessage(str);
+    public void sendLocalizedMessage(AbstractLocalizedMessage<DrapuriaPlayer, ?, MessageShowType, ?> localizedMessage) {
+        localizedMessage.send(this);
     }
 }
 

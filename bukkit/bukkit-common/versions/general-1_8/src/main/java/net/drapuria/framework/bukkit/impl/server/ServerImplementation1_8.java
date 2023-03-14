@@ -25,6 +25,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
+import org.github.paperspigot.Title;
 
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,16 @@ public class ServerImplementation1_8 implements ServerImplementation {
         ((CraftPlayer) player).getHandle().playerConnection
                 .sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\": \"" + message.trim() + "\"}"), (byte) 2));
 
+    }
+
+    @Override
+    public void sendTitle(Player player, String message, int fadeIn, int showTime, int fadeOut) {
+        player.sendTitle(Title.builder().title(message).fadeIn(fadeIn).stay(showTime).fadeOut(fadeOut).build());
+    }
+
+    @Override
+    public void sendSubTitle(Player player, String message, int fadeIn, int showTime, int fadeOut) {
+        player.sendTitle(Title.builder().subtitle(message).fadeIn(fadeIn).stay(showTime).fadeOut(fadeOut).build());
     }
 
     @Override

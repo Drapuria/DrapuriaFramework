@@ -1,9 +1,9 @@
 package net.drapuria.framework.language.aware;
 
-import net.drapuria.framework.language.Translateable;
+import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 
-public interface LocalizedMessageSender extends LanguageAware {
+public interface LocalizedMessageSender<R, T extends Enum<?>> extends LanguageAware {
 
-    void sendLocalizedMessage(final String messageKey, Translateable<?>... translateables);
+    void sendLocalizedMessage(AbstractLocalizedMessage<R, ?, T, ?> localizedMessage);
 
 }

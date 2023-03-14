@@ -2,12 +2,12 @@ package net.drapuria.framework.language;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.beans.component.ComponentRegistry;
+import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 import net.drapuria.framework.language.resource.LanguageResource;
 import net.drapuria.framework.language.resource.LanguageString;
 
@@ -24,6 +24,8 @@ public class LanguageService {
 
     private final ResourceRepository resourceRepository = new ResourceRepository(this);
     private final Map<ILanguageComponent<?>, LanguageContainer> containers = new HashMap<>();
+
+    private Class<? extends AbstractLocalizedMessage<?, ?, ?, ?>> localizedMessageClass;
 
     @Getter
     @Setter
@@ -71,6 +73,15 @@ public class LanguageService {
 
     public ResourceRepository getResourceRepository() {
         return resourceRepository;
+    }
+
+
+    public Class<? extends AbstractLocalizedMessage<?, ?, ?, ?>> getLocalizedMessageClass() {
+        return localizedMessageClass;
+    }
+
+    public void setLocalizedMessageClass(Class<? extends AbstractLocalizedMessage<?, ?, ?, ?>> localizedMessageClass) {
+        this.localizedMessageClass = localizedMessageClass;
     }
 
     private void registerComponentHolder() {

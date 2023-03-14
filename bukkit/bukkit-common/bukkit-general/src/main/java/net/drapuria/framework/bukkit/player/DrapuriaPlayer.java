@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.player;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.drapuria.framework.language.aware.LocalizedMessageSender;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import org.bukkit.GameMode;
@@ -14,7 +15,7 @@ import org.bukkit.permissions.Permissible;
 /**
  * Represents a Player
  */
-public interface DrapuriaPlayer extends Player, Permissible, LocalizedMessageSender {
+public interface DrapuriaPlayer extends Player, Permissible, LocalizedMessageSender<DrapuriaPlayer, MessageShowType> {
 
     void sendActionBar(String text);
 

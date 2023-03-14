@@ -13,6 +13,11 @@ import net.drapuria.framework.bukkit.protocol.ProtocolService;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.bukkit.util.Skin;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentLike;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.title.Title;
+import net.kyori.adventure.title.TitlePart;
+import net.kyori.adventure.util.Ticks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -70,7 +75,19 @@ public class ServerImplementation1_19 implements ServerImplementation {
 
     @Override
     public void sendActionBar(Player player, String message) {
-        player.sendActionBar(Component.text(message));
+        player.sendActionBar(message);
+    }
+
+    @Override
+    public void sendTitle(Player player, String message, int fadeIn, int showTime, int fadeOut) {
+        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Ticks.duration(fadeIn), Ticks.duration(showTime), Ticks.duration(fadeOut)));
+        player.sendTitlePart(TitlePart.TITLE, Component.text(message));
+    }
+
+    @Override
+    public void sendSubTitle(Player player, String message, int fadeIn, int showTime, int fadeOut) {
+        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Ticks.duration(fadeIn), Ticks.duration(showTime), Ticks.duration(fadeOut)));
+        player.sendTitlePart(TitlePart.SUBTITLE, Component.text(message));
     }
 
     @Override

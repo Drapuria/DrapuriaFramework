@@ -7,40 +7,43 @@ import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.beans.component.ComponentHolder;
 import net.drapuria.framework.beans.component.ComponentRegistry;
-import net.drapuria.framework.language.holder.LanguageHolderRepository;
-import net.drapuria.framework.language.holder.impl.DrapuriaLanguageHolder;
-import net.drapuria.framework.language.holder.listener.HolderRepositoryChangeListener;
+import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 import net.drapuria.framework.language.resource.LanguageResource;
 import net.drapuria.framework.language.resource.LanguageString;
 
-import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 @Service(name = "languageService")
 public class LanguageService {
 
     public static LanguageService getService;
 
+    private final ResourceRepository resourceRepository = new ResourceRepository(this);
     private final Map<ILanguageComponent<?>, LanguageContainer> containers = new HashMap<>();
-    @Getter private final ResourceRepository resourceRepository = new ResourceRepository(this);
-    private boolean useOwnHolderRepository = true;
-    private LanguageHolderRepository<?> holderRepository;
-    private final Set<HolderRepositoryChangeListener> changeListeners = new HashSet<>();
+
+    private Class<? extends AbstractLocalizedMessage<?, ?, ?, ?>> localizedMessageClass;
 
     @Getter
     @Setter
-    private Locale defaultLocale = Locale.US;
+    private Locale defaultLocale = Locale.UK;
+
+    @Getter
+    private boolean isBukkit;
 
     @PreInitialize
     public void init() {
         getService = this;
+        this.isBukkit = checkIsBukkit();
         this.registerComponentHolder();
     }
 
     @PostInitialize
     public void loadInternals() {
         this.resourceRepository.init();
-        this.holderRepository = new LanguageHolderRepository<UUID>(this);
     }
 
     public Optional<LanguageContainer> findContainer(final ILanguageComponent<?> holder) {
@@ -49,14 +52,17 @@ public class LanguageService {
 
     public Optional<LanguageContainer> findContainer(final Object component) {
         return this.containers.values().stream()
-                .filter(languageContainer -> languageContainer.getHolder().holder().equals(component))
+                .filter(languageContainer -> languageContainer.getComponent().holder().equals(component))
                 .findFirst();
     }
 
     public String getTranslatedString(final Locale locale, final String key) {
         final LanguageResource resource = this.resourceRepository.findResource(locale);
-        if (resource == null)
+        if (resource == null) {
+            if (!locale.equals(defaultLocale))
+                return getTranslatedString(defaultLocale, key);
             return "lang-not-defined";
+        }
         final LanguageString string = resource.find(key);
         return string == null ? "key-not-found" : string.string();
     }
@@ -65,22 +71,17 @@ public class LanguageService {
         return containers.values();
     }
 
-    public <ID extends Serializable> LanguageHolderRepository<ID> getHolderRepository() {
-        return (LanguageHolderRepository<ID>) this.holderRepository;
+    public ResourceRepository getResourceRepository() {
+        return resourceRepository;
     }
 
-    public <ID extends Serializable> void setHolderRepository(LanguageHolderRepository<ID> holderRepository) {
-        this.useOwnHolderRepository = false;
-        changeListeners.forEach(holderRepositoryChangeListener -> holderRepositoryChangeListener.onChange(this.holderRepository, holderRepository));
-        this.holderRepository = holderRepository;
+
+    public Class<? extends AbstractLocalizedMessage<?, ?, ?, ?>> getLocalizedMessageClass() {
+        return localizedMessageClass;
     }
 
-    public void registerHolderRepositoryChangeListener(final HolderRepositoryChangeListener listener) {
-        this.changeListeners.add(listener);
-    }
-
-    public void unregisterHolderRepositoryChangeListener(final HolderRepositoryChangeListener listener) {
-        this.changeListeners.remove(listener);
+    public void setLocalizedMessageClass(Class<? extends AbstractLocalizedMessage<?, ?, ?, ?>> localizedMessageClass) {
+        this.localizedMessageClass = localizedMessageClass;
     }
 
     private void registerComponentHolder() {
@@ -97,4 +98,14 @@ public class LanguageService {
             }
         });
     }
+
+    private boolean checkIsBukkit() {
+        try {
+            Class.forName("net.drapuria.framework.bukkit.Drapuria");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
 }

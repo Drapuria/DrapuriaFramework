@@ -84,6 +84,10 @@ public interface ServerImplementation {
 
     void sendActionBar(Player player, String message);
 
+    void sendTitle(Player player, String message, int fadeIn, int showTime, int fadeOut);
+
+    void sendSubTitle(Player player, String message, int fadeIn, int showTime, int fadeOut);
+
     boolean isServerThread();
 
     boolean callMoveEvent(Player player, Location from, Location to);

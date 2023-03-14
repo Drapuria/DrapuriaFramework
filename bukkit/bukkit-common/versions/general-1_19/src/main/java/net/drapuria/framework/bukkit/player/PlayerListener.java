@@ -34,7 +34,7 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         Metadata.provideForPlayer(player);
         final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_19(player, System.currentTimeMillis());
-        playerRepository.save(drapuriaPlayer);
+        playerRepository.save(drapuriaPlayer, drapuriaPlayer.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

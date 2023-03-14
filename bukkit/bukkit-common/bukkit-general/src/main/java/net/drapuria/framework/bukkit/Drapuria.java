@@ -25,6 +25,7 @@ import net.drapuria.framework.bukkit.item.skull.impl.HDBRepository;
 import net.drapuria.framework.bukkit.messaging.BungeeMessaging;
 import net.drapuria.framework.bukkit.util.SpigotUtil;
 import net.drapuria.framework.command.service.CommandService;
+import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.module.service.ModuleService;
 import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginManager;
@@ -91,6 +92,7 @@ public class Drapuria {
         IMPLEMENTATION = ServerImplementation.load(BeanContext.INSTANCE);
         AbstractVirtualAnvil.load();
         getCommandProvider = (BukkitCommandProvider) getCommandService.getCommandProvider();
+        LanguageService.getService.setLocalizedMessageClass(LocalizedMessage.class);
         final ModuleService moduleService = (ModuleService) DrapuriaCommon.BEAN_CONTEXT.getBean(ModuleService.class);
         moduleService.registerScanner(PluginDependenciesScanner.class);
         // load internal modules (modules managed by the framework)

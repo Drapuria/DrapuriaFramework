@@ -4,6 +4,8 @@
 
 package net.drapuria.framework.bukkit.player;
 
+import com.comphenix.protocol.wrappers.EnumWrappers;
+import net.drapuria.framework.language.aware.LocalizedMessageSender;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -13,7 +15,7 @@ import org.bukkit.permissions.Permissible;
 /**
  * Represents a Player
  */
-public interface DrapuriaPlayer extends Player, Permissible {
+public interface DrapuriaPlayer extends Player, Permissible, LocalizedMessageSender<DrapuriaPlayer, MessageShowType> {
 
     void sendActionBar(String text);
 
@@ -36,6 +38,7 @@ public interface DrapuriaPlayer extends Player, Permissible {
     boolean hasEmptyInventory();
 
     void giveItem(final ItemStack item);
+
 
     long getSessionJoin();
 

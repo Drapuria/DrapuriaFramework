@@ -17,6 +17,7 @@ import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypePara
 import net.drapuria.framework.command.annotation.Command;
 import net.drapuria.framework.command.annotation.DefaultCommand;
 import net.drapuria.framework.command.annotation.CommandParameter;
+import net.drapuria.framework.command.annotation.NullParameterAction;
 import net.drapuria.framework.command.annotation.SubCommand;
 import net.drapuria.framework.command.meta.CommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
@@ -116,6 +117,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                     BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
                     for (int i = 1; i < parameterTypes.length; i++) {
                         Class<?> parameter = method.getParameterTypes()[i];
+                        final NullParameterAction nullParameterAction = parameter.isAnnotationPresent(NullParameterAction.class)
+                                ? parameter.getAnnotation(NullParameterAction.class) : null;
                         if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
                             CommandParameter parameterInfo = method.getParameters()[i]
                                     .getAnnotation(CommandParameter.class);
@@ -125,7 +128,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                     parameterInfo.wildcard(),
                                     parameterInfo.allowNull(),
                                     parameterInfo.tabCompleteFlags(),
-                                    method.getParameters()[i]);
+                                    method.getParameters()[i],
+                                    nullParameterAction);
 
                         } else {
                             parameters[i - 1] = new BukkitParameter(parameter,
@@ -134,7 +138,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                     false,
                                     false,
                                     new String[]{},
-                                    method.getParameters()[i]);
+                                    method.getParameters()[i],
+                                    nullParameterAction);
                         }
                     }
                     this.parameterData = new BukkitParameterData(parameters);
@@ -162,6 +167,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
                 for (int i = 1; i < parameterTypes.length; i++) {
                     Class<?> parameter = method.getParameterTypes()[i];
+                    final NullParameterAction nullParameterAction = parameter.isAnnotationPresent(NullParameterAction.class) ? parameter.getAnnotation(NullParameterAction.class) : null;
                     if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
                         CommandParameter parameterInfo = method.getParameters()[i].getAnnotation(CommandParameter.class);
                         parameters[i - 1] = new BukkitParameter(parameter,
@@ -170,7 +176,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 parameterInfo.wildcard(),
                                 parameterInfo.allowNull(),
                                 parameterInfo.tabCompleteFlags(),
-                                method.getParameters()[i]);
+                                method.getParameters()[i],
+                                nullParameterAction);
 
                     } else {
                         parameters[i - 1] = new BukkitParameter(parameter,
@@ -179,7 +186,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 false,
                                 false,
                                 new String[]{},
-                                method.getParameters()[i]);
+                                method.getParameters()[i],
+                                nullParameterAction);
                     }
                 }
                 BukkitParameterData parameterData = new BukkitParameterData(parameters);
@@ -209,6 +217,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 BukkitParameter[] parameters = new BukkitParameter[parameterTypes.length - 1];
                 for (int i = 1; i < parameterTypes.length; i++) {
                     Class<?> parameter = method.getParameterTypes()[i];
+                    final NullParameterAction nullParameterAction = parameter.isAnnotationPresent(NullParameterAction.class) ? parameter.getAnnotation(NullParameterAction.class) : null;
                     if (method.getParameters()[i].isAnnotationPresent(CommandParameter.class)) {
                         CommandParameter parameterInfo = method.getParameters()[i].getAnnotation(CommandParameter.class);
                         parameters[i - 1] = new BukkitParameter(parameter,
@@ -217,7 +226,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 parameterInfo.wildcard(),
                                 parameterInfo.allowNull(),
                                 parameterInfo.tabCompleteFlags(),
-                                method.getParameters()[i]);
+                                method.getParameters()[i],
+                                nullParameterAction);
 
                     } else {
                         parameters[i - 1] = new BukkitParameter(parameter,
@@ -226,7 +236,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 false,
                                 false,
                                 new String[]{},
-                                method.getParameters()[i]);
+                                method.getParameters()[i],
+                                nullParameterAction);
                     }
                 }
                 BukkitParameterData parameterData = new BukkitParameterData(parameters);

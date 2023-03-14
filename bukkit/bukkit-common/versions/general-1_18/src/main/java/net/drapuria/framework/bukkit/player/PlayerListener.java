@@ -32,7 +32,7 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final DrapuriaPlayer drapuriaPlayer = new DrapuriaPlayer1_18(player, System.currentTimeMillis());
-        playerRepository.save(drapuriaPlayer);
+        playerRepository.save(drapuriaPlayer, drapuriaPlayer.getUniqueId());
     }
 
 

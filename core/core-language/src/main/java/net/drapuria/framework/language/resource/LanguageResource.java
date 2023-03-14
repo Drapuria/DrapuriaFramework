@@ -9,6 +9,9 @@ import java.util.Map;
 
 public class LanguageResource {
 
+    private static final LanguageString NOT_FOUND = new LanguageString(null, Locale.ENGLISH, "NOT_FOUND",
+            "§cError! Translation not found.");
+
     private final LanguageService service;
     @Getter
     private final Locale locale;
@@ -21,8 +24,12 @@ public class LanguageResource {
 
 
     public LanguageString find(final String key) {
-        return this.strings.getOrDefault(key, isDefault() ? find("drapuria.string.not.defined")
+        return this.strings.getOrDefault(key, isDefault() ? findSave("drapuria.string.not.defined")
                 : this.service.getResourceRepository().findResource(this.service.getDefaultLocale()).find(key));
+    }
+
+    public LanguageString findSave(final String key) {
+        return this.strings.getOrDefault(key, NOT_FOUND);
     }
 
     private boolean isDefault() {
@@ -32,4 +39,5 @@ public class LanguageResource {
     public void add(final String key, final LanguageString languageString) {
         this.strings.put(key, languageString);
     }
+}
 

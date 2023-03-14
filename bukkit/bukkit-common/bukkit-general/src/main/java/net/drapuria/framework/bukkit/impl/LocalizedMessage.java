@@ -39,6 +39,7 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
     public LocalizedMessage(String key) {
         super(key);
         super.localeGetFunction(DEFAULT_LOCALE_FUNCTION);
+        super.showType = MessageShowType.CHAT;
         super.color = ChatColor.RESET;
     }
 

@@ -26,6 +26,7 @@ public class PluginClassLoader {
     private final Supplier<Method> addUrlMethod;
 
     public PluginClassLoader(ClassLoader classLoader) throws IllegalStateException {
+
         if (classLoader instanceof URLClassLoader) {
             this.classLoader = (URLClassLoader) classLoader;
         } else {

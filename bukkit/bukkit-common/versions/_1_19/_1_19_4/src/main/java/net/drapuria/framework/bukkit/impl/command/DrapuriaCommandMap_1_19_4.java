@@ -15,22 +15,22 @@ import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R1.command.CraftCommandMap;
+import org.bukkit.craftbukkit.v1_19_R3.command.CraftCommandMap;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 
 // 1.19 IMPLEMENTATION
 
-//@CommandMapImpl
-public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommandMap {
+@CommandMapImpl
+public class DrapuriaCommandMap_1_19_4 extends CraftCommandMap implements ICommandMap {
 
     private final BukkitCommandProvider commandProvider;
 
     private static final List<String> EMPTY_ARRAY_LIST = new ArrayList<>();
     private static final String[] emptyStringArray = new String[]{};
 
-    public DrapuriaCommandMap_1_19(Server server, BukkitCommandProvider commandProvider) {
+    public DrapuriaCommandMap_1_19_4(Server server, BukkitCommandProvider commandProvider) {
         super(server);
         this.commandProvider = commandProvider;
 
@@ -178,7 +178,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                                         doneHere = true;
                                         continue subCommandMeta;
                                     }
-                                } else */if (org.apache.commons.lang.StringUtils.contains(subCommands, subCommandAlias)) {
+                                } else */if (StringUtils.contains(subCommands, subCommandAlias)) {
                                     doneHere = true;
                                     continue subCommandMeta;
                                 }

@@ -1,7 +1,5 @@
 package net.drapuria.framework.bukkit.impl;
 
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.player.MessageShowType;
@@ -18,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Function;
@@ -64,6 +63,20 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
         }
         if (super.sound() != null)
             super.sound().play(receiver);
+    }
+
+    @Override
+    public void send(Player... receiver) {
+        for (Player player : receiver) {
+            this.send(player);
+        }
+    }
+
+    @Override
+    public void send(Collection<Player> receiver) {
+        for (Player player : receiver) {
+            this.send(player);
+        }
     }
 
 

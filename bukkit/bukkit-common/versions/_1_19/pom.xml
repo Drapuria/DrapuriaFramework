@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>_1_19_3</module>
+        <module>_1_19_4</module>
     </modules>
 
 

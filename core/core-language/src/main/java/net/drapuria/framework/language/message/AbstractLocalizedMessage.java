@@ -16,6 +16,7 @@ import net.drapuria.framework.language.message.placeholder.SimplePlaceholderValu
 import net.drapuria.framework.language.message.placeholder.TranslateFormat;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Function;
@@ -57,7 +58,7 @@ public abstract class AbstractLocalizedMessage<R, C, T, S> {
         if (this.translateFormat == TranslateFormat.FORMAT)
             return String.format(locale, message, placeholderValues.stream().map(IPlaceholderValue::getValue).toArray());
         else {
-            for (IPlaceholderValue placeholderValue : placeholderValues)
+            for (IPlaceholderValue placeholderValue : placeholderValues)//{HALLO}
                 message = message.replace("{" + placeholderValue.getPlaceholder() + "}", placeholderValue.getValue());
             return message;
         }
@@ -70,6 +71,10 @@ public abstract class AbstractLocalizedMessage<R, C, T, S> {
     }
 
     public abstract void send(R receiver);
+
+    public abstract void send(R... receiver);
+
+    public abstract void send(Collection<R> receiver);
 
     public abstract void broadcast();
 

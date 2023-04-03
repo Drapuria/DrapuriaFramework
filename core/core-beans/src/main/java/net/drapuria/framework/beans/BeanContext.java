@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
         repo = @MavenRepository(url = "https://maven.imanity.dev/repository/imanity-libraries/"))
 public class BeanContext {
 
-    public static boolean SHOW_LOGS = false;
+    public static boolean SHOW_LOGS = true;
     public static BeanContext INSTANCE;
     public static final int PLUGIN_LISTENER_PRIORITY = 100;
 
@@ -386,33 +386,9 @@ public class BeanContext {
         }
 
         // Scanning through the JAR to see every Service Bean can be registered
-        List<BeanDetails> beanDetailsList;
-        try (SimpleTiming ignored = logTiming("Scanning Beans")) {
-            beanDetailsList = new NonNullArrayList<>(Arrays.asList(included));
-
-            for (Class<?> type : reflectLookup.findAnnotatedClasses(Service.class)) {
-
-                Service service = type.getAnnotation(Service.class);
-                Preconditions.checkNotNull(service, "The type " + type.getName() + " doesn't have @Service annotation!");
-
-                String name = service.name();
-
-                if (this.getBeanByName(name) == null) {
-                    ServiceBeanDetails beanDetails = new ServiceBeanDetails(type, name, service.dependencies());
-
-                    log("Found " + name + " with type " + type.getSimpleName() + ", Registering it as bean...");
-
-                    this.attemptBindPlugin(beanDetails);
-                    this.registerBean(beanDetails, false);
-
-                    beanDetailsList.add(beanDetails);
-                } else {
-                    new ServiceAlreadyExistsException(name).printStackTrace();
-                }
-            }
-        }
-
         // Scanning methods that registers bean
+
+        List<BeanDetails> beanDetailsList = new NonNullArrayList<>(Arrays.asList(included));
         try (SimpleTiming ignored = logTiming("Scanning Bean Method")) {
             for (Method method : reflectLookup.findAnnotatedStaticMethods(Bean.class)) {
                 if (method.getReturnType() == void.class) {
@@ -436,6 +412,29 @@ public class BeanContext {
                     BeanDetails beanDetails = new DependenciesBeanDetails(instance.getClass(), instance, name, Arrays.stream(detailsMethod.getParameters()).map(type -> this.getBeanDetails(type.getType())).filter(Objects::nonNull).map(BeanDetails::getName).toArray(String[]::new));
 
                     log("Found " + name + " with type " + instance.getClass().getSimpleName() + ", Registering it as bean...");
+
+                    this.attemptBindPlugin(beanDetails);
+                    this.registerBean(beanDetails, false);
+
+                    beanDetailsList.add(beanDetails);
+                } else {
+                    new ServiceAlreadyExistsException(name).printStackTrace();
+                }
+            }
+        }
+        try (SimpleTiming ignored = logTiming("Scanning Beans")) {
+
+            for (Class<?> type : reflectLookup.findAnnotatedClasses(Service.class)) {
+
+                Service service = type.getAnnotation(Service.class);
+                Preconditions.checkNotNull(service, "The type " + type.getName() + " doesn't have @Service annotation!");
+
+                String name = service.name();
+
+                if (this.getBeanByName(name) == null) {
+                    ServiceBeanDetails beanDetails = new ServiceBeanDetails(type, name, service.dependencies());
+
+                    log("Found " + name + " with type " + type.getSimpleName() + ", Registering it as bean...");
 
                     this.attemptBindPlugin(beanDetails);
                     this.registerBean(beanDetails, false);
@@ -534,6 +533,7 @@ public class BeanContext {
     }
 
     private List<BeanDetails> loadInOrder(List<BeanDetails> beanDetailsList) {
+        beanDetailsList.sort(new BeanDetailsComparator());
         Map<String, BeanDetails> unloaded = new HashMap<>();
         for (BeanDetails beanDetails : beanDetailsList) {
             unloaded.put(beanDetails.getName(), beanDetails);

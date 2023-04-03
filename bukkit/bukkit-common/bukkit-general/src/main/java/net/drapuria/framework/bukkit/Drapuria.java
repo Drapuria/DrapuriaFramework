@@ -14,6 +14,7 @@ import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.beans.annotation.Autowired;
 import net.drapuria.framework.beans.component.ComponentRegistry;
+import net.drapuria.framework.beans.details.SimpleBeanDetails;
 import net.drapuria.framework.bukkit.configuration.BukkitDrapuriaConfiguration;
 import net.drapuria.framework.bukkit.impl.*;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
@@ -35,6 +36,7 @@ import net.drapuria.framework.util.Stacktrace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.Server;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -85,9 +87,9 @@ public class Drapuria {
         Drapuria.CLASS_LOADER = new PluginClassLoader(plugin.getClass().getClassLoader());
         Drapuria.RANDOM = new FastRandom();
         BungeeMessaging.init();
-
         SpigotUtil.init();
         Drapuria.initCommon();
+        BeanContext.INSTANCE.registerBean(new SimpleBeanDetails(Bukkit.getServer(), "Server", Server.class));
         Drapuria.drapuriaConfiguration = new BukkitDrapuriaConfiguration();
         IMPLEMENTATION = ServerImplementation.load(BeanContext.INSTANCE);
         AbstractVirtualAnvil.load();

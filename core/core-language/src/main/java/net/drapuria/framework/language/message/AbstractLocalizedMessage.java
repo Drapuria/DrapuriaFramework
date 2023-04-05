@@ -8,12 +8,10 @@ import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
 import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.exception.LocalizedMessageClassNotFoundException;
-import net.drapuria.framework.language.message.placeholder.PlaceholderTransformer;
-import net.drapuria.framework.language.message.prefix.PrefixData;
+import net.drapuria.framework.language.message.exception.PlaceholderNotFoundException;
 import net.drapuria.framework.language.message.placeholder.IPlaceholderValue;
-import net.drapuria.framework.language.message.placeholder.PlaceholderValue;
-import net.drapuria.framework.language.message.placeholder.SimplePlaceholderValue;
 import net.drapuria.framework.language.message.placeholder.TranslateFormat;
+import net.drapuria.framework.language.message.prefix.PrefixData;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -48,20 +46,38 @@ public abstract class AbstractLocalizedMessage<R, C, T, S> {
         this.key = key;
     }
 
-    public String getMessage() {
+    public String getMessage(final Object... objects) {
         final Locale locale = this.locale == null ? service.getDefaultLocale() : this.locale;
-        return getMessage(locale);
+        return getMessage(locale, objects);
     }
 
-    public String getMessage(final Locale locale) {
+    public String getMessage(final Locale locale, Object... objects) {
         String message = service.getTranslatedString(locale, key);
-        if (this.translateFormat == TranslateFormat.FORMAT)
-            return String.format(locale, message, placeholderValues.stream().map(IPlaceholderValue::getValue).toArray());
-        else {
-            for (IPlaceholderValue placeholderValue : placeholderValues)//{HALLO}
-                message = message.replace("{" + placeholderValue.getPlaceholder() + "}", placeholderValue.getValue());
+        if (objects.length == 0)
             return message;
+        try {
+            if (this.translateFormat == TranslateFormat.FORMAT) {
+                String[] translatedObjects = new String[objects.length];
+                for (int i = 0; i < objects.length; i++) {
+                    if (this.placeholderValues.size() <= i)
+                        throw new PlaceholderNotFoundException("Placeholder for object " + objects[i] + " not found!");
+                    final Object object = objects[i];
+                    translatedObjects[i] = this.placeholderValues.get(i).getValue(object, locale);
+                }
+                return String.format(locale, message, translatedObjects);
+            } else {
+                for (int i = 0; i < objects.length; i++) {
+                    if (this.placeholderValues.size() <= i)
+                        throw new PlaceholderNotFoundException("Placeholder for object " + objects[i] + " not found!");
+                    final Object object = objects[i];
+                    final IPlaceholderValue placeholderValue = placeholderValues.get(i);
+                    message = message.replace("{" + placeholderValue.getPlaceholder() + "}", placeholderValue.getValue(object, locale));
+                }
+            }
+        } catch (PlaceholderNotFoundException e) {
+            e.printStackTrace();
         }
+        return message;
     }
 
     protected Locale getLocaleOf(R receiver) {
@@ -70,13 +86,11 @@ public abstract class AbstractLocalizedMessage<R, C, T, S> {
         return this.localeGetFunction.apply(receiver);
     }
 
-    public abstract void send(R receiver);
+    public abstract void send(R receiver, Object... objects);
 
-    public abstract void send(R... receiver);
+    public abstract void send(Collection<R> receiver, Object... objects);
 
-    public abstract void send(Collection<R> receiver);
-
-    public abstract void broadcast();
+    public abstract void broadcast(Object... objects);
 
     @SneakyThrows
     public static <R, C, T, S, E extends AbstractLocalizedMessage<R, C, T, S>> E of(final String key) {

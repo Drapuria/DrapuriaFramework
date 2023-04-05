@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 @AllArgsConstructor
 public class BackButton extends Button {
 
-    private IMenu back;
+    protected IMenu back;
 
     @Override
     public ItemStack getIcon(Player player) {

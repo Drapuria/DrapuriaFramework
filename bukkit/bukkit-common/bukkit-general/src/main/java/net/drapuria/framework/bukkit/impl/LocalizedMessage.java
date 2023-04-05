@@ -7,10 +7,12 @@ import net.drapuria.framework.bukkit.player.PlayerRepository;
 import net.drapuria.framework.bukkit.sound.SoundData;
 import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.AbstractLocalizedMessage;
-import net.drapuria.framework.language.message.placeholder.PlaceholderTransformer;
-import net.drapuria.framework.language.message.placeholder.PlaceholderValue;
-import net.drapuria.framework.language.message.placeholder.SimplePlaceholderValue;
+import net.drapuria.framework.language.message.placeholder.object.transformer.LocalePlaceholderTransformer;
+import net.drapuria.framework.language.message.placeholder.object.transformer.PlaceholderTransformer;
+import net.drapuria.framework.language.message.placeholder.object.PlaceholderValue;
+import net.drapuria.framework.language.message.placeholder.StringPlaceholderValue;
 import net.drapuria.framework.language.message.placeholder.TranslateFormat;
+import net.drapuria.framework.language.message.placeholder.object.transformer.SimplePlaceholderTransformer;
 import net.drapuria.framework.language.message.prefix.PrefixData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,10 +45,10 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
     }
 
     @Override
-    public void send(Player receiver) {
+    public void send(Player receiver, Object... objects) {
         final Locale locale = super.getLocaleOf(receiver);
         final PrefixData<?> prefixData = super.prefixData();
-        final String message = (prefixData != null ? prefixData.getAsString(locale) : "") + super.color + " " + this.getMessage(locale);
+        final String message = (prefixData != null ? prefixData.getAsString(locale) : "") + super.color + " " + this.getMessage(locale, objects);
         switch (showType()) {
             case ACTION_BAR:
                 Drapuria.IMPLEMENTATION.sendActionBar(receiver, message);
@@ -65,17 +67,11 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
             super.sound().play(receiver);
     }
 
-    @Override
-    public void send(Player... receiver) {
-        for (Player player : receiver) {
-            this.send(player);
-        }
-    }
 
     @Override
-    public void send(Collection<Player> receiver) {
+    public void send(Collection<Player> receiver, Object... objects) {
         for (Player player : receiver) {
-            this.send(player);
+            this.send(player, objects);
         }
     }
 
@@ -136,33 +132,44 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
     }
 
     public LocalizedMessage placeholder(final String value) {
-        super.placeholderValues.add(new SimplePlaceholderValue(value));
+        super.placeholderValues.add(new StringPlaceholderValue(value));
         return this;
     }
 
     public LocalizedMessage placeholder(final String placeholder, final String value) {
-        super.placeholderValues.add(new SimplePlaceholderValue(placeholder, value));
+        super.placeholderValues.add(new StringPlaceholderValue(placeholder, value));
         return this;
     }
 
-    public LocalizedMessage placeholder(final PlaceholderValue<?> placeholder) {
+    public LocalizedMessage placeholder(final PlaceholderValue<?, ?> placeholder) {
         this.placeholderValues.add(placeholder);
         return this;
     }
 
-    public <O> LocalizedMessage placeholder(final O object, final PlaceholderTransformer<O> transformer) {
-        return this.placeholder(PlaceholderValue.of(object, transformer));
+    public <O> LocalizedMessage placeholder(final Class<O> objectClass, final SimplePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.of(objectClass, transformer));
     }
 
-    public <O> LocalizedMessage placeholder(final String placeholder, final O object, final PlaceholderTransformer<O> transformer) {
-        return this.placeholder(PlaceholderValue.of(placeholder, object, transformer));
+    public <O> LocalizedMessage placeholder(final String placeholder, final SimplePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.of(placeholder, transformer));
     }
+
+
+    public <O> LocalizedMessage placeholder(final Class<O> objectClass, final LocalePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.of(objectClass, transformer));
+    }
+
+    public <O> LocalizedMessage placeholder(final String placeholder, final LocalePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.of(placeholder, transformer));
+    }
+
+
 
     @Override
-    public void broadcast() {
+    public void broadcast(Object... objects) {
         for (Player receiver : Bukkit.getOnlinePlayers()) {
             if (broadcastPermission == null || receiver.hasPermission(broadcastPermission)) {
-                send(receiver);
+                send(receiver, objects);
             }
         }
     }

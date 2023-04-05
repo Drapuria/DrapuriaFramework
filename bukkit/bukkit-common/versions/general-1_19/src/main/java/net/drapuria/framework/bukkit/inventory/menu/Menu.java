@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public abstract class Menu extends AbstractMenu {
     }
 
     public void setCachedButtons(Player player, Map<Integer, IButton> map) {
-        this.playerButtons.put(player, map);
+        this.playerButtons.put(player instanceof DrapuriaPlayer ? player.getPlayer() : player, map);
     }
 
     @Override

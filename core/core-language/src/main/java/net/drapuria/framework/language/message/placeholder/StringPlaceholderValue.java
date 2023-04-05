@@ -1,15 +1,17 @@
 package net.drapuria.framework.language.message.placeholder;
 
-public final class SimplePlaceholderValue implements IPlaceholderValue {
+import java.util.Locale;
+
+public final class StringPlaceholderValue implements IPlaceholderValue {
 
     private final String placeholder;
     private final String value;
-    public SimplePlaceholderValue(String value) {
+    public StringPlaceholderValue(String value) {
         this.value = value;
         this.placeholder = null;
     }
 
-    public SimplePlaceholderValue(String placeholder, String value) {
+    public StringPlaceholderValue(String placeholder, String value) {
         this.placeholder = placeholder;
         this.value = value;
     }
@@ -20,7 +22,7 @@ public final class SimplePlaceholderValue implements IPlaceholderValue {
     }
 
     @Override
-    public String getValue() {
+    public String getValue(Object toTranslate, Locale locale) {
         return this.value;
     }
 }

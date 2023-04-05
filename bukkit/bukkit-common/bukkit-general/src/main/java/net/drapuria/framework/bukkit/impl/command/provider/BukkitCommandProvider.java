@@ -27,6 +27,7 @@ import net.drapuria.framework.plugin.PluginClassLoader;
 import net.drapuria.framework.plugin.PluginListenerAdapter;
 import net.drapuria.framework.plugin.PluginManager;
 import net.drapuria.framework.beans.component.ComponentRegistry;
+import net.drapuria.framework.util.Stacktrace;
 import net.drapuria.framework.util.TypeAnnotationScanner;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -166,8 +167,8 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
                 .ifPresent(entry -> {
                     try {
                         commandReference.set((DrapuriaCommand) entry.getKey().newInstance(entry.getValue().toArray()));
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignored) {
-
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                        Stacktrace.print("Error while loading command in class " + commandClass.getName(), e);
                     }
                 });
         if (commandReference.get() == null) {

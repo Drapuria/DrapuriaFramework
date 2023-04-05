@@ -9,6 +9,7 @@ import com.mojang.authlib.properties.Property;
 import net.drapuria.framework.bukkit.item.meta.enchant.EnchantGlow;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;
 import net.drapuria.framework.bukkit.util.Skin;
+import net.kyori.adventure.text.Component;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -79,6 +80,16 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setDisplayName(Component component) {
+        this.itemMeta.displayName(component);
+        return this;
+    }
+
+    public ItemBuilder setLoreComponents(List<Component> components) {
+        this.itemMeta.lore(components);
+        return this;
+    }
+
     public ItemBuilder setLore(List<String> lore) {
         this.itemMeta.setLore(lore);
         return this;
@@ -100,8 +111,13 @@ public class ItemBuilder {
         return setLore(loreList);
     }
 
+    public ItemBuilder setLore(Component... lore) {
+        final List<Component> loreList = new ArrayList<>(Arrays.asList(lore));
+        return setLoreComponents(loreList);
+    }
+
     public ItemBuilder setSkullOwner(String owner) {
-        if (itemStack.getType() == Material.SKULL_ITEM) {
+        if (itemStack.getType() == Material.PLAYER_HEAD) {
             Skin skin = Skin.fromPlayer(owner);
             if (skin != null) {
                 final SkullMeta meta = (SkullMeta) itemStack.getItemMeta();

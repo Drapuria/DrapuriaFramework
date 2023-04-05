@@ -97,6 +97,19 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <filters>
+                                <filter>
+                                    <artifact>net.drapuria.framework.bukkit-general:${project.version}</artifact>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                    <excludes>
+                                        <exlude>
+                                            net.drapuria.framework.bukkit.inventory.menu.Menu.class
+                                        </exlude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
                         </configuration>
                     </execution>

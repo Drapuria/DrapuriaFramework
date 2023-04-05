@@ -9,6 +9,7 @@ public class GenericConfigurationProvider extends AbstractConfigurationProvider<
     @Override
     public void onEnable(Object config) {
         for (Method method : config.getClass().getDeclaredMethods()) {
+            if (method.getReturnType() != void.class) continue;
             method.setAccessible(true);
             method.invoke(config);
         }
@@ -18,6 +19,7 @@ public class GenericConfigurationProvider extends AbstractConfigurationProvider<
     @Override
     public void onPostEnable(Object config) {
         for (Method method : config.getClass().getDeclaredMethods()) {
+            if (method.getReturnType() != void.class) continue;
             method.setAccessible(true);
             method.invoke(config);
         }

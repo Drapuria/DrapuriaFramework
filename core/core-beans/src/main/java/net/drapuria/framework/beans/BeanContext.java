@@ -51,7 +51,7 @@ public class BeanContext {
      */
     public static final Logger LOGGER = LogManager.getLogger(BeanContext.class);
 
-    protected static void log(String msg, Object... replacement) {
+    public static void log(String msg, Object... replacement) {
         if (SHOW_LOGS) {
             LOGGER.info("[BeanContext] " + String.format(msg, replacement));
         }
@@ -373,7 +373,7 @@ public class BeanContext {
         return details;
     }
 
-    private void attemptBindPlugin(BeanDetails beanDetails) {
+    public void attemptBindPlugin(BeanDetails beanDetails) {
         if (PluginManager.isInitialized()) {
             AbstractPlugin plugin = PluginManager.INSTANCE.getPluginByClass(beanDetails.getType());
 
@@ -417,6 +417,9 @@ public class BeanContext {
             }
         }
         try (SimpleTiming ignored = logTiming("Scanning Bean Method")) {
+            beanDetailsList.stream().filter(beanDetails -> beanDetails instanceof ConfigurationBeanDetails)
+                    .map(beanDetails -> (ConfigurationBeanDetails) beanDetails)
+                    .forEach(configurationBeanDetails -> configurationBeanDetails.registerBeans(this, reflectLookup));
             for (Method method : reflectLookup.findAnnotatedStaticMethods(Bean.class)) {
                 if (method.getReturnType() == void.class) {
                     new IllegalArgumentException("The Method " + method + " has annotated @Bean but no return type!").printStackTrace();

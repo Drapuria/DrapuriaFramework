@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import lombok.NonNull;
 import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.NonNullArrayList;
+import net.drapuria.framework.beans.configuration.ConfigurationProviderRegistry;
 import net.drapuria.framework.libraries.annotation.MavenDependency;
 import net.drapuria.framework.libraries.annotation.MavenRepository;
 import net.drapuria.framework.plugin.AbstractPlugin;
@@ -159,7 +160,15 @@ public class BeanContext {
     public void stop() {
         List<BeanDetails> detailsList = Lists.newArrayList(this.sortedBeans);
         Collections.reverse(detailsList);
-
+        detailsList.stream().filter(beanDetails -> beanDetails.isDisposable())
+                .map(beanDetails -> (DisposableBean) beanDetails.getInstance())
+                .forEach(disposableBean -> {
+                    try {
+                        disposableBean.destroy();
+                    } catch (Exception e) {
+                        LOGGER.error(e);
+                    }
+                });
         this.call(PreDestroy.class, detailsList);
 
         for (BeanDetails details : detailsList) {
@@ -389,18 +398,36 @@ public class BeanContext {
         // Scanning methods that registers bean
 
         List<BeanDetails> beanDetailsList = new NonNullArrayList<>(Arrays.asList(included));
+        try (SimpleTiming ignored = logTiming("Scanning Configuration Providers")) {
+            ConfigurationProviderRegistry.scanProviders(this, reflectLookup);
+        }
+        try (SimpleTiming ignored = logTiming("Scanning Configurations")) {
+            for (Class<?> type : reflectLookup.findAnnotatedClasses(Configuration.class)) {
+                Configuration configuration = type.getAnnotation(Configuration.class);
+                String name = configuration.value();
+                if (name.isEmpty())
+                    name = type.getName();
+                ConfigurationBeanDetails beanDetails = new ConfigurationBeanDetails(type, name, configuration.enableMethod());
+                beanDetails.setInstance(type.newInstance());
+                log("Found " + name + " with type " + type.getSimpleName() + ", registering it as configuration...");
+                this.attemptBindPlugin(beanDetails);
+                this.registerBean(beanDetails, false);
+                beanDetailsList.add(beanDetails);
+                beanDetails.call(PreInitialize.class);
+            }
+        }
         try (SimpleTiming ignored = logTiming("Scanning Bean Method")) {
             for (Method method : reflectLookup.findAnnotatedStaticMethods(Bean.class)) {
                 if (method.getReturnType() == void.class) {
                     new IllegalArgumentException("The Method " + method + " has annotated @Bean but no return type!").printStackTrace();
                 }
+                Bean bean = method.getAnnotation(Bean.class);
+                if (bean == null)
+                    continue;
                 BeanParameterDetailsMethod detailsMethod = new BeanParameterDetailsMethod(method, this);
                 final Object instance = detailsMethod.invoke(null, this);
 
-                Bean bean = method.getAnnotation(Bean.class);
-                if (bean == null) {
-                    continue;
-                }
+
 
                 String name = bean.name();
                 if (name.isEmpty()) {
@@ -639,5 +666,4 @@ public class BeanContext {
 
         return Collections.emptyList();
     }
-
 }

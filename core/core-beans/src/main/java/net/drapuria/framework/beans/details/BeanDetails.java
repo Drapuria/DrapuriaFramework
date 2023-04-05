@@ -29,6 +29,8 @@ public interface BeanDetails {
 
     boolean isDestroyed();
 
+    boolean isDisposable();
+
     @Nullable
     String getTag(String key);
 

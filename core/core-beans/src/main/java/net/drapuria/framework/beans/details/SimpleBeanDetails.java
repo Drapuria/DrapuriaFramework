@@ -7,6 +7,7 @@ package net.drapuria.framework.beans.details;
 import lombok.Getter;
 import lombok.Setter;
 
+import net.drapuria.framework.beans.DisposableBean;
 import net.drapuria.framework.plugin.AbstractPlugin;
 import net.drapuria.framework.beans.ServiceDependencyType;
 import org.jetbrains.annotations.Nullable;
@@ -26,12 +27,15 @@ public class SimpleBeanDetails implements BeanDetails {
 
     private AbstractPlugin plugin;
     private Set<String> children;
+    private boolean disposable;
 
     public SimpleBeanDetails(Object instance, String name, Class<?> type) {
         this.instance = instance;
         this.name = name;
         this.type = type;
         this.children = new HashSet<>();
+        this.disposable = DisposableBean.class.isAssignableFrom(type);
+
     }
 
     @SuppressWarnings("RedundantThrows")
@@ -57,6 +61,11 @@ public class SimpleBeanDetails implements BeanDetails {
     @Override
     public boolean isDestroyed() {
         return false;
+    }
+
+    @Override
+    public boolean isDisposable() {
+        return this.disposable;
     }
 
     @Override

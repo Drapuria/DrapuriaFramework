@@ -46,6 +46,7 @@ public class GenericBeanDetails implements BeanDetails {
 
     private Set<String> children;
     private Map<String, String> tags;
+    private final boolean disposable;
 
     public GenericBeanDetails(Object instance) {
         this(instance.getClass(), instance, "dummy");
@@ -61,6 +62,7 @@ public class GenericBeanDetails implements BeanDetails {
         this.stage = ActivationStage.NOT_LOADED;
         this.tags = new ConcurrentHashMap<>(0);
         this.children = new HashSet<>();
+        this.disposable = DisposableBean.class.isAssignableFrom(type);
     }
 
     public GenericBeanDetails(Class<?> type, @Nullable Object instance, String name) {
@@ -183,7 +185,7 @@ public class GenericBeanDetails implements BeanDetails {
         this.changeStage(annotation);
     }
 
-    private void changeStage(Class<? extends Annotation> annotation) {
+    protected void changeStage(Class<? extends Annotation> annotation) {
         if (annotation == PreInitialize.class) {
             this.stage = ActivationStage.PRE_INIT_CALLED;
         } else if (annotation == PostInitialize.class) {
@@ -208,6 +210,11 @@ public class GenericBeanDetails implements BeanDetails {
     @Override
     public boolean isDestroyed() {
         return this.stage == ActivationStage.PRE_DESTROY_CALLED || this.stage == ActivationStage.POST_DESTROY_CALLED;
+    }
+
+    @Override
+    public boolean isDisposable() {
+        return this.disposable;
     }
 
     @Override

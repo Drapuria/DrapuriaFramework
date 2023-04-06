@@ -4,7 +4,7 @@ package net.drapuria.framework.beans.configuration;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Provides all the necessary methods for a Configurations Class which implements a Configuration
+ * Provides all the necessary methods for a Configuration Class which implements a Configuration
  *
  * @param <T> The Interface this provider handles
  */

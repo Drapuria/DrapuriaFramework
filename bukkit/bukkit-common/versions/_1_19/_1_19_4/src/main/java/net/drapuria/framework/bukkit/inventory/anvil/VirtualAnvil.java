@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@SuppressWarnings("ALL")
 public abstract class VirtualAnvil extends AbstractVirtualAnvil {
 
     protected Player player;

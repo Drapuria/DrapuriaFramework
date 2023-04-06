@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.inventory.anvil;
 
+import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.bukkit.Drapuria;
 import lombok.SneakyThrows;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;
@@ -131,7 +132,7 @@ public abstract class VirtualAnvil extends AbstractVirtualAnvil {
                 managedAnvils.remove(p);
                 anvil.getAnvilInventory().clear();
                 p.getOpenInventory().setCursor(new ItemStack(Material.AIR));
-                anvil.onCancel();
+                FrameworkMisc.TASK_SCHEDULER.runSync(() -> anvil.onCancel());
             }
         }
 

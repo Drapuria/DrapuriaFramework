@@ -113,10 +113,7 @@ public class ServerImplementation1_19 implements ServerImplementation {
                 ConfirmAction action = confirm.apply(this.player, text);
                 setConfirmAction(action);
                 if (action == ConfirmAction.CONFIRMED)
-                    FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
                         player.closeInventory();
-
-                    });
             }
 
             @Override
@@ -134,9 +131,7 @@ public class ServerImplementation1_19 implements ServerImplementation {
                 ConfirmAction action = confirm.apply(this.player, text);
                 setConfirmAction(action);
                 if (action == ConfirmAction.CONFIRMED)
-                    FrameworkMisc.TASK_SCHEDULER.runSync(() -> {
-                        player.closeInventory();
-                    });
+                    player.closeInventory();
             }
 
             @Override

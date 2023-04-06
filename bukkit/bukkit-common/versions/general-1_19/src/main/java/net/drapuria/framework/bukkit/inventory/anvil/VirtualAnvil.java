@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.inventory.anvil;
 
+import net.drapuria.framework.FrameworkMisc;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.chat.IChatBaseComponent;
@@ -133,8 +134,8 @@ public abstract class VirtualAnvil extends AbstractVirtualAnvil {
                 managedAnvils.remove(p);
                 anvil.getAnvilInventory().clear();
                 p.getOpenInventory().setCursor(new ItemStack(Material.AIR));
-                anvil.onCancel();
                 resetActiveContainer(p);
+                FrameworkMisc.TASK_SCHEDULER.runSync(() -> anvil.onCancel());
             }
         }
     }

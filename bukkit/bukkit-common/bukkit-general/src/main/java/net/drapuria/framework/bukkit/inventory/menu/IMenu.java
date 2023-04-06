@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface IMenu {
 
@@ -72,6 +73,8 @@ public interface IMenu {
     void updateMenu(Player player);
 
     void updateButton(Player player, int slot, IButton button);
+
+    Set<Player> getPlayersInMenu();
 
     default int size(Map<Integer, IButton> buttons) {
         if (this.getSize() != -1) return getDefaultSize();

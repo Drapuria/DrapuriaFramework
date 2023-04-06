@@ -14,7 +14,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
@@ -157,5 +159,10 @@ public abstract class Menu extends AbstractMenu {
     public void updateButton(Player player, int slot, IButton button) {
         final Inventory inventory = this.getInventory(player);
         inventory.setItem(slot, button.getIcon(player));
+    }
+
+    @Override
+    public Set<Player> getPlayersInMenu() {
+        return this.playerButtons.keySet();
     }
 }

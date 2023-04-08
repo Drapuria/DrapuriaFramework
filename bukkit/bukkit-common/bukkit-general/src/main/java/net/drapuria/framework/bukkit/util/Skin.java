@@ -163,6 +163,17 @@ public class Skin {
         return new Skin(texture, signature);
     }
 
+
+    public static Skin download(UUID uuid) throws Exception {
+        URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+        InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
+        JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+        String texture = textureProperty.get("value").getAsString();
+        String signature = textureProperty.get("signature").getAsString();
+
+        return new Skin(texture, signature);
+    }
+
     public static Skin fromMineSkin(String id) {
         Skin skin = MINE_SKIN_CACHE.get(id);
         return skin == null ? Skin.GRAY : skin;

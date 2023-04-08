@@ -8,7 +8,6 @@ import net.drapuria.framework.bukkit.sound.SoundData;
 import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 import net.drapuria.framework.language.message.placeholder.object.transformer.LocalePlaceholderTransformer;
-import net.drapuria.framework.language.message.placeholder.object.transformer.PlaceholderTransformer;
 import net.drapuria.framework.language.message.placeholder.object.PlaceholderValue;
 import net.drapuria.framework.language.message.placeholder.StringPlaceholderValue;
 import net.drapuria.framework.language.message.placeholder.TranslateFormat;
@@ -141,6 +140,7 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
         return this;
     }
 
+
     public LocalizedMessage placeholder(final PlaceholderValue<?, ?> placeholder) {
         this.placeholderValues.add(placeholder);
         return this;
@@ -148,6 +148,18 @@ public class LocalizedMessage extends AbstractLocalizedMessage<Player, ChatColor
 
     public <O> LocalizedMessage placeholder(final Class<O> objectClass, final SimplePlaceholderTransformer<O> transformer) {
         return this.placeholder(PlaceholderValue.of(objectClass, transformer));
+    }
+
+    public <O> LocalizedMessage translatablePlaceholder(final Class<O> objectClass, final SimplePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.ofTranslatable(objectClass, transformer));
+    }
+
+    public <O> LocalizedMessage translatablePlaceholder(final String placeholder, final SimplePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.ofTranslatable(placeholder, transformer));
+    }
+
+    public <O> LocalizedMessage translatablePlaceholder(final SimplePlaceholderTransformer<O> transformer) {
+        return this.placeholder(PlaceholderValue.ofTranslatable(transformer));
     }
 
     public <O> LocalizedMessage placeholder(final String placeholder, final SimplePlaceholderTransformer<O> transformer) {

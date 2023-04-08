@@ -1,5 +1,6 @@
 package net.drapuria.framework.language.message.placeholder.object;
 
+import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.placeholder.IPlaceholderValue;
 import net.drapuria.framework.language.message.placeholder.object.transformer.LocalePlaceholderTransformer;
 import net.drapuria.framework.language.message.placeholder.object.transformer.PlaceholderTransformer;
@@ -62,4 +63,17 @@ public abstract class PlaceholderValue<O, T> implements IPlaceholderValue {
         final SimplePlaceholderTransformer<O> simplePlaceholderTransformer = (SimplePlaceholderTransformer<O>) transformer;
         return new ObjectPlaceholderValue<>(simplePlaceholderTransformer);
     }
+
+    public static <O> PlaceholderValue ofTranslatable(final Class<O> objectClass, final SimplePlaceholderTransformer<O> transformer) {
+            return new TranslatableObjectPlaceholderValue(objectClass, transformer, LanguageService.getService);
+    }
+
+    public static <O> PlaceholderValue ofTranslatable(final SimplePlaceholderTransformer<O> transformer) {
+        return new TranslatableObjectPlaceholderValue(transformer, LanguageService.getService);
+    }
+
+    public static <O> PlaceholderValue ofTranslatable(String placeholder, final SimplePlaceholderTransformer<O> transformer) {
+        return new TranslatableObjectPlaceholderValue(placeholder, transformer, LanguageService.getService);
+    }
+
 }

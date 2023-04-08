@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 @Setter
 @MavenDependency(groupId = "org.json", artifactId = "json", version = "20200518")
@@ -53,6 +54,16 @@ public class Skin {
                 @Override
                 public @Nullable Skin load(@NonNull String s) throws Exception {
                     return loadFromPlayerName(s);
+                }
+            });
+
+    private static final LoadingCache<UUID, Skin> UUID_SKULL_CACHE = Caffeine.newBuilder()
+            .expireAfterAccess(5, TimeUnit.MINUTES)
+            .initialCapacity(60)
+            .build(new CacheLoader<UUID, Skin>() {
+                @Override
+                public @Nullable Skin load(@NonNull UUID s) throws Exception {
+                    return download(s);
                 }
             });
 
@@ -142,6 +153,25 @@ public class Skin {
             return null;
         }
         return skin;
+    }
+
+    public static Skin fromPlayer(UUID player) {
+        Skin skin = UUID_SKULL_CACHE.getIfPresent(player);
+        if (skin == null) {
+            FrameworkMisc.TASK_SCHEDULER.runAsync(() -> UUID_SKULL_CACHE.refresh(player));
+            return null;
+        }
+        return skin;
+    }
+
+    public static void fromPlayer(UUID player, Consumer<Skin> consumer) {
+        Skin skin = UUID_SKULL_CACHE.getIfPresent(player);
+        if (skin == null) {
+            FrameworkMisc.TASK_SCHEDULER.runAsync(() -> {
+                UUID_SKULL_CACHE.refresh(player);
+                consumer.accept(UUID_SKULL_CACHE.get(player));
+            });
+        }
     }
 
     public static Skin download(String name) throws Exception {

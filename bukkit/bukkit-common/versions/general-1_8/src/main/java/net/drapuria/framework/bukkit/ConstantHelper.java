@@ -21,6 +21,10 @@ import static org.bukkit.Material.STAINED_GLASS_PANE;
 
 public class ConstantHelper {
 
+    private ConstantHelper() {
+
+    }
+
     @BootstrapInvoke
     public static void loadConstants() {
         ItemConstants.BARRIER = ItemBuilder.of(Material.BARRIER).build();

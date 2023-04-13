@@ -165,8 +165,14 @@ public class Skin {
     }
 
     public static void fromPlayer(UUID player, Consumer<Skin> consumer) {
-        Skin skin = UUID_SKULL_CACHE.getIfPresent(player);
-        if (skin == null) {
+        if (player == null) {
+            consumer.accept(GRAY);
+            return;
+        }
+        try {
+            Skin skin = UUID_SKULL_CACHE.getIfPresent(player);
+            consumer.accept(skin);
+        } catch (Exception ignored) {
             FrameworkMisc.TASK_SCHEDULER.runAsync(() -> {
                 UUID_SKULL_CACHE.refresh(player);
                 consumer.accept(UUID_SKULL_CACHE.get(player));
@@ -175,28 +181,21 @@ public class Skin {
     }
 
     public static Skin download(String name) throws Exception {
-        URL url_0 = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
-        InputStreamReader reader_0 = new InputStreamReader(url_0.openStream());
+        URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name);
+        InputStreamReader reader_0 = new InputStreamReader(url.openStream());
 
         String uuid = new JsonParser().parse(reader_0).getAsJsonObject().get("id").getAsString();
 
         if (uuid == null || uuid.isEmpty()) {
             return Skin.GRAY;
         }
-
-        URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
-        InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
-        JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
-        String texture = textureProperty.get("value").getAsString();
-        String signature = textureProperty.get("signature").getAsString();
-
-        return new Skin(texture, signature);
+        return download(uuid);
     }
 
 
     public static Skin download(UUID uuid) throws Exception {
-        URL url_1 = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
-        InputStreamReader reader_1 = new InputStreamReader(url_1.openStream());
+        URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+        InputStreamReader reader_1 = new InputStreamReader(url.openStream());
         JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
         String texture = textureProperty.get("value").getAsString();
         String signature = textureProperty.get("signature").getAsString();

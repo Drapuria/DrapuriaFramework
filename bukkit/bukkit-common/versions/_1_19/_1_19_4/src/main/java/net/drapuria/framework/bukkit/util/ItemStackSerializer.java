@@ -1,29 +1,19 @@
 package net.drapuria.framework.bukkit.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutput;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.math.BigInteger;
-
 import net.drapuria.framework.ObjectSerializer;
 import net.drapuria.framework.beans.annotation.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.math.BigInteger;
+
 @Component
 public class ItemStackSerializer implements ObjectSerializer<ItemStack, String> {
-    public ItemStackSerializer() {
-    }
-
     public static ItemStack deserializeItemStack(String data) {
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream((new BigInteger(data, 32)).toByteArray())) {
             return ItemStack.deserializeBytes(inputStream.readAllBytes());

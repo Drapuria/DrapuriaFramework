@@ -13,6 +13,8 @@ import net.drapuria.framework.bukkit.scoreboard.board.DrapuriaBoard;
 import net.drapuria.framework.bukkit.sound.SoundConstants;
 import net.drapuria.framework.bukkit.sound.SoundData;
 import net.drapuria.framework.bukkit.util.DrapuriaSoundDefaults;
+import net.minecraft.server.v1_8_R3.NetworkManager;
+import net.minecraft.server.v1_8_R3.PlayerConnection;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -52,5 +54,6 @@ public class ConstantHelper {
         };
 
     }
+
 
 }

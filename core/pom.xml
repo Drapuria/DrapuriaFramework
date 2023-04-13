@@ -25,6 +25,7 @@
         <module>core-config</module>
         <module>core-scheduler</module>
         <module>core-language</module>
+        <module>core-properties</module>
     </modules>
 
     <properties>

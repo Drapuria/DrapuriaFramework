@@ -6,12 +6,13 @@ package net.drapuria.framework.redis;
 
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
-import net.drapuria.framework.beans.*;
-import net.drapuria.framework.beans.annotation.*;
-import net.drapuria.framework.configuration.yaml.SimpleYamlConfiguration;
+import net.drapuria.framework.beans.JacksonService;
+import net.drapuria.framework.beans.annotation.PostDestroy;
+import net.drapuria.framework.beans.annotation.PostInitialize;
+import net.drapuria.framework.beans.annotation.Service;
+import net.drapuria.framework.beans.annotation.ServiceDependency;
+import net.drapuria.framework.beans.annotation.ShouldInitialize;
 import net.drapuria.framework.configuration.yaml.configs.yaml.YamlConfiguration;
-import net.drapuria.framework.libraries.annotation.MavenDependency;
-import net.drapuria.framework.libraries.annotation.MavenRepository;
 import org.redisson.Redisson;
 import org.redisson.api.RMap;
 import org.redisson.api.RReadWriteLock;
@@ -20,7 +21,6 @@ import org.redisson.codec.JsonJacksonCodec;
 import org.redisson.config.Config;
 
 import java.io.File;
-import java.nio.file.Path;
 
 @Service(name = "redis", dependencies = {"serializer", "jackson"})
 @ServiceDependency(dependencies = {"serializer", "jackson"})

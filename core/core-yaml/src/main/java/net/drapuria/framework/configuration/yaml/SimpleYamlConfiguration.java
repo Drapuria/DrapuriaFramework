@@ -29,7 +29,6 @@ import org.yaml.snakeyaml.representer.Represent;
 import org.yaml.snakeyaml.representer.Representer;
 
 
-@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class SimpleYamlConfiguration extends ConfigurationProvider {
 
     static {

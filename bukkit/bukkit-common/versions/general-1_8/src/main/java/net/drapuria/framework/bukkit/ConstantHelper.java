@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit;
 
+import lombok.Value;
 import net.drapuria.framework.BootstrapInvoke;
 import net.drapuria.framework.bukkit.inventory.menu.Button;
 import net.drapuria.framework.bukkit.inventory.menu.header.HeaderMenuFactory;
@@ -22,7 +23,6 @@ import static org.bukkit.Material.STAINED_GLASS_PANE;
 public class ConstantHelper {
 
     private ConstantHelper() {
-
     }
 
     @BootstrapInvoke

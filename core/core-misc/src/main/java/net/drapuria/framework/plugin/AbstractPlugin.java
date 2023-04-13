@@ -4,6 +4,8 @@
 
 package net.drapuria.framework.plugin;
 
+import java.io.File;
+
 public interface AbstractPlugin {
 
     default void onInitial() {
@@ -31,5 +33,7 @@ public interface AbstractPlugin {
     ClassLoader getPluginClassLoader();
 
     String getName();
+
+    File getDataFolder();
 
 }

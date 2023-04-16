@@ -34,6 +34,26 @@ public class ConstructorWrapper<R> extends WrapperAbstract {
 		return null;
 	}
 
+	public R resolve(Object[]... args) {
+
+		Throwable lastException = null;
+
+
+		for (Object[] objects : args) {
+			try {
+				return this.constructor.newInstance(objects);
+			} catch (Throwable throwable) {
+				lastException = throwable;
+			}
+		}
+
+		if (lastException != null) {
+			throw new RuntimeException(lastException);
+		}
+		return null;
+
+	}
+
 	public Class<?>[] getParameterTypes() {
 		return this.constructor.getParameterTypes();
 	}

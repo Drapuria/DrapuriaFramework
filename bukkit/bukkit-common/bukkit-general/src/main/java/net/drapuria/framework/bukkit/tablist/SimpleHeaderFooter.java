@@ -4,6 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import net.drapuria.framework.bukkit.util.CC;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,8 +26,8 @@ public class SimpleHeaderFooter {
         if (destroying)
             return;
         DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getAdapter();
-        String headerNow = BukkitUtil.color(adapter.getHeader(player));
-        String footerNow = BukkitUtil.color(adapter.getFooter(player));
+        String headerNow = CC.translate(adapter.getHeader(player));
+        String footerNow = CC.translate(adapter.getFooter(player));
         if (!headerNow.equals(this.header) || !footerNow.equals(this.footer)) {
             updateHeaderAndFooter(headerNow, footerNow);
             this.header = headerNow;

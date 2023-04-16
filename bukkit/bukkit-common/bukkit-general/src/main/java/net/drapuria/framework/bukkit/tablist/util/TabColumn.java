@@ -1,6 +1,7 @@
 package net.drapuria.framework.bukkit.tablist.util;
 
 import lombok.Getter;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.version.PlayerVersion;
 import org.bukkit.entity.Player;
 
@@ -66,7 +67,7 @@ public enum TabColumn {
 
     public Integer getNumb(Player player, int raw) {
         /* Check if the Player is not a 1.7 User */
-        if (PlayerUtil.getVersion(player) != PlayerVersion.v1_7) {
+        if (Minecraft.getProtocol(player) != PlayerVersion.v1_7) {
             return raw - startNumber + 1;
         }
         int number = 0;

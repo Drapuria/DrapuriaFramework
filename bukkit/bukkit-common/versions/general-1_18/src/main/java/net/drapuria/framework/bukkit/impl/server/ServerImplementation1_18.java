@@ -12,6 +12,8 @@ import net.drapuria.framework.bukkit.inventory.anvil.AbstractVirtualAnvil;
 import net.drapuria.framework.bukkit.inventory.anvil.ConfirmAction;
 import net.drapuria.framework.bukkit.inventory.anvil.VirtualAnvil;
 import net.drapuria.framework.bukkit.protocol.ProtocolService;
+import net.drapuria.framework.bukkit.protocol.packet.PacketService;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.util.BlockPosition;
 import net.drapuria.framework.bukkit.util.Skin;
 import net.kyori.adventure.text.Component;
@@ -28,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -100,6 +103,17 @@ public class ServerImplementation1_18 implements ServerImplementation {
     @Override
     public boolean callMoveEvent(Player player, Location from, Location to) {
         return false;
+    }
+
+    @Override
+    public void sendTeam(Player player, String name, String prefix, String suffix, Collection<String> nameSet, int type) {
+        PacketService.send(player, WrappedPacketOutScoreboardTeam.builder()
+                .name(name)
+                .prefix(prefix)
+                .suffix(suffix)
+                .nameSets(nameSet)
+                .action(type)
+                .build());
     }
 
     @Override

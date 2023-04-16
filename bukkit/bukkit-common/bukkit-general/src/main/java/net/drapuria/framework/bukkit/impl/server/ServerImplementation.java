@@ -22,6 +22,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.imanity.framework.reflect.ReflectLookup;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -91,6 +92,9 @@ public interface ServerImplementation {
     boolean isServerThread();
 
     boolean callMoveEvent(Player player, Location from, Location to);
+
+    void sendTeam(Player player, String name, String prefix, String suffix, Collection<String> nameSet, int type);
+
 
     Skin getSkinFromPlayer(Player player);
 

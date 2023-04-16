@@ -5,7 +5,9 @@ import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
 import net.drapuria.framework.util.AccessUtil;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Resolver for fields
@@ -25,11 +27,12 @@ public class FieldResolver extends MemberResolver<Field> {
 		return AccessUtil.setAccessible(this.clazz.getDeclaredFields()[index]);
 	}
 
-	public Field resolve(Class<?> clazz, int index) {
-		Field[] fields = Arrays.stream(this.clazz.getDeclaredFields()).filter(field -> field.getType().equals(clazz)).toArray(Field[]::new);
-		if (fields.length <= index)
-			return null;
-		return fields[index];
+	public <T> FieldWrapper<T> resolve(Class<T> type, int index) {
+		try {
+			return new FieldWrapper<>(this.resolve(new ResolverQuery(type, index)));
+		} catch (NoSuchFieldException e) {
+			throw new IllegalArgumentException(e);
+		}
 	}
 
 	@Override
@@ -60,6 +63,10 @@ public class FieldResolver extends MemberResolver<Field> {
 		return new FieldAccessor(resolveSilent(names));
 	}
 
+	public <T> FieldWrapper<T> resolveSilent(Class<T> type, int index) {
+		return new FieldWrapper<>(this.resolveSilent(new ResolverQuery(type, index)));
+	}
+
 	public Field resolveSilent(String... names) {
 		try {
 			return resolve(names);
@@ -67,6 +74,11 @@ public class FieldResolver extends MemberResolver<Field> {
 			if (AccessUtil.VERBOSE) { e.printStackTrace(); }
 		}
 		return null;
+	}
+
+
+	public FieldWrapper resolveByLastTypeWrapper(Class<?> type) throws ReflectiveOperationException {
+		return new FieldWrapper(this.resolveByLastType(type));
 	}
 
 	public Field resolve(String... names) throws NoSuchFieldException {
@@ -113,6 +125,36 @@ public class FieldResolver extends MemberResolver<Field> {
 			}
 		}
 		return null;
+	}
+
+	public <T> FieldWrapper<T> resolveWithGenericType(Class<T> fieldType, Class<?>... genericType) {
+		try {
+			return new FieldWrapper<>(this.resolve(new ResolverQuery(fieldType, -1, genericType)));
+		} catch (Throwable throwable) {
+			throw new RuntimeException(throwable);
+		}
+	}
+
+	public <T> List<FieldWrapper<T>> resolveList(Class<T> type) {
+		List<FieldWrapper<T>> fieldList = new ArrayList<>();
+
+		try {
+			int index = 0;
+			while (true) {
+				FieldWrapper<T> field;
+				try {
+					field = this.resolve(type, index++);
+				} catch (IllegalArgumentException e) {
+					break;
+				}
+
+				fieldList.add(field);
+			}
+		} catch (Throwable throwable) {
+			throw new RuntimeException(throwable);
+		}
+
+		return fieldList;
 	}
 
 	/**

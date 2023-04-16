@@ -4,8 +4,24 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import lombok.Setter;
+import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.beans.annotation.Autowired;
+import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.impl.metadata.Metadata;
+import net.drapuria.framework.bukkit.protocol.packet.PacketDto;
+import net.drapuria.framework.bukkit.protocol.packet.PacketListener;
+import net.drapuria.framework.bukkit.protocol.packet.PacketService;
+import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutLogin;
+import net.drapuria.framework.bukkit.reflection.BukkitReflection;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import net.drapuria.framework.bukkit.tablist.util.IDrapuriaTab;
 import net.drapuria.framework.bukkit.tablist.util.impl.ProtocolLibTabImpl;
+import net.drapuria.framework.bukkit.util.AsyncTypeCallback;
+import net.drapuria.framework.metadata.MetadataKey;
+import net.drapuria.framework.metadata.MetadataMap;
+import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -20,8 +36,8 @@ public class DrapuriaTabHandler {
     @Getter
     private static DrapuriaTabHandler instance;
 
-    public static final MetadataKey<DrapuriaTablist> TABLIST_KEY = MetadataKey.create("Azure_" + "TabList", DrapuriaTablist.class);
-    private static final MetadataKey<SimpleHeaderFooter> SIMPLE_HEADER_FOOTER_KEY = MetadataKey.create("Azure_" + "SimpleHeaderFooter", SimpleHeaderFooter.class);
+    public static final MetadataKey<DrapuriaTablist> TABLIST_KEY = MetadataKey.create("Drapuria_" + "TabList", DrapuriaTablist.class);
+    private static final MetadataKey<SimpleHeaderFooter> SIMPLE_HEADER_FOOTER_KEY = MetadataKey.create("Drapuria_" + "SimpleHeaderFooter", SimpleHeaderFooter.class);
 
 
     private final DrapuriaTabAdapter adapter;
@@ -47,7 +63,7 @@ public class DrapuriaTabHandler {
 
         this.adapter = adapter;
 
-        AzureAPI.injectBean(this);
+        DrapuriaCommon.injectBean(this);
 
         this.registerImplementation();
         this.setup();
@@ -78,7 +94,7 @@ public class DrapuriaTabHandler {
             }
         }).performSync(true, () -> {
             MetadataMap map = Metadata.provideForPlayer(player);
-            map.get(TABLIST_KEY).ifPresent(AzureTablist::destroy);
+            map.get(TABLIST_KEY).ifPresent(DrapuriaTablist::destroy);
             return map.has(TABLIST_KEY) ? map : null;
         });
     }
@@ -114,7 +130,7 @@ public class DrapuriaTabHandler {
 
         // To ensure client will display 60 slots on 1.7
         if (Bukkit.getMaxPlayers() < 60) {
-            if (MinecraftVersion.VERSION.olderThan(MinecraftReflection.Version.v1_8_R1)) {
+            if (MinecraftVersion.VERSION.olderThan(Minecraft.Version.v1_8_R1)) {
                 packetService.registerPacketListener(new PacketListener() {
                     @Override
                     public Class<?>[] type() {
@@ -131,13 +147,13 @@ public class DrapuriaTabHandler {
                     }
                 });
             } else {
-                AzurePlugin.getInstance().getServerManager().getCurrentServer().getServerData().setSlots(60);
+                BukkitReflection.setMaxPlayers(Drapuria.PLUGIN.getServer(), 60);
             }
         }
 
         //Start Thread
         this.thread = Executors.newSingleThreadScheduledExecutor(new ThreadFactoryBuilder()
-                .setNameFormat("Azure-Tablist-Thread")
+                .setNameFormat("Drapuria-Tablist-Thread")
                 .setDaemon(true)
                 .setUncaughtExceptionHandler((thread1, throwable) -> Stacktrace.print(throwable))
                 .build());
@@ -149,7 +165,7 @@ public class DrapuriaTabHandler {
             }
             this.t = 0;
             for (Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
-                AzureTablist tablist = Metadata
+                DrapuriaTablist tablist = Metadata
                         .provideForPlayer(player)
                         .getOrNull(TABLIST_KEY);
 

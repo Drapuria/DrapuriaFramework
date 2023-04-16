@@ -30,6 +30,12 @@ public class MethodResolver extends MemberResolver<Method> {
 		return null;
 	}
 
+	public MethodWrapper resolve(int index, Class<?>... parameters) throws ReflectiveOperationException {
+
+		return new MethodWrapper(this.resolve(new ResolverQuery(index, parameters)));
+
+	}
+
 	public Method resolveSignatureSilent(String... signatures) {
 		try {
 			return resolveSignature(signatures);
@@ -113,6 +119,12 @@ public class MethodResolver extends MemberResolver<Method> {
 	@Override
 	protected NoSuchMethodException notFoundException(String joinedNames) {
 		return new NoSuchMethodException("Could not resolve method for " + joinedNames + " in class " + this.clazz);
+	}
+
+	public MethodWrapper resolve(Class<?> returnType, int index, Class<?>... parameters) throws ReflectiveOperationException {
+
+		return new MethodWrapper<>(this.resolve(new ResolverQuery(returnType, index, parameters)));
+
 	}
 
 	static boolean ClassListEqual(Class<?>[] l1, Class<?>[] l2) {

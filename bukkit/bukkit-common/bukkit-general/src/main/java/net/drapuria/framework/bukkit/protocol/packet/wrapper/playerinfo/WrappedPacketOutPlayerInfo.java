@@ -1,28 +1,31 @@
 package net.drapuria.framework.bukkit.protocol.packet.wrapper.playerinfo;
 
-import com.comphenix.protocol.events.PacketContainer;
 import lombok.Getter;
 import lombok.Setter;
+import net.drapuria.framework.bukkit.protocol.packet.PacketDirection;
+import net.drapuria.framework.bukkit.protocol.packet.type.PacketType;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.PacketContainer;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
-import net.drapuria.framework.bukkit.reflection.resolver.minecraft.NMSClassResolver;
-import net.drapuria.framework.bukkit.reflection.resolver.minecraft.OBCClassResolver;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ChatComponentWrapper;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.GameProfileWrapper;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.PacketWrapper;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-//@AutowiredWrappedPacket(value = PacketType.Server.PLAYER_INFO, direction = PacketDirection.WRITE)
+@AutowiredWrappedPacket(value = PacketType.Server.PLAYER_INFO, direction = PacketDirection.WRITE)
 @Getter
 @Setter
-public class WrappedPacketOutPlayerInfo implements SendableWrapper {
+public class WrappedPacketOutPlayerInfo extends WrappedPacket implements SendableWrapper {
 
     private static Class<?> PACKET_CLASS;
-    public static final NMSClassResolver NMS_CLASS_RESOLVER = new NMSClassResolver();
-    public static final OBCClassResolver CRAFT_CLASS_RESOLVER = new OBCClassResolver();
-    public static final NettyClassResolver NETTY_CLASS_RESOLVER = new NettyClassResolver();
 
     public static void init() {
         try {
@@ -62,6 +65,7 @@ public class WrappedPacketOutPlayerInfo implements SendableWrapper {
         this.playerInfoData.addAll(playerInfoData);
     }
 
+    @Override
     protected void setup() {
 
         if (WrappedPlayerInfoData.isPlayerInfoDataExists()) { // 1.8
@@ -86,6 +90,7 @@ public class WrappedPacketOutPlayerInfo implements SendableWrapper {
 
     }
 
+    @Override
     public PacketContainer asPacketContainer() {
 
         if (WrappedPlayerInfoData.isPlayerInfoDataExists()) { // 1.8

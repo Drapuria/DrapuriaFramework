@@ -5,16 +5,27 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import lombok.Getter;
+import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.version.PlayerVersion;
 import net.drapuria.framework.bukkit.tablist.util.BufferedTabObject;
+import net.drapuria.framework.bukkit.tablist.util.LegacyClientUtil;
 import net.drapuria.framework.bukkit.tablist.util.TabColumn;
 import net.drapuria.framework.bukkit.tablist.util.TabEntry;
+import net.drapuria.framework.bukkit.util.CC;
 import net.drapuria.framework.bukkit.util.Skin;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+/**
+ * @author Marinus created on 23.06.2021 inside the package - de.vantrex.azure.tablist
+ */
 
 @Getter
 public class DrapuriaTablist {
@@ -31,11 +42,19 @@ public class DrapuriaTablist {
 
     public DrapuriaTablist(Player player) {
         this.player = player;
-        setup();
+        final boolean version_1_7 = Minecraft.getProtocol(player) == PlayerVersion.v1_7;
+        if (version_1_7)
+            DrapuriaCommon.TASK_SCHEDULER.runAsyncScheduled(this::setup, 15);
+        else
+            setup();
+
     }
 
     private void setup() {
-        for (int i = 1; i <= slots; i++) {
+        final boolean version_1_7 = Minecraft.getProtocol(player) == PlayerVersion.v1_7;
+        final int possibleSlots = version_1_7 ? 60 : slots;
+
+        for (int i = 1; i <= possibleSlots; i++) {
             final TabColumn tabColumn = TabColumn.getFromSlot(player, i);
             if (tabColumn == null) {
                 continue;
@@ -48,6 +67,18 @@ public class DrapuriaTablist {
                     tabColumn.getNumb(player, i),
                     i
             );
+            if (version_1_7) {
+                player.sendMessage("added team");
+
+                Drapuria.IMPLEMENTATION.sendTeam(
+                        player,
+                        LegacyClientUtil.name(i - 1),
+                        "",
+                        "",
+                        Collections.singleton(LegacyClientUtil.entry(i - 1)),
+                        0
+                );
+            }
             currentEntries.add(tabEntry);
         }
         //   AzureTabHandler.getInstance().getImplementation().removeSelf(player);
@@ -61,6 +92,9 @@ public class DrapuriaTablist {
         if (destroying || isSetup)
             return;
         DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getAdapter();
+
+        final boolean version_1_7 = Minecraft.getProtocol(player) == PlayerVersion.v1_7;
+
 
         Set<TabEntry> previous = new HashSet<>(currentEntries);
         Set<BufferedTabObject> processedObjects = adapter.getSlots(player);
@@ -78,11 +112,11 @@ public class DrapuriaTablist {
                     DrapuriaTabHandler.getInstance().getImplementation().updateFakeLatency(this, tabEntry, scoreObject.getPing());
                 }
 
-
-                if (!tabEntry.getTexture().toString().equals(scoreObject.getSkin().toString())) {
-                    DrapuriaTabHandler.getInstance().getImplementation().updateFakeSkin(this, tabEntry, scoreObject.getSkin());
+                if (!version_1_7) {
+                    if (!tabEntry.getTexture().toString().equals(scoreObject.getSkin().toString())) {
+                        DrapuriaTabHandler.getInstance().getImplementation().updateFakeSkin(this, tabEntry, scoreObject.getSkin());
+                    }
                 }
-
                 DrapuriaTabHandler.getInstance().getImplementation().updateFakeName(this, tabEntry, scoreObject.getText());
             }
         }
@@ -90,14 +124,15 @@ public class DrapuriaTablist {
         for (TabEntry tabEntry : previous) {
             DrapuriaTabHandler.getInstance().getImplementation().updateFakeName(this, tabEntry, "");
             DrapuriaTabHandler.getInstance().getImplementation().updateFakeLatency(this, tabEntry, 0);
-            DrapuriaTabHandler.getInstance().getImplementation().updateFakeSkin(this, tabEntry, Skin.GRAY);
-
+            if (!version_1_7) {
+                DrapuriaTabHandler.getInstance().getImplementation().updateFakeSkin(this, tabEntry, Skin.GRAY);
+            }
         }
 
         previous.clear();
 
-        String headerNow = BukkitUtil.color(adapter.getHeader(player));
-        String footerNow = BukkitUtil.color(adapter.getFooter(player));
+        String headerNow = CC.translate(adapter.getHeader(player));
+        String footerNow = CC.translate(adapter.getFooter(player));
 
         if (!headerNow.equals(this.header) || !footerNow.equals(this.footer)) {
             DrapuriaTabHandler.getInstance().getImplementation().updateHeaderAndFooter(this, headerNow, footerNow);
@@ -109,7 +144,8 @@ public class DrapuriaTablist {
     public void destroy() {
         destroying = true;
         getCurrentEntries().forEach(entry -> DrapuriaTabHandler.getInstance().getImplementation().removeFakePlayer(this, entry));
-
+        if (Minecraft.getProtocol(player) == PlayerVersion.v1_7)
+            return;
         PacketContainer headerAndFooter = new PacketContainer(PacketType.Play.Server.PLAYER_LIST_HEADER_FOOTER);
         headerAndFooter.getChatComponents().write(0, WrappedChatComponent.fromText(""));
         headerAndFooter.getChatComponents().write(1, WrappedChatComponent.fromText(""));

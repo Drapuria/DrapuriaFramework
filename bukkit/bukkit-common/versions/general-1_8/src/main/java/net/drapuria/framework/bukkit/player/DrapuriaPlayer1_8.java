@@ -731,6 +731,11 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     }
 
     @Override
+    public boolean canSee(Entity entity) {
+        return player.canSee(entity);
+    }
+
+    @Override
     public Location getLocation() {
         return player.getLocation();
     }

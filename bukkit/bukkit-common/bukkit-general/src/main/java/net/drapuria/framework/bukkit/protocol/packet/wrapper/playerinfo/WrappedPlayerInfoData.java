@@ -3,6 +3,15 @@ package net.drapuria.framework.bukkit.protocol.packet.wrapper.playerinfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.resolver.ConstructorResolver;
+import net.drapuria.framework.bukkit.reflection.resolver.minecraft.NMSClassResolver;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ChatComponentWrapper;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ConstructorWrapper;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.GameProfileWrapper;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ObjectWrapper;
+import net.drapuria.framework.util.EquivalentConverter;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -49,11 +58,12 @@ public class WrappedPlayerInfoData {
     private GameProfileWrapper gameProfile;
     private ChatComponentWrapper chatComponent;
 
+    @SneakyThrows
     public static WrappedPlayerInfoData from(Player player) {
 
         GameMode gameMode = player.getGameMode();
         GameProfileWrapper gameProfile = GameProfileWrapper.fromPlayer(player);
-        int ping = MinecraftReflection.getPing(player);
+        int ping = Minecraft.getPing(player);
         ChatComponentWrapper chatComponent = ChatComponentWrapper.fromText(player.getPlayerListName());
 
         return new WrappedPlayerInfoData(ping, gameMode, gameProfile, chatComponent);
@@ -78,14 +88,14 @@ public class WrappedPlayerInfoData {
                                                 playerInfoPacketClass,
                                                 GameProfileWrapper.IMPLEMENTATION.getGameProfileClass(),
                                                 int.class,
-                                                MinecraftReflection.getEnumGamemodeClass(),
-                                                MinecraftReflection.getIChatBaseComponentClass()
+                                                Minecraft.getEnumGamemodeClass(),
+                                                Minecraft.getIChatBaseComponentClass()
                                         },
                                         new Class[] {
                                                 GameProfileWrapper.IMPLEMENTATION.getGameProfileClass(),
                                                 int.class,
-                                                MinecraftReflection.getEnumGamemodeClass(),
-                                                MinecraftReflection.getIChatBaseComponentClass()
+                                                Minecraft.getEnumGamemodeClass(),
+                                                Minecraft.getIChatBaseComponentClass()
                                         });
                     } catch (Throwable throwable) {
                         throw new RuntimeException(throwable);
@@ -99,13 +109,13 @@ public class WrappedPlayerInfoData {
                                     null,
                                     specific.gameProfile.getHandle(),
                                     specific.latency,
-                                    MinecraftReflection.getGameModeConverter().getGeneric(specific.getGameMode()),
+                                    Minecraft.getGameModeConverter().getGeneric(specific.getGameMode()),
                                     specific.chatComponent != null ? specific.chatComponent.getHandle() : null
                             },
                             new Object[] {
                                     specific.gameProfile.getHandle(),
                                     specific.latency,
-                                    MinecraftReflection.getGameModeConverter().getGeneric(specific.getGameMode()),
+                                    Minecraft.getGameModeConverter().getGeneric(specific.getGameMode()),
                                     specific.chatComponent != null ? specific.chatComponent.getHandle() : null
                             }
                     );
@@ -122,9 +132,9 @@ public class WrappedPlayerInfoData {
                 GameProfileWrapper gameProfile = (GameProfileWrapper) objectWrapper.getFieldByFirstType(GameProfileWrapper.IMPLEMENTATION.getGameProfileClass());
                 int latency = objectWrapper.getFieldByFirstType(int.class);
 
-                GameMode gameMode = MinecraftReflection.getGameModeConverter().getSpecific(objectWrapper.getFieldByFirstType(MinecraftReflection.getEnumGamemodeClass()));
+                GameMode gameMode = Minecraft.getGameModeConverter().getSpecific(objectWrapper.getFieldByFirstType(Minecraft.getEnumGamemodeClass()));
 
-                ChatComponentWrapper chatComponent = MinecraftReflection.getChatComponentConverter().getSpecific(objectWrapper.getFieldByFirstType(ChatComponentWrapper.GENERIC_TYPE));
+                ChatComponentWrapper chatComponent = Minecraft.getChatComponentConverter().getSpecific(objectWrapper.getFieldByFirstType(ChatComponentWrapper.GENERIC_TYPE));
 
                 return new WrappedPlayerInfoData(latency, gameMode, gameProfile, chatComponent);
             }

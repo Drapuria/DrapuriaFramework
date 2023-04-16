@@ -6,11 +6,14 @@ import net.drapuria.framework.bukkit.impl.annotation.ProviderTestImpl;
 import net.drapuria.framework.bukkit.impl.server.ServerImplementation;
 import net.drapuria.framework.bukkit.impl.test.ImplementationFactory;
 import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardObjective;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardScore;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardObjective;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardScore;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutTitle;
 import net.drapuria.framework.bukkit.reflection.Reflection;
 import net.drapuria.framework.bukkit.reflection.annotation.ProtocolImpl;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ChatComponentWrapper;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
+import net.drapuria.framework.bukkit.reflection.resolver.wrapper.MethodWrapper;
 import net.drapuria.framework.bukkit.reflection.util.SubclassUtil;
 import net.drapuria.framework.bukkit.reflection.version.PlayerVersion;
 import net.drapuria.framework.bukkit.reflection.version.protocol.ProtocolCheck;
@@ -51,11 +54,50 @@ public class Minecraft {
     public static final Version VERSION;
     public static final MinecraftVersion MINECRAFT_VERSION = MinecraftVersion.VERSION;
 
-    private static NMSClassResolver nmsClassResolver = new NMSClassResolver();
-    private static OBCClassResolver obcClassResolver = new OBCClassResolver();
-    private static Class<?> NmsEntity;
-    private static Class<?> CraftEntity;
-    private static ProtocolCheck protocolCheck;
+    public static String NETTY_PREFIX;
+
+
+    private static final NMSClassResolver NMS_CLASS_RESOLVER = new NMSClassResolver();
+    private static final OBCClassResolver OBC_CLASS_RESOLVER = new OBCClassResolver();
+    private static Class<?> NMS_ENTITY;
+    private static Class<?> CRAFT_ENTITY;
+
+    /**
+     * The CraftPlayer.getHandle method
+     */
+    private static MethodWrapper PLAYER_GET_HANDLE;
+
+    /**
+     * The EntityPlayer.playerConnection field
+     */
+    private static FieldWrapper FIELD_PLAYER_CONNECTION;
+
+    /**
+     * The PlayerConnection.networkManager field
+     */
+    private static FieldWrapper FIELD_NETWORK_MANAGER;
+
+    /**
+     * The NetworkManager.channel field
+     */
+    private static FieldWrapper FIELD_CHANNEL;
+
+    /**
+     * Netty Channel Type
+     */
+    public static Class<?> CHANNEL_TYPE;
+
+    /**
+     * GameProfile Type
+     */
+    public static Class<?> GAME_PROFILE_TYPE;
+
+    /**
+     * The PlayerConnection.sendPacket method
+     */
+    private static MethodWrapper<Void> METHOD_SEND_PACKET;
+
+    private static ProtocolCheck PROTOCOL_CHECK;
 
 
     static {
@@ -63,7 +105,7 @@ public class Minecraft {
         try {
             tempVersion = Version.getVersion();
         } catch (Exception e) {
-            Drapuria.LOGGER.error("[ReflectionHelper] Failed to get legacy version");
+            System.out.println("[Drapuria] Failed to get legacy version");
         }
         VERSION = tempVersion;
 
@@ -74,12 +116,60 @@ public class Minecraft {
         }
 
         try {
-            NmsEntity = nmsClassResolver.resolve("Entity", "world.entity.Entity");
-            CraftEntity = obcClassResolver.resolve("entity.CraftEntity");
+            NMS_ENTITY = NMS_CLASS_RESOLVER.resolve("Entity");
+            CRAFT_ENTITY = OBC_CLASS_RESOLVER.resolve("entity.CraftEntity");
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
-        initProtocolCheck();
+
+        try {
+            CHANNEL_TYPE = Class.forName("io.netty.channel.Channel");
+            NETTY_PREFIX = "io.netty.";
+        } catch (ClassNotFoundException ex) {
+
+            try {
+                CHANNEL_TYPE = Class.forName("net.minecraft.util.io.netty.channel.Channel");
+                NETTY_PREFIX = "net.minecraft.util.io.netty.";
+            } catch (ClassNotFoundException ex2) {
+                throw new IllegalStateException("Coulnd't find netty Channel class!", ex2);
+            }
+
+        }
+
+        try {
+            GAME_PROFILE_TYPE = Class.forName("com.mojang.authlib.GameProfile");
+        } catch (ClassNotFoundException ex) {
+            try {
+                GAME_PROFILE_TYPE = Class.forName("net.minecraft.util.com.mojang.authlib.GameProfile");
+            } catch (ClassNotFoundException ex2) {
+                throw new IllegalStateException("Coulnd't find mojang GameProfile class!", ex2);
+            }
+        }
+
+        try {
+            Class<?> entityPlayerType = NMS_CLASS_RESOLVER.resolve("EntityPlayer");
+            Class<?> playerConnectionType = NMS_CLASS_RESOLVER.resolve("PlayerConnection");
+            Class<?> networkManagerType = NMS_CLASS_RESOLVER.resolve("NetworkManager");
+
+            Minecraft.PLAYER_GET_HANDLE = new MethodWrapper(OBC_CLASS_RESOLVER.resolve("entity.CraftPlayer")
+                    .getDeclaredMethod("getHandle"));
+            Minecraft.FIELD_PLAYER_CONNECTION = new FieldResolver(entityPlayerType)
+                    .resolveByFirstTypeDynamic(playerConnectionType);
+
+            Class<?> packetClass = NMS_CLASS_RESOLVER.resolve("Packet");
+
+            Minecraft.METHOD_SEND_PACKET = new MethodWrapper(playerConnectionType.getDeclaredMethod("sendPacket", packetClass));
+
+            Minecraft.FIELD_NETWORK_MANAGER = new FieldResolver(playerConnectionType)
+                    .resolveByFirstTypeWrapper(networkManagerType);
+
+            Minecraft.FIELD_CHANNEL = new FieldResolver(networkManagerType)
+                    .resolveByFirstTypeDynamic(CHANNEL_TYPE);
+        } catch (Throwable throwable) {
+            throw new IllegalStateException("Something went wrong when doing reflection", throwable);
+        }
+
+        Minecraft.initProtocolCheck();
     }
 
     @SneakyThrows
@@ -112,7 +202,7 @@ public class Minecraft {
             throw new UnsupportedOperationException("Couldn't find any usable protocol check! (but it's shouldn't be possible)");
         }
 
-        protocolCheck = (ProtocolCheck) lastSuccess.newInstance();
+        PROTOCOL_CHECK = (ProtocolCheck) lastSuccess.newInstance();
         Drapuria.LOGGER.info("Initialized Protocol Check with " + lastSuccess.getSimpleName());
     }
 
@@ -143,21 +233,21 @@ public class Minecraft {
         try {
             method = AccessUtil.setAccessible(object.getClass().getDeclaredMethod("getHandle"));
         } catch (ReflectiveOperationException e) {
-            method = AccessUtil.setAccessible(CraftEntity.getDeclaredMethod("getHandle"));
+            method = AccessUtil.setAccessible(CRAFT_ENTITY.getDeclaredMethod("getHandle"));
         }
         return method.invoke(object);
     }
 
     public static PlayerVersion getProtocol(Player player) {
-        return PlayerVersion.getVersionFromRaw(protocolCheck.getVersion(player));
+        return PlayerVersion.getVersionFromRaw(PROTOCOL_CHECK.getVersion(player));
     }
 
     public static Entity getBukkitEntity(Object object) throws ReflectiveOperationException {
         Method method;
         try {
-            method = AccessUtil.setAccessible(NmsEntity.getDeclaredMethod("getBukkitEntity"));
+            method = AccessUtil.setAccessible(NMS_ENTITY.getDeclaredMethod("getBukkitEntity"));
         } catch (ReflectiveOperationException e) {
-            method = AccessUtil.setAccessible(CraftEntity.getDeclaredMethod("getHandle"));
+            method = AccessUtil.setAccessible(CRAFT_ENTITY.getDeclaredMethod("getHandle"));
         }
         return (Entity) method.invoke(object);
     }
@@ -170,23 +260,43 @@ public class Minecraft {
         return null;
     }
 
+    public static EquivalentConverter.EnumConverter<WrappedPacketOutTitle.Action> getTitleActionConverter() {
+        if (TITLE_ACTION_CONVERTER == null) {
+            TITLE_ACTION_CONVERTER = new EquivalentConverter.EnumConverter<>(getEnumTitleActionClass(), WrappedPacketOutTitle.Action.class);
+        }
+
+        return TITLE_ACTION_CONVERTER;
+    }
 
     private static FieldWrapper<Integer> PING_FIELD;
 
     public static int getPing(Player player) throws ReflectiveOperationException {
         if (PING_FIELD == null) {
             try {
-                Class<?> type = nmsClassResolver.resolve("EntityPlayer");
+                Class<?> type = NMS_CLASS_RESOLVER.resolve("EntityPlayer");
                 PING_FIELD = new FieldResolver(type).resolveWrapper("ping");
             } catch (Throwable throwable) {
                 throw new RuntimeException(throwable);
             }
         }
 
-        Object nmsPlayer = ((Method) getHandle(obcClassResolver.resolve("CraftPlayer"))).invoke(player);
+        Object nmsPlayer = ((Method) getHandle(OBC_CLASS_RESOLVER.resolve("CraftPlayer"))).invoke(player);
         return PING_FIELD.get(nmsPlayer);
     }
 
+    public static <T> T getChannel(Player player) {
+        Object entityPlayer = Minecraft.PLAYER_GET_HANDLE.invoke(player);
+        Object playerConnection = Minecraft.FIELD_PLAYER_CONNECTION.get(entityPlayer);
+        Object networkManager = Minecraft.FIELD_NETWORK_MANAGER.get(playerConnection);
+        return (T) Minecraft.FIELD_CHANNEL.get(networkManager);
+    }
+
+
+    public static void sendPacket(Player player, Object packet) {
+        Object entityPlayer = Minecraft.PLAYER_GET_HANDLE.invoke(player);
+        Object playerConnection = Minecraft.FIELD_PLAYER_CONNECTION.get(entityPlayer);
+        Minecraft.METHOD_SEND_PACKET.invoke(playerConnection, packet);
+    }
 
     private static FieldWrapper<Integer> ENTITY_ID_RESOLVER;
 
@@ -196,7 +306,7 @@ public class Minecraft {
 
     public static int setEntityId(int newIds) {
         if (ENTITY_ID_RESOLVER == null) {
-            ENTITY_ID_RESOLVER = new FieldResolver(nmsClassResolver.resolveSilent("Entity"))
+            ENTITY_ID_RESOLVER = new FieldResolver(NMS_CLASS_RESOLVER.resolveSilent("Entity"))
                     .resolveWrapper("entityCount");
         }
 
@@ -398,10 +508,10 @@ public class Minecraft {
 
     public static Class<? extends Enum> getEnumGamemodeClass() {
         try {
-            return nmsClassResolver.resolve("EnumGamemode");
+            return NMS_CLASS_RESOLVER.resolve("EnumGamemode");
         } catch (Throwable throwable) {
             try {
-                Class<? extends Enum> type = nmsClassResolver.resolve("WorldSettings$EnumGamemode");
+                Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolve("WorldSettings$EnumGamemode");
                 //    NMS_CLASS_RESOLVER.cache("EnumGamemode", type);
                 return type;
             } catch (Throwable throwable1) {
@@ -412,10 +522,10 @@ public class Minecraft {
 
     public static Class<?> getIChatBaseComponentClass() {
         try {
-            return nmsClassResolver.resolve("IChatBaseComponent");
+            return NMS_CLASS_RESOLVER.resolve("IChatBaseComponent");
         } catch (ClassNotFoundException ex) {
             try {
-                return obcClassResolver
+                return OBC_CLASS_RESOLVER
                         .resolve("util.CraftChatMessage")
                         .getMethod("fromString", String.class)
                         .getReturnType().getComponentType();
@@ -427,10 +537,10 @@ public class Minecraft {
 
     public static Class<?> getChatModifierClass() {
         try {
-            return nmsClassResolver.resolve("ChatModifier");
+            return NMS_CLASS_RESOLVER.resolve("ChatModifier");
         } catch (Throwable throwable) {
             try {
-                return nmsClassResolver.resolveSubClass(getIChatBaseComponentClass(), "ChatModifier");
+                return NMS_CLASS_RESOLVER.resolveSubClass(getIChatBaseComponentClass(), "ChatModifier");
             } catch (Throwable throwable1) {
                 throw new RuntimeException(throwable1);
             }
@@ -439,10 +549,10 @@ public class Minecraft {
 
     public static Class<? extends Enum> getEnumChatFormatClass() {
         try {
-            return nmsClassResolver.resolve("EnumChatFormat");
+            return NMS_CLASS_RESOLVER.resolve("EnumChatFormat");
         } catch (Throwable throwable) {
             try {
-                Class<? extends Enum> type = nmsClassResolver.resolveSubClass(getIChatBaseComponentClass(), "EnumChatFormat");
+                Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolveSubClass(getIChatBaseComponentClass(), "EnumChatFormat");
                 // NMS_CLASS_RESOLVER.cache("ChatModifier", type);
                 return type;
             } catch (Throwable throwable1) {
@@ -455,10 +565,10 @@ public class Minecraft {
     public static Class<? extends Enum> getEnumScoreboardActionClass() {
         try {
 
-            return nmsClassResolver.resolve("EnumScoreboardAction");
+            return NMS_CLASS_RESOLVER.resolve("EnumScoreboardAction");
         } catch (Throwable throwable) {
             try {
-                Class<? extends Enum> type = nmsClassResolver.resolveSubClass(PacketTypeClasses.Play.Server.SCOREBOARD_SCORE, "EnumScoreboardAction");
+                Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolveSubClass(PacketTypeClasses.Server.SCOREBOARD_SCORE, "EnumScoreboardAction");
                 //    NMS_CLASS_RESOLVER.cache("EnumScoreboardAction", type);
                 return type;
             } catch (Throwable throwable1) {
@@ -473,7 +583,7 @@ public class Minecraft {
         }
     }
 
-    /*
+
     public static Class<? extends Enum> getEnumTitleActionClass() {
         try {
             return NMS_CLASS_RESOLVER.resolve("EnumTitleAction");
@@ -487,15 +597,15 @@ public class Minecraft {
             }
         }
     }
-     */
+
 
     private static EquivalentConverter.EnumConverter<GameMode> GAME_MODE_CONVERTER;
     private static EquivalentConverter.EnumConverter<ChatColor> CHAT_COLOR_CONVERTER;
     private static EquivalentConverter.EnumConverter<WrappedPacketOutScoreboardObjective.HealthDisplayType> HEALTH_DISPLAY_TYPE_CONVERTER;
     private static EquivalentConverter.EnumConverter<WrappedPacketOutScoreboardScore.ScoreboardAction> SCOREBOARD_ACTION_CONVERTER;
-    // private static EquivalentConverter.EnumConverter<WrappedPacketOutTitle.Action> TITLE_ACTION_CONVERTER;
+     private static EquivalentConverter.EnumConverter<WrappedPacketOutTitle.Action> TITLE_ACTION_CONVERTER;
 
-    //  private static EquivalentConverter<ChatComponentWrapper> CHAT_COMPONENT_CONVERTER;
+      private static EquivalentConverter<ChatComponentWrapper> CHAT_COMPONENT_CONVERTER;
 
     public static EquivalentConverter.EnumConverter<WrappedPacketOutScoreboardObjective.HealthDisplayType> getHealthDisplayTypeConverter() {
         if (HEALTH_DISPLAY_TYPE_CONVERTER == null) {
@@ -513,15 +623,15 @@ public class Minecraft {
 
     public static Class<? extends Enum> getHealthDisplayTypeClass() {
         try {
-            return nmsClassResolver.resolve("EnumScoreboardHealthDisplay");
+            return NMS_CLASS_RESOLVER.resolve("EnumScoreboardHealthDisplay");
         } catch (Throwable throwable) {
             try {
-                Class<? extends Enum> type = nmsClassResolver.resolve("IScoreboardCriteria$EnumScoreboardHealthDisplay");
+                Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolve("IScoreboardCriteria$EnumScoreboardHealthDisplay");
                 //NMS_CLASS_RESOLVER.cache("EnumScoreboardHealthDisplay", type);
                 return type;
             } catch (Throwable throwable1) {
                 try {
-                    Class<? extends Enum> type = nmsClassResolver.resolve("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay");
+                    Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolve("net.minecraft.world.scores.criteria.IScoreboardCriteria$EnumScoreboardHealthDisplay");
                     //   NMS_CLASS_RESOLVER.cache("EnumScoreboardHealthDisplay", type);
                     return type;
                 } catch (Exception e) {
@@ -558,6 +668,14 @@ public class Minecraft {
         }
 
         return CHAT_COLOR_CONVERTER;
+    }
+
+    public static EquivalentConverter<ChatComponentWrapper> getChatComponentConverter() {
+        if (CHAT_COMPONENT_CONVERTER != null) {
+            return CHAT_COMPONENT_CONVERTER;
+        }
+
+        return CHAT_COMPONENT_CONVERTER = handle(ChatComponentWrapper::getHandle, ChatComponentWrapper::fromHandle);
     }
 
     public static <T> EquivalentConverter<T> handle(final Function<T, Object> toHandle,

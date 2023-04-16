@@ -8,7 +8,10 @@ import lombok.experimental.UtilityClass;
 import net.drapuria.framework.bukkit.reflection.resolver.MethodResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.util.BlockIterator;
 
 /**
  * A class containing various utils helping with spigot development.
@@ -85,6 +88,27 @@ public class BukkitUtil {
 
     public boolean locationEquals(final Location location1, final Location location2) {
         return location1 != null && location2 != null && location2.getWorld().equals(location2.getWorld()) && location1.getX() == location2.getX() && location1.getY() == location2.getY() && location1.getZ() == location2.getZ();
+    }
+
+    public Block getBlockLookingAt(final Player player, final int distance) {
+        final Location location = player.getEyeLocation();
+        final BlockIterator blocksToAdd = new BlockIterator(location, 0.0D, distance);
+        Block block = null;
+        while (blocksToAdd.hasNext()) {
+            block = blocksToAdd.next();
+        }
+        return block;
+    }
+
+    public boolean isNPC(Player player) {
+        if (player.hasMetadata("DrapuriaBot")) {
+            return true;
+        }
+
+        if (player.hasMetadata("NPC")) {
+            return true;
+        }
+        return false;
     }
 
 }

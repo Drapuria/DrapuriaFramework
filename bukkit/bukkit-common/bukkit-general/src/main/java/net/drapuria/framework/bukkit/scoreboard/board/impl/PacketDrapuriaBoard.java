@@ -4,10 +4,10 @@
 
 package net.drapuria.framework.bukkit.scoreboard.board.impl;
 
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardDisplayObjective;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardObjective;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardScore;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardDisplayObjective;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardObjective;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardScore;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.scoreboard.SidebarOptions;
@@ -37,15 +37,16 @@ public class PacketDrapuriaBoard extends DrapuriaBoard {
 
     @Override
     public void createBoard() {
-        WrappedPacketOutScoreboardObjective packetA = new WrappedPacketOutScoreboardObjective();
-        packetA.setName(player.getName());
-        packetA.setDisplayName("Objective");
-        packetA.setAction(WrappedPacketOutScoreboardObjective.Action.ADD);
-        packetA.setHealthDisplayType(WrappedPacketOutScoreboardObjective.HealthDisplayType.INTEGER);
-        WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective();
-        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
-        packetB.setObjective(player.getName());
-
+        WrappedPacketOutScoreboardObjective packetA = new WrappedPacketOutScoreboardObjective(
+                player.getName(),
+                "Objective",
+                WrappedPacketOutScoreboardObjective.HealthDisplayType.INTEGER,
+                WrappedPacketOutScoreboardObjective.Action.ADD
+        );
+        WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective(
+                DisplaySlot.SIDEBAR,
+                player.getName()
+        );        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
         protocolService.sendPacket(player, packetA.asProtocolLibPacketContainer());
         protocolService.sendPacket(player, packetB.asProtocolLibPacketContainer());
         created = true;
@@ -81,11 +82,12 @@ public class PacketDrapuriaBoard extends DrapuriaBoard {
     @Override
     public void sendClear(int line, String entry) {
 
-        WrappedPacketOutScoreboardScore packetA = new WrappedPacketOutScoreboardScore();
-        packetA.setEntry(getEntry(line));
-        packetA.setScore(line);
-        packetA.setObjective(player.getName());
-        packetA.setAction(WrappedPacketOutScoreboardScore.ScoreboardAction.REMOVE);
+        WrappedPacketOutScoreboardScore packetA = new WrappedPacketOutScoreboardScore(
+                getEntry(line),
+                player.getName(),
+                line,
+                WrappedPacketOutScoreboardScore.ScoreboardAction.REMOVE
+        );
         WrappedPacketOutScoreboardTeam packetB = getOrRegisterTeam(line);
         packetB.setAction(1);
         ProtocolLibService.getService.sendPacket(player, packetA.asProtocolLibPacketContainer());
@@ -97,9 +99,7 @@ public class PacketDrapuriaBoard extends DrapuriaBoard {
         WrappedPacketOutScoreboardObjective packetA = new WrappedPacketOutScoreboardObjective();
         packetA.setAction(WrappedPacketOutScoreboardObjective.Action.REMOVE);
         packetA.setName(player.getName());
-        WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective();
-        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
-        packetB.setObjective(player.getName());
+        WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective(DisplaySlot.SIDEBAR, player.getName());
         ProtocolLibService.getService.sendPacket(player, packetB.asProtocolLibPacketContainer());
         ProtocolLibService.getService.sendPacket(player, packetA.asProtocolLibPacketContainer());
         created = false;
@@ -107,21 +107,20 @@ public class PacketDrapuriaBoard extends DrapuriaBoard {
 
     private WrappedPacketOutScoreboardTeam getOrRegisterTeam(int line) {
 
-        WrappedPacketOutScoreboardTeam packetB = new WrappedPacketOutScoreboardTeam();
-        packetB.setName("-sb" + line);
-        packetB.setAction(0);
-        packetB.setChatFormat(15);
+        WrappedPacketOutScoreboardTeam packetB = WrappedPacketOutScoreboardTeam.builder()
+                .name("-sb" + line)
+                .action(0)
+                .chatFormat(0)
+                .build();
 
 
         if (getLines()[line] != null) {
             packetB.setAction(2);
         } else {
             getLines()[line] = "";
-            WrappedPacketOutScoreboardScore packetA = new WrappedPacketOutScoreboardScore();
-            packetA.setEntry(getEntry(line));
-            packetA.setObjective(player.getName());
-            packetA.setScore(line);
-            packetA.setAction(WrappedPacketOutScoreboardScore.ScoreboardAction.CHANGE);
+            WrappedPacketOutScoreboardScore packetA = new WrappedPacketOutScoreboardScore(getEntry(line),
+                    player.getName(),
+                    line, WrappedPacketOutScoreboardScore.ScoreboardAction.CHANGE);
             packetB.setAction(0);
             packetB.getNameSet().add(getEntry(line));
             ProtocolLibService.getService.sendPacket(player, packetA.asProtocolLibPacketContainer());

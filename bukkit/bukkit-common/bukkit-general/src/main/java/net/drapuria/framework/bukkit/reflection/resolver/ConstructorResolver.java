@@ -2,6 +2,7 @@ package net.drapuria.framework.bukkit.reflection.resolver;
 
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ConstructorWrapper;
 import net.drapuria.framework.util.AccessUtil;
+import net.drapuria.framework.util.Utility;
 
 import java.lang.reflect.Constructor;
 
@@ -99,8 +100,39 @@ public class ConstructorResolver extends MemberResolver<Constructor> {
         return null;
     }
 
+    public ConstructorWrapper resolveMatches(Class<?>[]... types) {
+        for (Class<?>[] parameters : types) {
+            for (Constructor constructor : this.clazz.getDeclaredConstructors()) {
+
+                Class<?>[] parametersTypes = constructor.getParameterTypes();
+
+                if (isParametersEquals(parametersTypes, parameters)) {
+                    try {
+                        return new ConstructorWrapper<>(AccessUtil.setAccessible(constructor));
+                    } catch (ReflectiveOperationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     @Override
     protected NoSuchMethodException notFoundException(String joinedNames) {
         return new NoSuchMethodException("Could not resolve constructor for " + joinedNames + " in class " + this.clazz);
+    }
+
+    static boolean isParametersEquals(Class<?>[] l1, Class<?>[] l2) {
+        boolean equal = true;
+        if (l1.length != l2.length) { return false; }
+        for (int i = 0; i < l1.length; i++) {
+            if (Utility.wrapPrimitive(l1[i]) != Utility.wrapPrimitive(l2[i])) {
+                equal = false;
+                break;
+            }
+        }
+        return equal;
     }
 }

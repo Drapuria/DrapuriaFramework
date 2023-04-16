@@ -7,6 +7,13 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.*;
 import com.google.common.collect.ImmutableSet;
+import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.impl.metadata.Metadata;
+import net.drapuria.framework.bukkit.protocol.packet.PacketService;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.playerinfo.PlayerInfoAction;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.playerinfo.WrappedPacketOutPlayerInfo;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.version.PlayerVersion;
 import net.drapuria.framework.bukkit.tablist.DrapuriaTabHandler;
 import net.drapuria.framework.bukkit.tablist.DrapuriaTablist;
 import net.drapuria.framework.bukkit.tablist.util.IDrapuriaTab;
@@ -29,7 +36,7 @@ public class ProtocolLibTabImpl implements IDrapuriaTab {
 
     @Override
     public void registerLoginListener() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(AzurePlugin.getInstance(), PacketType.Play.Server.LOGIN) {
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(Drapuria.PLUGIN, PacketType.Play.Server.LOGIN) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 event.getPacket().getIntegers().write(2, 60);
@@ -43,7 +50,7 @@ public class ProtocolLibTabImpl implements IDrapuriaTab {
 
         ImmutableSet.copyOf(Bukkit.getOnlinePlayers())
                 .stream()
-                .filter(online -> MinecraftReflection.getProtocol(online) == PlayerVersion.v1_7)
+                .filter(online -> Minecraft.getProtocol(online) == PlayerVersion.v1_7)
                 .filter(online ->
                         Metadata.provideForPlayer(online).has(DrapuriaTabHandler.TABLIST_KEY))
                 .forEach(online -> PacketService.send(online, packet));

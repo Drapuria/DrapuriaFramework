@@ -18,6 +18,7 @@ import net.drapuria.framework.bukkit.reflection.util.SubclassUtil;
 import net.drapuria.framework.bukkit.reflection.version.PlayerVersion;
 import net.drapuria.framework.bukkit.reflection.version.protocol.ProtocolCheck;
 import net.drapuria.framework.util.EquivalentConverter;
+import net.minecraft.server.v1_8_R3.EntityPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -108,13 +109,11 @@ public class Minecraft {
             System.out.println("[Drapuria] Failed to get legacy version");
         }
         VERSION = tempVersion;
-
         try {
             Version.runSanityCheck();
         } catch (Exception e) {
             throw new RuntimeException("Sanity check which should always succeed just failed! Am I crazy?!", e);
         }
-
         try {
             NMS_ENTITY = NMS_CLASS_RESOLVER.resolve("Entity");
             CRAFT_ENTITY = OBC_CLASS_RESOLVER.resolve("entity.CraftEntity");

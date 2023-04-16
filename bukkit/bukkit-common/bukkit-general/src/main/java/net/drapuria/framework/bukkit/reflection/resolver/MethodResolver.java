@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
  */
 public class MethodResolver extends MemberResolver<Method> {
 
+
 	public MethodResolver(Class<?> clazz) {
 		super(clazz);
 	}
@@ -108,12 +109,8 @@ public class MethodResolver extends MemberResolver<Method> {
 
 	@Override
 	protected Method resolveObject(ResolverQuery query) throws ReflectiveOperationException {
-		for (Method method : this.clazz.getDeclaredMethods()) {
-			if (method.getName().equals(query.getName()) && (query.getTypes().length == 0 || ClassListEqual(query.getTypes(), method.getParameterTypes()))) {
-				return AccessUtil.setAccessible(method);
-			}
-		}
-		throw new NoSuchMethodException();
+		return this.accessorCache.resolveMethod(query);
+
 	}
 
 	@Override

@@ -3,8 +3,10 @@ package net.drapuria.framework.bukkit.reflection.resolver;
 import net.drapuria.framework.bukkit.reflection.accessor.FieldAccessor;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
 import net.drapuria.framework.util.AccessUtil;
+import net.drapuria.framework.util.Utility;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +36,7 @@ public class FieldResolver extends MemberResolver<Field> {
 			throw new IllegalArgumentException(e);
 		}
 	}
+
 
 	@Override
 	public Field resolveIndexSilent(int index) {
@@ -109,12 +112,18 @@ public class FieldResolver extends MemberResolver<Field> {
 		}
 	}
 
+
 	@Override
 	protected Field resolveObject(ResolverQuery query) throws ReflectiveOperationException {
+		return this.accessorCache.resolveField(query);
+		/*
 		if (query.getTypes() == null || query.getTypes().length == 0) {
 			return AccessUtil.setAccessible(this.clazz.getDeclaredField(query.getName()));
 		} else {
+			System.out.println("WE ARE HERE " + clazz.getName() + " SEARCHING FOR " + query.getTypes()[0]);
+			System.out.println("QEUERY NAME: " + query.getName());
 			for (Field field : this.clazz.getDeclaredFields()) {
+				System.out.println("FOUND field" + field);
 				if (field.getName().equals(query.getName())) {
 					for (Class type : query.getTypes()) {
 						if (field.getType().equals(type)) {
@@ -125,6 +134,42 @@ public class FieldResolver extends MemberResolver<Field> {
 			}
 		}
 		return null;
+		 */
+	}
+
+	public Field resolveField(ResolverQuery query) throws ReflectiveOperationException {
+		int currentIndex = 0;
+		Field result = null;
+		for (Field field : this.clazz.getDeclaredFields()) {
+			if ((query.getName() == null || field.getName().equals(query.getName()))
+					&& (query.getReturnType() == null || Utility.wrapPrimitive(query.getReturnType()).equals(Utility.wrapPrimitive(field.getType())))
+					&& (query.getModifierOptions() == null || query.getModifierOptions().matches(field.getModifiers()))) {
+				if (query.getTypes() != null && query.getTypes().length > 0) {
+					Type[] genericTypes = Utility.getGenericTypes(field);
+					if (genericTypes == null) {
+						continue;
+					}
+
+					if (!Utility.isParametersEquals(genericTypes, query.getTypes())) {
+						continue;
+					}
+				}
+
+				if (query.getIndex() == -2) {
+					result = field;
+					continue;
+				}
+
+				if (query.getIndex() < 0 || query.getIndex() == currentIndex++) {
+					return result;
+				}
+			}
+		}
+
+		if (result != null) {
+			return result;
+		}
+		throw new NoSuchFieldException();
 	}
 
 	public <T> FieldWrapper<T> resolveWithGenericType(Class<T> fieldType, Class<?>... genericType) {
@@ -179,7 +224,9 @@ public class FieldResolver extends MemberResolver<Field> {
 	}
 
 	public FieldWrapper resolveByFirstTypeDynamic(Class<?> type) throws ReflectiveOperationException {
-		Field field = this.resolve(new ResolverQuery(type));
+		Field field = this.resolve(new ResolverQuery(type, -1).withModifierOptions(ResolverQuery.ModifierOptions.builder()
+				.onlyDynamic(true)
+				.build()));
 
 		if (field != null)
 			return new FieldWrapper<>(field);

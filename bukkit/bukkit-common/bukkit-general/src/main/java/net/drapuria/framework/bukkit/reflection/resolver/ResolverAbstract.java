@@ -45,17 +45,9 @@ public abstract class ResolverAbstract<T> {
 	protected T resolve(ResolverQuery... queries) throws ReflectiveOperationException {
 		if (queries == null || queries.length <= 0) { throw new IllegalArgumentException("Given possibilities are empty"); }
 		for (ResolverQuery query : queries) {
-			//Object is already resolved, return it directly
-			if (resolvedObjects.containsKey(query)) { return resolvedObjects.get(query); }
-
-			//Object is not yet resolved, try to find it
 			try {
-				T resolved = resolveObject(query);
-				//Store if it was found
-				resolvedObjects.put(query, resolved);
-				return resolved;
+				return resolveObject(query);
 			} catch (ReflectiveOperationException e) {
-				//Not found, ignore the exception
 			}
 		}
 

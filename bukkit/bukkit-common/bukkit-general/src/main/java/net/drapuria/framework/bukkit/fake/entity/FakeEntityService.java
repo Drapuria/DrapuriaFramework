@@ -14,7 +14,7 @@ import net.drapuria.framework.bukkit.fake.entity.exception.FakeEntityPoolNotFoun
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.NameTagType;
 import net.drapuria.framework.bukkit.listener.events.Events;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;

@@ -16,7 +16,7 @@ import net.drapuria.framework.bukkit.fake.entity.npc.modifier.*;
 import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.TextLine;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import net.drapuria.framework.bukkit.util.ReflectionUtils;

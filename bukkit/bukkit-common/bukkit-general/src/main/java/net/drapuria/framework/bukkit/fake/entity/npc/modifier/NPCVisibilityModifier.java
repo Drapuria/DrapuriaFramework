@@ -1,16 +1,13 @@
 package net.drapuria.framework.bukkit.fake.entity.npc.modifier;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.wrappers.*;
-import net.drapuria.framework.DrapuriaCommon;
-import net.drapuria.framework.bukkit.fake.entity.FakeEntityPool;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntityService;
 import net.drapuria.framework.bukkit.fake.entity.modifier.FakeEntityModifier;
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.SkinType;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -18,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 public class NPCVisibilityModifier extends FakeEntityModifier<NPC> {

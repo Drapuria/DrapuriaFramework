@@ -9,7 +9,7 @@ import com.mojang.authlib.properties.Property;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.drapuria.framework.BootstrapInvoke;
 import net.drapuria.framework.bukkit.protocol.ProtocolService;
-import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.util.Skin;
 import net.kyori.adventure.text.Component;
 import net.minecraft.EnumChatFormat;

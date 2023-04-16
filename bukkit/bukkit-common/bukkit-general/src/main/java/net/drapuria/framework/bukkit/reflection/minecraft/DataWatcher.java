@@ -17,14 +17,17 @@ import java.util.Map;
 
 public class DataWatcher {
 
-    static NMSClassResolver nmsClassResolver = new NMSClassResolver();
+    public static NMSClassResolver nmsClassResolver = new NMSClassResolver();
 
-    static Class<?> ItemStack = nmsClassResolver.resolveSilent("ItemStack", "world.item.ItemStack");
-    static Class<?> ChunkCoordinates = nmsClassResolver.resolveSilent("ChunkCoordinates", "world.level.ChunkCoordinates");
-    static Class<?> BlockPosition = nmsClassResolver.resolveSilent("BlockPosition", "core.BlockPosition");
-    static Class<?> Vector3f = nmsClassResolver.resolveSilent("Vector3f", "core.Vector3f");
-    static Class<?> DataWatcher = nmsClassResolver.resolveSilent("DataWatcher", "network.syncher.DataWatcher");
-    static Class<?> Entity = nmsClassResolver.resolveSilent("Entity", "world.entity.Entity");
+    public static Class<?> TYPE = nmsClassResolver.resolveSilent("DataWatcher");
+
+
+    public static final Class<?> ItemStack = nmsClassResolver.resolveSilent("ItemStack", "world.item.ItemStack");
+    public static final Class<?> ChunkCoordinates = nmsClassResolver.resolveSilent("ChunkCoordinates", "world.level.ChunkCoordinates");
+    public static final Class<?> BlockPosition = nmsClassResolver.resolveSilent("BlockPosition", "core.BlockPosition");
+    public static final Class<?> Vector3f = nmsClassResolver.resolveSilent("Vector3f", "core.Vector3f");
+    public static final Class<?> DataWatcher = nmsClassResolver.resolveSilent("DataWatcher", "network.syncher.DataWatcher");
+    public static final Class<?> Entity = nmsClassResolver.resolveSilent("Entity", "world.entity.Entity");
 
     static ConstructorResolver DataWacherConstructorResolver = new ConstructorResolver(DataWatcher);
 

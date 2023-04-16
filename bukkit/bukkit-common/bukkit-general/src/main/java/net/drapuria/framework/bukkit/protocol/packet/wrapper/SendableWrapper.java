@@ -4,12 +4,15 @@
 
 package net.drapuria.framework.bukkit.protocol.packet.wrapper;
 
-import com.comphenix.protocol.events.PacketContainer;
 
 public interface SendableWrapper {
 
-    default PacketContainer asProtocolLibPacketContainer() {
+    default com.comphenix.protocol.events.PacketContainer asProtocolLibPacketContainer() {
         return null;
+    }
+
+    default PacketContainer asPacketContainer() {
+        return PacketContainer.of(asNMSPacket());
     }
 
     default Object asNMSPacket() {

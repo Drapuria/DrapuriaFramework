@@ -79,5 +79,4 @@ public class SimpleAnimatedText {
         }
         return stringBuilder.toString();
     }
-
 }

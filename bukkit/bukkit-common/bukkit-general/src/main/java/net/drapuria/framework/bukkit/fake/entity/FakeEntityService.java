@@ -14,6 +14,7 @@ import net.drapuria.framework.bukkit.fake.entity.exception.FakeEntityPoolNotFoun
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.NameTagType;
 import net.drapuria.framework.bukkit.listener.events.Events;
+import net.drapuria.framework.bukkit.protocol.packet.PacketService;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import org.bukkit.entity.Player;
@@ -178,7 +179,8 @@ public class FakeEntityService {
             executorService.submit(() -> {
                 WrappedPacketOutScoreboardTeam packet = getScoreboardTeamPacket(player);
                 packet.setNameSet(namesToAdd);
-                ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
+                PacketService.send(player, packet);
+               // ProtocolLibService.getService.sendPacket(player, packet.asProtocolLibPacketContainer());
             });
     }
 

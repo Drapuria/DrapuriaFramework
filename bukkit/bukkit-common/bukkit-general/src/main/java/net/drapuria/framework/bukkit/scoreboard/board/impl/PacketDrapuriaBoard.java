@@ -46,7 +46,8 @@ public class PacketDrapuriaBoard extends DrapuriaBoard {
         WrappedPacketOutScoreboardDisplayObjective packetB = new WrappedPacketOutScoreboardDisplayObjective(
                 DisplaySlot.SIDEBAR,
                 player.getName()
-        );        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
+        );
+        packetB.setDisplaySlot(DisplaySlot.SIDEBAR);
         protocolService.sendPacket(player, packetA.asProtocolLibPacketContainer());
         protocolService.sendPacket(player, packetB.asProtocolLibPacketContainer());
         created = true;

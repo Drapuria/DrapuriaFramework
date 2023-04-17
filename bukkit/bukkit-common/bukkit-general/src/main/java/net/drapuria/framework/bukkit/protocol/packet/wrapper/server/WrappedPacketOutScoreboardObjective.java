@@ -1,5 +1,8 @@
 package net.drapuria.framework.bukkit.protocol.packet.wrapper.server;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.NonNull;
@@ -13,12 +16,21 @@ import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.Autowire
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.PacketWrapper;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @AutowiredWrappedPacket(value = PacketType.Server.SCOREBOARD_OBJECTIVE, direction = PacketDirection.WRITE)
 @Getter
 @Setter
 public class WrappedPacketOutScoreboardObjective extends WrappedPacket implements SendableWrapper {
+
+    private static boolean HAS_CHAT_FORMAT;
+    private static Map<HealthDisplayType, Object> convertedHealthDisplayType = new HashMap<>();
+    private static final Class<? extends Enum> healthDisplayTypeClass = Minecraft.getHealthDisplayTypeClass();
+    private static final Class<? extends Enum> healthDisplayConverterGenericType  = Minecraft.getHealthDisplayTypeConverter().getGenericType();
+    static {
+        HAS_CHAT_FORMAT = Minecraft.MINECRAFT_VERSION.version() >= 11601;
+    }
 
     private String name = "";
     private String displayName = "";
@@ -59,6 +71,30 @@ public class WrappedPacketOutScoreboardObjective extends WrappedPacket implement
                 .setFieldByIndex(Minecraft.getHealthDisplayTypeClass(), 0, Minecraft.getHealthDisplayTypeConverter().getGeneric(this.healthDisplayType))
                 .setFieldByIndex(int.class, 0, this.action.getId())
                 .getPacket();
+    }
+
+    @Override
+    public PacketContainer asProtocolLibPacketContainer() {
+        final PacketContainer packetContainer = ProtocolLibrary.getProtocolManager().createPacket(com.comphenix.protocol.PacketType.Play.Server.SCOREBOARD_OBJECTIVE);
+        packetContainer.getIntegers().write(0, action.id);
+        packetContainer.getStrings().write(0, name);
+        if (HAS_CHAT_FORMAT) {
+            packetContainer.getChatComponents().write(0, WrappedChatComponent.fromText(this.displayName));
+        } else {
+            packetContainer.getStrings().write(1, displayName);
+            Object convertedHealthDisplayType;
+            if (WrappedPacketOutScoreboardObjective.convertedHealthDisplayType.containsKey(this.healthDisplayType)) {
+                convertedHealthDisplayType = WrappedPacketOutScoreboardObjective
+                        .convertedHealthDisplayType.get(this.healthDisplayType);
+            } else {
+                convertedHealthDisplayType = Minecraft.getHealthDisplayTypeConverter().getGeneric(healthDisplayType);
+                WrappedPacketOutScoreboardObjective.convertedHealthDisplayType
+                        .put(this.healthDisplayType, convertedHealthDisplayType);
+            }
+            packetContainer.getEnumModifier(healthDisplayTypeClass, healthDisplayConverterGenericType).write(0,
+                    Minecraft.getHealthDisplayTypeConverter().getGeneric(healthDisplayType));
+        }
+        return packetContainer;
     }
 
     @Getter

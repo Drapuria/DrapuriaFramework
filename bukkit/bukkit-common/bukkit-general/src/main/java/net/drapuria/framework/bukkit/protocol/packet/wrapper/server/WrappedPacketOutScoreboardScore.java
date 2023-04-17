@@ -1,5 +1,6 @@
 package net.drapuria.framework.bukkit.protocol.packet.wrapper.server;
 
+import com.comphenix.protocol.events.PacketContainer;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.protocol.packet.PacketDirection;
@@ -7,9 +8,13 @@ import net.drapuria.framework.bukkit.protocol.packet.type.PacketType;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.PacketWrapper;
 import org.bukkit.entity.Player;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @AutowiredWrappedPacket(value = PacketType.Server.SCOREBOARD_SCORE, direction = PacketDirection.WRITE)
 @Getter
@@ -17,6 +22,9 @@ import org.bukkit.entity.Player;
 public class WrappedPacketOutScoreboardScore extends WrappedPacket implements SendableWrapper {
 
     private static boolean ACTION_IS_ENUM;
+    private static final Class<? extends Enum> enumScoreboardActionClass = Minecraft.getEnumScoreboardActionClass();
+    private static final Class<? extends Enum> genericScoreboardActionClass = Minecraft.getScoreboardActionConverter().getGenericType();
+    private static final Map<ScoreboardAction, Object> convertedActions = new HashMap<>();
 
     static {
 
@@ -78,6 +86,29 @@ public class WrappedPacketOutScoreboardScore extends WrappedPacket implements Se
         }
 
         return packet.getPacket();
+    }
+
+    @Override
+    public PacketContainer asProtocolLibPacketContainer() {
+        final PacketContainer packetContainer = ProtocolLibService.getService.getProtocolManager().createPacket(com.comphenix.protocol.PacketType.Play.Server.SCOREBOARD_SCORE);
+        packetContainer.getStrings().write(0, this.entry);
+        packetContainer.getStrings().write(1, this.objective);
+        packetContainer.getIntegers().write(0, this.score);
+        if (ACTION_IS_ENUM) {
+            Object convertedEnum;
+            if (convertedActions.containsKey(action)) {
+                convertedEnum = convertedActions.get(action);
+            } else {
+                convertedEnum = Minecraft.getScoreboardActionConverter().getGeneric(this.action);
+                convertedActions.put(action, convertedEnum);
+            }
+            packetContainer.getEnumModifier(enumScoreboardActionClass,
+                    genericScoreboardActionClass).write(0,
+                    convertedEnum);
+        } else {
+            packetContainer.getIntegers().write(1, this.action.id);
+        }
+        return packetContainer;
     }
 
     @Getter

@@ -1,9 +1,7 @@
 package net.drapuria.framework.bukkit.fake.entity.modifier;
 
 import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketContainer;
-import lombok.NonNull;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;

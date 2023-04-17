@@ -1,10 +1,12 @@
 package net.drapuria.framework.bukkit.protocol.packet.wrapper.server;
 
+import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.ImmutableBiMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.PacketWrapper;
 import org.bukkit.scoreboard.DisplaySlot;
 import net.drapuria.framework.bukkit.protocol.packet.PacketDirection;
@@ -53,5 +55,12 @@ public class WrappedPacketOutScoreboardDisplayObjective extends WrappedPacket im
                 .setFieldByIndex(int.class, 0, DISPLAY_SLOT_TO_ID.get(this.displaySlot))
                 .setFieldByIndex(String.class, 0, this.objective)
                 .getPacket();
+    }
+
+    public PacketContainer asProtocolLibPacketContainer() {
+        final PacketContainer packetContainer = ProtocolLibService.getService.getProtocolManager().createPacket(com.comphenix.protocol.PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
+        packetContainer.getIntegers().write(0, DISPLAY_SLOT_TO_ID.get(this.displaySlot));
+        packetContainer.getStrings().write(0, this.objective);
+        return packetContainer;
     }
 }

@@ -1,13 +1,18 @@
 package net.drapuria.framework.bukkit.protocol.packet.wrapper.server;
 
+import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.Maps;
 import lombok.*;
+import net.drapuria.framework.bukkit.protocol.ProtocolService;
 import net.drapuria.framework.bukkit.protocol.packet.PacketDirection;
 import net.drapuria.framework.bukkit.protocol.packet.type.PacketType;
 import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
+import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ObjectWrapper;
 import org.bukkit.entity.Player;
@@ -23,10 +28,12 @@ public class WrappedPacketOutScoreboardTeam extends WrappedPacket implements Sen
     private static boolean HAS_TEAM_PUSH;
     private static boolean HAS_CHAT_FORMAT;
 
+    private static boolean newVersion;
+
     public static void init() {
 
         FieldResolver fieldResolver = new FieldResolver(PacketTypeClasses.Server.SCOREBOARD_TEAM);
-
+        newVersion = MinecraftVersion.getVersion().newerThan(Minecraft.Version.v1_16_R1);
         try {
             HAS_TEAM_PUSH = fieldResolver.resolveSilent(String.class, 5).exists();
         } catch (IllegalArgumentException ex) {
@@ -137,6 +144,52 @@ public class WrappedPacketOutScoreboardTeam extends WrappedPacket implements Sen
         }
 
         return packetObject;
+    }
+
+    @Override
+    public PacketContainer asProtocolLibPacketContainer() {
+        final PacketContainer packetContainer = ProtocolLibService.getService.getProtocolManager().createPacket(com.comphenix.protocol.PacketType.Play.Server.SCOREBOARD_TEAM);
+        int packOptionData = 0;
+        if (this.allowFriendlyFire) {
+            packOptionData |= 1;
+        }
+        if (this.seeFriendlyInvisibles) {
+            packOptionData |= 2;
+        }
+        if (!newVersion) {
+            packetContainer.getStrings().write(0, this.name);
+            packetContainer.getStrings().write(1, this.displayName);
+            packetContainer.getStrings().write(2, this.prefix);
+            packetContainer.getStrings().write(3, this.suffix);
+            packetContainer.getStrings().write(4, this.visibility.name);
+            if (HAS_TEAM_PUSH) {
+                packetContainer.getStrings().write(5, this.teamPush.name);
+            }
+            packetContainer.getSpecificModifier(Collection.class).write(0, this.nameSet);
+            if (HAS_CHAT_FORMAT) {
+                packetContainer.getIntegers().write(0, this.chatFormat);
+                packetContainer.getIntegers().write(1, this.action);
+                packetContainer.getIntegers().write(2, packOptionData);
+            } else {
+                packetContainer.getIntegers().write(0, this.action);
+                packetContainer.getIntegers().write(1, packOptionData);
+            }
+        } else {
+            packetContainer.getStrings().write(0, this.name);
+            packetContainer.getIntegers().write(0, this.action);
+            packetContainer.getSpecificModifier(Collection.class).write(0, this.nameSet);
+            packetContainer.getSpecificModifier(Optional.class).write(0, (Optional) ProtocolService.protocolService
+                    .getVersionHelper().getScoreboardTeamOptional(this.name,
+                            this.displayName,
+                            this.prefix,
+                            this.suffix,
+                            chatFormat,
+                            packOptionData,
+                            this.allowFriendlyFire,
+                            visibility));
+
+        }
+        return packetContainer;
     }
 
     public static WrappedPacketOutScoreboardTeamBuilder builder() {

@@ -16,6 +16,7 @@ import net.drapuria.framework.bukkit.fake.entity.npc.modifier.*;
 import net.drapuria.framework.bukkit.fake.hologram.FakeEntityHologram;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.line.TextLine;
+import net.drapuria.framework.bukkit.protocol.packet.PacketService;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
@@ -92,7 +93,8 @@ public class NPC extends FakeEntity {
             WrappedPacketOutScoreboardTeam packet = SERVICE.getScoreboardTeamPacket(player);
             packet.setAction(3);
             packet.setNameSet(Collections.singletonList(this.npcOptions.getSkinType() == SkinType.OWN ? ("§r" + player.getUniqueId().toString().substring(0, 6)) : this.gameProfile.getName()));
-            protocolService.sendPacket(player, packet.asProtocolLibPacketContainer());
+           // protocolService.sendPacket(player, packet.asProtocolLibPacketContainer());
+            PacketService.send(player, packet);
         }
         SERVICE.getExecutorService().schedule(() -> {
             if (!player.isOnline()) return;

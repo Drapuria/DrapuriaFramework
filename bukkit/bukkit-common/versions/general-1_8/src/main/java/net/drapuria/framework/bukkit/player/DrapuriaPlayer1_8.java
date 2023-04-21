@@ -6,6 +6,8 @@ package net.drapuria.framework.bukkit.player;
 
 import com.google.common.base.Preconditions;
 import de.vantrex.hardcorespigot.modules.Module;
+import de.vantrex.hardcorespigot.modules.knockback.KnockbackModule;
+import de.vantrex.hardcorespigot.modules.potion.PotionModule;
 import de.vantrex.hardcorespigot.profiles.potion.PotionProfile;
 import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.AbstractLocalizedMessage;
@@ -245,13 +247,23 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     }
 
     @Override
-    public Module getKnockbackModule() {
+    public KnockbackModule getKnockbackModule() {
         return player.getKnockbackModule();
     }
 
     @Override
     public void resetKnockbackModule() {
         player.resetKnockbackModule();
+    }
+
+    @Override
+    public PotionModule getPotionModule() {
+        return player.getPotionModule();
+    }
+
+    @Override
+    public void resetPotionModule() {
+        player.resetPotionModule();
     }
 
     @Override
@@ -713,17 +725,6 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     public void showPlayer(Player player) {
         player.showPlayer(player);
     }
-
-    @Override
-    public PotionProfile getPotionProfile() {
-        return player.getPotionProfile();
-    }
-
-    @Override
-    public void setPotionProfile(PotionProfile potionProfile) {
-        player.setPotionProfile(potionProfile);
-    }
-
 
     @Override
     public boolean canSee(Player player) {

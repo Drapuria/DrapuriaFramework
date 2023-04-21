@@ -4,15 +4,13 @@
 
 package net.drapuria.framework.bukkit.impl.command;
 
+import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
-import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
-import net.drapuria.framework.command.parameter.Parameter;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -20,8 +18,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 // 1.8 IMPLEMENTATION
 
@@ -77,9 +79,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;
                     }
-                    if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
+                    for (BukkitParameterData parameterData : drapuriaCommand.getCommandMeta().getParameterDatas()) {
                         // check if there is paramter left to complete
-                        BukkitParameterData parameterData = drapuriaCommand.getCommandMeta().getParameterData();
                         if (parameterData.getParameterCount() > 0) {
                             int parameterIndex = index;
                             if (parameterIndex == parameterData.getParameterCount()
@@ -95,7 +96,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                         Player.class,
                                         emptyStringArray));
                                 doneHere = true;
-                                continue; // ?
+                                continue commandLoop; // ?
                                 //  break commandLoop;
                             }
                             if (parameterData.getParameterCount() > parameterIndex) {
@@ -110,7 +111,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                             }
                         } else {
                             doneHere = true;
-                          //  continue commandLoop;
+                            //  continue commandLoop;
                         }
                     }
                     // loop through all subcommands and checks if player can access the sub command
@@ -182,7 +183,8 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                         doneHere = true;
                                         continue subCommandMeta;
                                     }
-                                } else */if (StringUtils.contains(subCommands, subCommandAlias)) {
+                                } else */
+                                if (StringUtils.contains(subCommands, subCommandAlias)) {
                                     doneHere = true;
                                     continue subCommandMeta;
                                 }
@@ -202,7 +204,7 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
                                     if (StringUtils.endsWithIgnoreCase(m, toComplete)
                                             || StringUtils.endsWithIgnoreCase(toComplete, m)) {
                                         completions.add(m);
-                                      //  doneHere = true; // TODO CHECK IF WE NEED THIS HERE?
+                                        //  doneHere = true; // TODO CHECK IF WE NEED THIS HERE?
                                         continue subCommandMeta;
                                     }
                                 }

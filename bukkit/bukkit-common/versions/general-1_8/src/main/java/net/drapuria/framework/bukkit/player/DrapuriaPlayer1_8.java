@@ -726,6 +726,8 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
         player.showPlayer(player);
     }
 
+
+
     @Override
     public boolean canSee(Player player) {
         return player.canSee(player);

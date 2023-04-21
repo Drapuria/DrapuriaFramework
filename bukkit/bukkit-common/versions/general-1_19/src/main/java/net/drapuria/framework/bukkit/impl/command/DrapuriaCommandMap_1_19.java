@@ -75,9 +75,8 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                     if (!inputString.startsWith(command.toLowerCase() + " ")) {
                         continue;
                     }
-                    if (drapuriaCommand.getCommandMeta().getParameterData() != null) {
+                    for (BukkitParameterData parameterData : drapuriaCommand.getCommandMeta().getParameterDatas()) {
                         // check if there is paramter left to complete
-                        BukkitParameterData parameterData = drapuriaCommand.getCommandMeta().getParameterData();
                         if (parameterData.getParameterCount() > 0) {
                             int parameterIndex = index;
                             if (parameterIndex == parameterData.getParameterCount()
@@ -93,7 +92,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                                         Player.class,
                                         emptyStringArray));
                                 doneHere = true;
-                                continue; // ?
+                                continue commandLoop; // ?
                                 //  break commandLoop;
                             }
                             if (parameterData.getParameterCount() > parameterIndex) {
@@ -108,7 +107,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                             }
                         } else {
                             doneHere = true;
-                            //continue commandLoop;
+                            //  continue commandLoop;
                         }
                     }
                     // loop through all subcommands and checks if player can access the sub command

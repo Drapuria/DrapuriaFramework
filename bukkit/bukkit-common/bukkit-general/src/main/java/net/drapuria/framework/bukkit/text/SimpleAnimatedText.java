@@ -36,6 +36,18 @@ public class SimpleAnimatedText {
         if (currentIndex == text.length()) {
             currentIndex = 0;
         }
+        return buildCurrentIndex();
+    }
+
+    public String last() {
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = text.length() - 1;
+        }
+        return buildCurrentIndex();
+    }
+
+    private String buildCurrentIndex() {
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < this.length; i++) {
             String chatColor;
@@ -59,31 +71,4 @@ public class SimpleAnimatedText {
         return stringBuilder.toString();
     }
 
-    public String last() {
-        currentIndex--;
-        if (currentIndex < 0) {
-            currentIndex = text.length() - 1;
-        }
-        final StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < this.length; i++) {
-            String chatColor;
-            String colorAfter = "";
-            if (currentIndex == i) {
-                chatColor = highlightColor;
-                colorAfter = "";
-            } else if (currentIndex == i - 1) {
-                chatColor = colorBefore;
-                colorAfter = defaultColor;
-            } else if (currentIndex == i + 1) {
-                chatColor = this.colorAfter;
-            } else {
-                if (i == 0)
-                    chatColor = defaultColor;
-                else chatColor = "";
-            }
-            char c = text.charAt(i);
-            stringBuilder.append(chatColor).append(c).append(colorAfter);
-        }
-        return stringBuilder.toString();
-    }
 }

@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.impl.command;
 
+import lombok.Getter;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
@@ -21,9 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitCommandMeta> {
     private BukkitCommandMeta commandMeta;
-
-    protected DrapuriaCommand() {
+    @Getter
+    private final Object instance;
+    public DrapuriaCommand(final Object instance) {
         super("name");
+        this.instance = instance;
         this.commandMeta = new BukkitCommandMeta(this);
     }
 
@@ -33,15 +36,10 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             return;
         }
         if (arguments.length == 0) {
-            if (this.commandMeta.isUseUnlySubCommands())
+            if (this.commandMeta.getParameterDatas().isEmpty())
                 player.sendMessage(generateDefaultUsage(null, ""));
-            else {
-                if (this.commandMeta.getMethod() == null)
-                    execute(player);
-                else {
-                    this.commandMeta.execute(player, arguments);
-                }
-            }
+            else
+                this.commandMeta.execute(player, arguments);
             return;
         }
         final String cmdLine = String.join(" ", arguments);
@@ -61,32 +59,11 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 }
             }
         }
-        //System.out.println("ACTUAL COMMAND: " + actualCommand.toString());
-        /*
-        actualCommand = new StringBuilder();
-        for (final String argument : arguments) {
-            if (actualCommand.length() > 0)
-                actualCommand.append(" ");
-            actualCommand.append(argument);
-            BukkitSubCommandMeta subCommandMeta = this.commandMeta.getSubCommandMeta(actualCommand.toString().toLowerCase());
-            if (subCommandMeta != null) {
-                String[] array = Arrays.stream(cmdLine.replaceFirst(actualCommand.toString(), "")
-                        .split(" "))
-                        .filter(s -> !s.isEmpty()).toArray(String[]::new);
-                objects.put(subCommandMeta, array);
-            }
-        }
-         */
         if (objects.isEmpty()) {
-            if (this.commandMeta.isUseUnlySubCommands())
-                player.sendMessage(generateDefaultUsage(null, ""));
-            else {
-                if (this.commandMeta.getMethod() == null)
-                    execute(player);
-                else {
+                if (this.commandMeta.getParameterDatas().isEmpty())
+                    player.sendMessage(generateDefaultUsage(null, ""));
+                else
                     this.commandMeta.execute(player, arguments);
-                }
-            }
         } else {
             Map.Entry<BukkitSubCommandMeta, String[]> subCommandEntry = objects.entrySet()
                     .stream()
@@ -122,8 +99,6 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
         return this.commandMeta;
     }
 
-    public void execute(Player player) {
-    }
 
     @Override
     public boolean execute(CommandSender commandSender, String s, String[] strings) {
@@ -150,6 +125,9 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
 
 
     protected String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
+        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
+            System.out.println(stackTraceElement);
+        }
         if (subCommand == null) {
             StringBuilder builder = new StringBuilder();
             AtomicInteger index = new AtomicInteger();
@@ -167,7 +145,8 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 if (index.get() < this.commandMeta.getSubCommandMeta().size())
                     builder.append("\n");
             });
-
+            if (builder.length() == 0)
+                return "THIS BITCH EMPTY";
             return builder.toString();
         }
         return "Verwendung: /" + this.getName() + " " + label + " " + subCommand.getSubCommand()

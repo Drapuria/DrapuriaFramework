@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface SubCommand {
 
+    String[] labels() default {};
+
     String[] names();
 
     String parameters() default "";

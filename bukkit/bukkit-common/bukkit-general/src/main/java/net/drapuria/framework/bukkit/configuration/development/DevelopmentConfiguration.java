@@ -28,7 +28,7 @@ public class DevelopmentConfiguration {
     @ConfigurationElement
     public static class Logging {
         private boolean enabled;
-        @Comment(value = {"Valid Logging modes are", "CHAT_IF_PLAYER", "CHAT", "CONSOLE", "Be aware that 'CHAT__PLAYER' only logs to players who have enabled logging with /drapurialogging addme"})
+        @Comment(value = {"Valid Logging modes are", "CHAT_PLAYER", "CHAT", "CONSOLE", "Be aware that 'CHAT__PLAYER' only logs to players who have enabled logging with /drapurialogging addme"})
         private LoggingMode mode = LoggingMode.CONSOLE;
     }
     public static enum LoggingMode {

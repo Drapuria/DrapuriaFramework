@@ -5,6 +5,9 @@
 package net.drapuria.framework.bukkit.text;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class SimpleAnimatedText {
 
     private final String text;
@@ -12,6 +15,10 @@ public class SimpleAnimatedText {
     private final String colorBefore;
     private final String highlightColor;
     private final String colorAfter;
+    @Getter
+    private final int length;
+    @Getter
+    @Setter
     private int currentIndex;
 
 
@@ -21,7 +28,7 @@ public class SimpleAnimatedText {
         this.defaultColor = defaultColor;
         this.colorBefore = colorBefore;
         this.colorAfter = colorAfter;
-
+        this.length = text.length();
     }
 
     public String next() {
@@ -30,7 +37,7 @@ public class SimpleAnimatedText {
             currentIndex = 0;
         }
         final StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
+        for (int i = 0; i < this.length; i++) {
             String chatColor;
             String colorAfter = "";
             if (currentIndex == i) {
@@ -58,7 +65,7 @@ public class SimpleAnimatedText {
             currentIndex = text.length() - 1;
         }
         final StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < text.length(); i++) {
+        for (int i = 0; i < this.length; i++) {
             String chatColor;
             String colorAfter = "";
             if (currentIndex == i) {

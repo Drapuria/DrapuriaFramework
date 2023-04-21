@@ -91,7 +91,7 @@ public class DrapuriaTablist {
     public void update() {
         if (destroying || isSetup)
             return;
-        DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getAdapter();
+        DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getDefaultAdapter();
 
         final boolean version_1_7 = Minecraft.getProtocol(player) == PlayerVersion.v1_7;
 

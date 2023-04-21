@@ -189,9 +189,19 @@ public class Skin {
         if (uuid == null || uuid.isEmpty()) {
             return Skin.GRAY;
         }
-        return download(uuid);
+
+        return downloadFromStringUuid(uuid);
     }
 
+    private static Skin downloadFromStringUuid(String uuid) throws Exception {
+        URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");
+        InputStreamReader reader_1 = new InputStreamReader(url.openStream());
+        JsonObject textureProperty = new JsonParser().parse(reader_1).getAsJsonObject().get("properties").getAsJsonArray().get(0).getAsJsonObject();
+        String texture = textureProperty.get("value").getAsString();
+        String signature = textureProperty.get("signature").getAsString();
+
+        return new Skin(texture, signature);
+    }
 
     public static Skin download(UUID uuid) throws Exception {
         URL url = new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unsigned=false");

@@ -234,4 +234,9 @@ public class DrapuriaCommandMap extends SimpleCommandMap implements ICommandMap 
     public void unregisterDrapuriaCommand(Command command) {
         command.unregister(this);
     }
+
+    @Override
+    public List<String> spigotTabComplete(CommandSender sender, String cmdLine, Location location) {
+        return super.tabComplete(sender, cmdLine, location);
+    }
 }

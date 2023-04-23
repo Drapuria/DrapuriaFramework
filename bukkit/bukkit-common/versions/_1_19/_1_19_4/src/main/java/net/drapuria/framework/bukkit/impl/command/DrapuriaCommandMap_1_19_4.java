@@ -233,4 +233,9 @@ public class DrapuriaCommandMap_1_19_4 extends CraftCommandMap implements IComma
     public void unregisterDrapuriaCommand(Command command) {
         command.unregister(this);
     }
+
+    @Override
+    public List<String> spigotTabComplete(CommandSender sender, String cmdLine, Location location) {
+        return super.tabComplete(sender, cmdLine, location);
+    }
 }

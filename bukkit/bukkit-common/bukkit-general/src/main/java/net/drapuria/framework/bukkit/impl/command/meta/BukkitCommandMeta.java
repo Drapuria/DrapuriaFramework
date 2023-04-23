@@ -21,6 +21,7 @@ import net.drapuria.framework.command.annotation.NullParameterAction;
 import net.drapuria.framework.command.annotation.SubCommand;
 import net.drapuria.framework.command.meta.CommandMeta;
 import net.drapuria.framework.command.parameter.Parameter;
+import net.drapuria.framework.command.parameter.ParameterData;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -30,6 +31,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -48,13 +51,15 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
     private final Map<String, Set<BukkitSubCommandMeta>> subCommandMeta;
     private final Collection<BukkitSubCommandMeta> subCommandMetaCollection;
     private boolean useDrapuriaPlayer;
-
+    final Map<Integer, Integer> methodsWithSameParameterCount = new HashMap<>();
     public BukkitCommandMeta(DrapuriaCommand parent) {
         super(parent.getInstance(), parent.getName(), null);
         this.parent = parent;
         this.activeAliases = new HashMap<>();
 
         this.fetchCommands();
+        super.parameterDatas.sort(Comparator.comparingInt(ParameterData::getParameterCount));
+        Collections.reverse(super.parameterDatas);
         // this.subCommandMeta = this.fetchSubCommands();
         this.subCommandMeta = this.fetchSubCommands();
 
@@ -68,6 +73,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
         System.out.println(Arrays.toString(this.commandAliases));
         System.out.println(this.activeAliases);
         this.subCommandMetaCollection = this.subCommandMeta.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        this.parameterDatas.forEach(bukkitParameterData ->
+                methodsWithSameParameterCount.merge(bukkitParameterData.getParameterCount(), 1, Integer::sum));
     }
 
     public void setCommandPermission(String commandPermission) {
@@ -149,8 +156,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 nullParameterAction);
                     }
                 }
-                parameterDatas.add(new BukkitParameterData(parameters));
-                this.method = method;
+                parameterDatas.add(new BukkitParameterData(method, parameters));
             }
         }
     }
@@ -194,8 +200,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 nullParameterAction);
                     }
                 }
-                BukkitParameterData parameterData = new BukkitParameterData(parameters);
-                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent, method, parameterTypes[0] == DrapuriaPlayer.class, parent);
+                BukkitParameterData parameterData = new BukkitParameterData(method, parameters);
+                BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent.getInstance(), method, parameterTypes[0] == DrapuriaPlayer.class, parent);
 
                 String defaultAlias = meta.getDefaultAlias();
                 //    System.out.println("defaultAlias: " + defaultAlias);
@@ -222,17 +228,31 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
             DrapuriaCommon.executorService.execute(() -> execute(executor, params));
             return;
         }
+        BukkitParameterData foundData = null;
+        Object[] foundObjects = null;
+        boolean allMatches = true;
+        parameterLoop:
         for (BukkitParameterData parameterData : this.parameterDatas) {
             Object[] objects = new Object[parameterData.getParameterCount() + 1];
             objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
-
+            final int totalMethodsWithCount = this.methodsWithSameParameterCount.get(parameterData.getParameterCount());
             for (int i = 0; i < parameterData.getParameterCount(); i++) {
                 if (i == params.length) {
                     if (parameterData.getParameterCount() == i) break;
                     BukkitParameter bukkitParameter = parameterData.get(i);
                     CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(bukkitParameter.getClassType());
-                    objects[i + 1] = commandTypeParameter.parse(executor, bukkitParameter.getDefaultValue());
-                    break;
+                    final Object object = commandTypeParameter.parse(executor, bukkitParameter.getDefaultValue());
+                    objects[i + 1] = object;
+                    if (object == null)
+                        continue;
+                    if (allMatches) {
+                        System.out.println("ALL MATCHES BREAKING");
+                        foundData = parameterData;
+                        foundObjects = objects;
+                        break parameterLoop;
+                    }
+                    System.out.println("i == params.length CONTINUE");
+                    continue parameterLoop;
                 }
                 Parameter parameter = parameterData.getParameters()[i];
                 CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
@@ -249,9 +269,16 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                             stringBuilder.append(params[index]);
                         }
                         objects[i + 1] = stringBuilder.toString();
-                    } else
-                        objects[i + 1] = builder;
+                    } else {
+                        Object object = commandTypeParameter.parse(executor, params[i]);
+                        if (object == null && totalMethodsWithCount > 1) {
+                            allMatches = false;
+                            continue parameterLoop;
+                        }
+                        objects[i + 1] = object;
+                    }
                 } else {
+                    System.out.println("HALLO");
                     BukkitParameter bukkitParameter = parameterData.get(i);
                     if (bukkitParameter.getClassType() == Player.class && bukkitParameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
                         if (bukkitParameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
@@ -260,18 +287,67 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), params[i]);
                                 return;
                             }
+                           // objects[i + 1] = object;
+                            System.out.println("PLAYER typeparameter type " + commandTypeParameter.getType());
+                            System.out.println("object " + object);
+                            System.out.println("params[i] " + params[i]);
+                            System.out.println("i: " + i);
+                            System.out.println("param count: " + parameterData.getParameterCount());
+                            if (object == null && totalMethodsWithCount > 1) {
+                                allMatches = false;
+                                System.out.println("x2");
+                                continue parameterLoop;
+                            }
+                            System.out.println("...");
                             objects[i + 1] = object;
+                            if (i + 1 == parameterData.getParameterCount()) {
+                                allMatches = true;
+                                foundData = parameterData;
+                                foundObjects = objects;
+                                System.out.println("breaking?");
+                                break parameterLoop;
+                            }
                         }
-                    } else
-                        objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
+                    } else {
+                        Object object = commandTypeParameter.parse(executor, params[i]);
+                        System.out.println("typeparameter type " + commandTypeParameter.getType());
+                        System.out.println("object " + object);
+                        System.out.println("params[i] " + params[i]);
+                        System.out.println("i: " + i);
+                        System.out.println("param count: " + parameterData.getParameterCount());
+                        if (object == null && totalMethodsWithCount > 1) {
+                            allMatches = false;
+                            System.out.println("x2");
+                            continue parameterLoop;
+                        }
+                        System.out.println("...");
+                        objects[i + 1] = object;
+                        if (i + 1 == parameterData.getParameterCount()) {
+                            allMatches = true;
+                            foundData = parameterData;
+                            foundObjects = objects;
+                            System.out.println("breaking?");
+                            break parameterLoop;
+                        }
+                    }
                 }
             }
-            try {
-                this.method.invoke(this.instance, objects);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-            return; // TODO: RETURN?
         }
+        if (foundData == null) {
+            System.out.println("foundData == null");
+            return;
+        }
+        System.out.println("parameter count: " + foundData.getParameterCount());
+        System.out.println("objects length: " + foundObjects.length);
+        System.out.println("parameters: " + Arrays.toString(foundData.getParameters()));
+        System.out.println("objects: " + Arrays.toString(foundObjects));
+        if (foundObjects.length - 1 != foundData.getParameterCount()) // - 1 since we have the player parameter?
+            return;
+        try {
+            foundData.getMethod().invoke(this.instance, foundObjects);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return; // TODO: RETURN?
     }
 }

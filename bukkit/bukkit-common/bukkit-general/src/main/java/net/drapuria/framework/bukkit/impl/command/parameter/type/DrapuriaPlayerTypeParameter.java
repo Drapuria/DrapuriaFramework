@@ -36,6 +36,10 @@ public class DrapuriaPlayerTypeParameter extends CommandTypeParameter<DrapuriaPl
 
     @Override
     public DrapuriaPlayer parse(Player player, String source) {
+        if (source.equalsIgnoreCase(Parameter.CURRENT_SELF)) {
+            return playerRepository.findById(player.getUniqueId()).get();
+        }
+        final Player target = Bukkit.getPlayer(source);
         final Optional<DrapuriaPlayer> optional = source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? playerRepository.findById(player.getUniqueId()) : playerRepository.findById(Bukkit.getPlayer(source).getUniqueId());
         return optional.orElse(null);
     }

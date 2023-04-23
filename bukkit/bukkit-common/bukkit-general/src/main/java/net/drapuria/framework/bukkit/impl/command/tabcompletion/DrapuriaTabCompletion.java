@@ -1,48 +1,43 @@
-/*
- * Copyright (c) 2022. Drapuria
- */
+package net.drapuria.framework.bukkit.impl.command.tabcompletion;
 
-package net.drapuria.framework.bukkit.impl.command;
-
+import com.google.common.collect.ImmutableSet;
+import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
+import net.drapuria.framework.bukkit.impl.command.ICommandMap;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
-import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_19_R1.command.CraftCommandMap;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-// 1.19 IMPLEMENTATION
-
-//@CommandMapImpl
-public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommandMap {
-
-    private final BukkitCommandProvider commandProvider;
+public class DrapuriaTabCompletion {
 
     private static final List<String> EMPTY_ARRAY_LIST = new ArrayList<>();
     private static final String[] emptyStringArray = new String[]{};
 
-    public DrapuriaCommandMap_1_19(Server server, BukkitCommandProvider commandProvider) {
-        super(server);
+    private final BukkitCommandProvider commandProvider;
+    private final ICommandMap spigotCommandMap;
+
+
+
+    public DrapuriaTabCompletion(BukkitCommandProvider commandProvider, ICommandMap spigotCommandMap) {
         this.commandProvider = commandProvider;
-
+        this.spigotCommandMap = spigotCommandMap;
     }
 
-    @Override
-    public List<String> tabComplete(CommandSender sender, String cmdLine) {
-        return this.tabComplete(sender, cmdLine, null);
-    }
-
-    @Override
     public List<String> tabComplete(CommandSender sender, String cmdLine, Location location) {
+        System.out.println("HALLO");
         if (!(sender instanceof Player)) return Collections.emptyList();
         final Player player = (Player) sender;
         final Set<String> completions = new HashSet<>();
@@ -53,7 +48,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
             final String mainCommand = input[0] + " ";
             String subCommands = cmdLine.replaceFirst(mainCommand, "");
             final int index = input.length; //run integer to get current location of our string
-            final int spaceIndex = cmdLine.indexOf(" ");
+            //final int spaceIndex = cmdLine.indexOf(" ");
             // loop through every command
             commandLoop:
             for (final DrapuriaCommand drapuriaCommand : commandProvider.getCommandRepository().getCommands()) {
@@ -118,6 +113,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
 
                         // loop through all subcommand aliases
                         for (String subCommandAlias : subCommand.getAliases()) {
+                            final String normalizedSubCommandAlias = subCommandAlias;
                             subCommandAlias = subCommandAlias.toLowerCase();
                             //final String tmpSubCommands = subCommands.endsWith(" ") ? subCommands.index
                             String[] argumentSplit = subCommandAlias.split(" ");
@@ -169,7 +165,8 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                                     continue subCommandMeta;
                                 }
                                 int finalIndex = index - 1;
-                                 /*
+
+                                /*
                                 if (--finalIndex > parameterData.getParameterCount()) {
                                     player.sendMessage("huh");
                                     if (StringUtils.contains(subCommands, subCommandAlias)) {
@@ -177,7 +174,8 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                                         doneHere = true;
                                         continue subCommandMeta;
                                     }
-                                } else */if (org.apache.commons.lang.StringUtils.contains(subCommands, subCommandAlias)) {
+                                } else */
+                                if (StringUtils.contains(subCommands, subCommandAlias)) {
                                     doneHere = true;
                                     continue subCommandMeta;
                                 }
@@ -186,7 +184,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
                                 // split missing string into parts
                                 final String[] missingParts = missing.split(" ");
                                 // get real arguments
-                                final String[] realArguments = subCommandAlias.split(" ");
+                                final String[] realArguments = normalizedSubCommandAlias.split(" ");
                                 // get the missing parts
                                 final String toComplete = missingParts[0];
                                 // get the realarguments
@@ -210,7 +208,7 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
             List<String> completionList = new ArrayList<>(completions);
             // check if we have to go through bukkit completions & check if the players has permission to go through every command
             if (!doneHere && player.hasPermission("drapuria.command.tabcomplete.all")) {
-                List<String> vanillaCompletionList = super.tabComplete(sender, cmdLine, (null));
+                List<String> vanillaCompletionList = spigotCommandMap.spigotTabComplete(sender, cmdLine, (null));
                 if (vanillaCompletionList != null)
                     completionList.addAll(vanillaCompletionList);
             }
@@ -220,22 +218,12 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
             e.printStackTrace();
         }
         return EMPTY_ARRAY_LIST;
+
     }
 
-    public List<String> tabCompleteParameter(Player sender, String parameter, Class<?> transformTo, String[] tabCompleteFlags) {
+    private List<String> tabCompleteParameter(Player sender, String parameter, Class<?> transformTo, String[] tabCompleteFlags) {
         return !commandProvider.getCommandTypeParameterParser().containsKey(transformTo)
                 ? (new ArrayList<>()) : commandProvider.getTypeParameter(transformTo)
                 .tabComplete(sender, ImmutableSet.copyOf(tabCompleteFlags), parameter.toLowerCase());
-    }
-
-
-    @Override
-    public void unregisterDrapuriaCommand(Command command) {
-        command.unregister(this);
-    }
-
-    @Override
-    public List<String> spigotTabComplete(CommandSender sender, String cmdLine, Location location) {
-        return super.tabComplete(sender, cmdLine, location);
     }
 }

@@ -231,4 +231,9 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
     public void unregisterDrapuriaCommand(Command command) {
         command.unregister(this);
     }
+
+    @Override
+    public List<String> spigotTabComplete(CommandSender sender, String cmdLine, Location location) {
+        return super.tabComplete(sender, cmdLine, location);
+    }
 }

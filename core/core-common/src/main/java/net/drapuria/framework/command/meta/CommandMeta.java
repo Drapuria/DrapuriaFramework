@@ -14,7 +14,6 @@ import java.util.Map;
 @Getter
 public abstract class CommandMeta<E, T extends ParameterData<?>> {
 
-    protected Method method;
     protected boolean isAsyncDefaultCommand;
     protected final Object instance;
     protected List<T> parameterDatas;

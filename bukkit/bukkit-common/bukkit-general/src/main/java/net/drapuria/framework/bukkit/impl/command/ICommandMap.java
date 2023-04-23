@@ -5,7 +5,11 @@
 package net.drapuria.framework.bukkit.impl.command;
 
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 public interface ICommandMap {
 
@@ -14,5 +18,7 @@ public interface ICommandMap {
     boolean register(String prefix, Command command);
 
     void unregisterDrapuriaCommand(Command command);
+
+    List<String> spigotTabComplete(CommandSender sender, String cmdLine, Location location);
 
 }

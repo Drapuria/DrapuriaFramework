@@ -40,7 +40,7 @@ public class DrapuriaPlayerTypeParameter extends CommandTypeParameter<DrapuriaPl
             return playerRepository.findById(player.getUniqueId()).get();
         }
         final Player target = Bukkit.getPlayer(source);
-        final Optional<DrapuriaPlayer> optional = source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? playerRepository.findById(player.getUniqueId()) : playerRepository.findById(Bukkit.getPlayer(source).getUniqueId());
+        final Optional<DrapuriaPlayer> optional = source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? playerRepository.findById(player.getUniqueId()) : target == null ? Optional.empty() : playerRepository.findById(target.getUniqueId());
         return optional.orElse(null);
     }
 

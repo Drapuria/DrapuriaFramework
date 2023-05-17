@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.impl.command.meta;
 
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.Drapuria;
@@ -52,6 +53,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
     private final Collection<BukkitSubCommandMeta> subCommandMetaCollection;
     private boolean useDrapuriaPlayer;
     final Map<Integer, Integer> methodsWithSameParameterCount = new HashMap<>();
+
     public BukkitCommandMeta(DrapuriaCommand parent) {
         super(parent.getInstance(), parent.getName(), null);
         this.parent = parent;
@@ -72,7 +74,9 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
         System.out.println("registered COMMAND WITH NAME: " + this.commandName);
         System.out.println(Arrays.toString(this.commandAliases));
         System.out.println(this.activeAliases);
-        this.subCommandMetaCollection = this.subCommandMeta.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+        this.subCommandMetaCollection = this.subCommandMeta.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
         this.parameterDatas.forEach(bukkitParameterData ->
                 methodsWithSameParameterCount.merge(bukkitParameterData.getParameterCount(), 1, Integer::sum));
     }
@@ -122,6 +126,8 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                 Executor executor = method.getAnnotation(Executor.class);
 
                 Class<?>[] parameterTypes = method.getParameterTypes();
+                System.out.println("para length: " + parameterTypes.length);
+                System.out.println("para: " + Arrays.toString(parameterTypes));
                 String[] annotationParameterTypes = executor.parameters();
                 if (parameterTypes.length == 0)
                     break;
@@ -156,7 +162,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 nullParameterAction);
                     }
                 }
-                parameterDatas.add(new BukkitParameterData(method, parameters));
+                parameterDatas.add(new BukkitParameterData(method, parameters, executor.labels().length == 0 ? Sets.newHashSet() : Sets.newHashSet(executor.labels())));
             }
         }
     }
@@ -200,7 +206,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 nullParameterAction);
                     }
                 }
-                BukkitParameterData parameterData = new BukkitParameterData(method, parameters);
+                BukkitParameterData parameterData = new BukkitParameterData(method, parameters, subCommand.labels().length == 0 ? Sets.newHashSet() : Sets.newHashSet(subCommand.labels()));
                 BukkitSubCommandMeta meta = new BukkitSubCommandMeta(this, subCommand, parameterData, this.parent.getInstance(), method, parameterTypes[0] == DrapuriaPlayer.class, parent);
 
                 String defaultAlias = meta.getDefaultAlias();
@@ -223,28 +229,34 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
 
     @Override
     @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
-    public void execute(Player executor, String[] params) {
+    public void execute(Player executor, String label, String[] params) {
         if (isAsyncDefaultCommand && Bukkit.isPrimaryThread()) {
-            DrapuriaCommon.executorService.execute(() -> execute(executor, params));
+            DrapuriaCommon.executorService.execute(() -> execute(executor, label, params));
             return;
         }
+        System.out.println("params length: " + params.length);
         BukkitParameterData foundData = null;
         Object[] foundObjects = null;
         boolean allMatches = true;
         parameterLoop:
         for (BukkitParameterData parameterData : this.parameterDatas) {
+            if (!parameterData.isValidLabel(label))
+                continue;
             Object[] objects = new Object[parameterData.getParameterCount() + 1];
             objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
             final int totalMethodsWithCount = this.methodsWithSameParameterCount.get(parameterData.getParameterCount());
             for (int i = 0; i < parameterData.getParameterCount(); i++) {
+                System.out.println("i: " + i);
                 if (i == params.length) {
                     if (parameterData.getParameterCount() == i) break;
                     BukkitParameter bukkitParameter = parameterData.get(i);
                     CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(bukkitParameter.getClassType());
                     final Object object = commandTypeParameter.parse(executor, bukkitParameter.getDefaultValue());
                     objects[i + 1] = object;
-                    if (object == null)
-                        continue;
+                    if (object == null) {
+                        System.out.println("CONTINUE");
+                        continue parameterLoop;
+                    }
                     if (allMatches) {
                         System.out.println("ALL MATCHES BREAKING");
                         foundData = parameterData;
@@ -287,7 +299,7 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                                 parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), params[i]);
                                 return;
                             }
-                           // objects[i + 1] = object;
+                            // objects[i + 1] = object;
                             System.out.println("PLAYER typeparameter type " + commandTypeParameter.getType());
                             System.out.println("object " + object);
                             System.out.println("params[i] " + params[i]);
@@ -332,8 +344,14 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
                     }
                 }
             }
+            if (parameterData.getParameterCount() == 0 && params.length == 0) {
+                foundData = parameterData;
+                foundObjects = objects;
+                break;
+            }
         }
         if (foundData == null) {
+            executor.sendMessage(parent.generateDefaultUsage(null, label));
             System.out.println("foundData == null");
             return;
         }
@@ -349,5 +367,10 @@ public class BukkitCommandMeta extends CommandMeta<Player, BukkitParameterData> 
             e.printStackTrace();
         }
         return; // TODO: RETURN?
+    }
+
+    @Override
+    public List<BukkitParameterData> getParameterDatas() {
+        return super.getParameterDatas();
     }
 }

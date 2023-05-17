@@ -11,6 +11,7 @@ import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.command.FrameworkCommand;
+import net.drapuria.framework.command.parameter.Parameter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
@@ -19,6 +20,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitCommandMeta> {
     private BukkitCommandMeta commandMeta;
@@ -30,7 +32,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
         this.commandMeta = new BukkitCommandMeta(this);
     }
 
-    public void execute(Player player, String[] arguments) {
+    public void execute(Player player, String label, String[] arguments) {
         if (!canAccess(player)) {
             Drapuria.IMPLEMENTATION.sendActionBar(player, generateDefaultPermission());
             return;
@@ -39,7 +41,7 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
             if (this.commandMeta.getParameterDatas().isEmpty())
                 player.sendMessage(generateDefaultUsage(null, ""));
             else
-                this.commandMeta.execute(player, arguments);
+                this.commandMeta.execute(player, label, arguments);
             return;
         }
         final String cmdLine = String.join(" ", arguments);
@@ -63,10 +65,11 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 if (this.commandMeta.getParameterDatas().isEmpty())
                     player.sendMessage(generateDefaultUsage(null, ""));
                 else
-                    this.commandMeta.execute(player, arguments);
+                    this.commandMeta.execute(player, label, arguments);
         } else {
             Map.Entry<BukkitSubCommandMeta, String[]> subCommandEntry = objects.entrySet()
                     .stream()
+                    .filter(entry -> entry.getKey().getParameterData().isValidLabel(label))
                     .filter(entry -> entry.getKey().isEveryArgumentPresent(player, entry.getValue()))
                     .max(Comparator.comparingInt(value -> value.getKey().getParameterData().getParameterCount()))
                     .orElse(objects.entrySet()
@@ -81,16 +84,6 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 DrapuriaCommon.executorService.execute(() -> subCommandEntry.getKey().execute(player, subCommandEntry.getValue()));
             } else
                     subCommandEntry.getKey().execute(player, subCommandEntry.getValue());
-            /*
-            objects.entrySet().stream()
-                    .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
-                    .ifPresent(entry -> {
-                        if (entry.getKey().isAsyncExecution()) {
-                            DrapuriaCommon.executorService.execute(() -> entry.getKey().execute(player, entry.getValue()));
-                        } else
-                            entry.getKey().execute(player, entry.getValue());
-                    });
-             */
         }
     }
 
@@ -101,9 +94,9 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
 
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] strings) {
+    public boolean execute(CommandSender commandSender, String label, String[] strings) {
         if (!(commandSender instanceof Player)) return false;
-        execute((Player) commandSender, strings);
+        execute((Player) commandSender, label, strings);
         return true;
     }
 
@@ -124,16 +117,15 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
     }
 
 
-    protected String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
-        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-            System.out.println(stackTraceElement);
-        }
+    public String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
         if (subCommand == null) {
             StringBuilder builder = new StringBuilder();
             AtomicInteger index = new AtomicInteger();
 
             // TODO PREBUILD PARAMETER STRING AND REPLACE OPTIONAL (EVERYTHING WITH A DEFAULT VALUE OR EVERYTHING WITH MULTIPLE OPTIONS WHERE IT IS THE LARGER THING WITH [argument] INSTEAD OF <argument>
-            this.commandMeta.getSubCommandMetaCollection().forEach((subCommandMeta) -> {
+            this.commandMeta.getSubCommandMetaCollection()
+                    .stream().filter(meta -> meta.getParameterData().isValidLabel(label))
+                    .forEach((subCommandMeta) -> {
                 builder.append("Verwendung: /")
                         .append(this.getName())
                         .append(" ")
@@ -145,6 +137,15 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
                 if (index.get() < this.commandMeta.getSubCommandMeta().size())
                     builder.append("\n");
             });
+            this.commandMeta.getParameterDatas()
+                    .stream()
+                    .filter(data -> data.isValidLabel(label))
+                    .forEach(data -> {
+                        builder.append("Verwendung: /")
+                                .append(label)
+                                .append(" ")
+                                .append(Arrays.stream(data.getParameters()).map(bukkitParameter -> "<" + bukkitParameter.getParameter() + ">").collect(Collectors.joining(" ")));
+                    });
             if (builder.length() == 0)
                 return "THIS BITCH EMPTY";
             return builder.toString();

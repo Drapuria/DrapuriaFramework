@@ -30,6 +30,6 @@ public abstract class CommandMeta<E, T extends ParameterData<?>> {
 
     public abstract boolean canAccess(E executor);
 
-    public abstract void execute(E executor, String[] params);
+    public abstract void execute(E executor, String label, String[] params);
 
 }

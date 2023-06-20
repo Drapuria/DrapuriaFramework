@@ -20,7 +20,7 @@ public @interface SubCommand {
 
     String[] names();
 
-    String parameters() default "";
+    String[] parameters() default "";
 
     String permission() default "";
 

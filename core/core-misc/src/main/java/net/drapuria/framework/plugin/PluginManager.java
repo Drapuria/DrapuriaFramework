@@ -57,6 +57,12 @@ public class PluginManager {
         }
     }
 
+    public void onPluginPostEnable(AbstractPlugin plugin) {
+        synchronized (this.listenerAdapters) {
+            this.listenerAdapters.forEach(listenerAdapter -> listenerAdapter.onPluginPostEnable(plugin));
+        }
+    }
+
     public void onPluginDisable(AbstractPlugin plugin) {
         synchronized (this.listenerAdapters) {
             this.listenerAdapters.forEach(listenerAdapter -> listenerAdapter.onPluginDisable(plugin));

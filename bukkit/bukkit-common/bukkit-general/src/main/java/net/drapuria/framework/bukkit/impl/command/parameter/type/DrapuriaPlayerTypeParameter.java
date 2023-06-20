@@ -24,13 +24,23 @@ public class DrapuriaPlayerTypeParameter extends CommandTypeParameter<DrapuriaPl
     private static final PlayerRepository playerRepository = PlayerRepository.getRepository;
 
     @Override
-    public DrapuriaPlayer parseNonPlayer(CommandSender sender, String value) {
-        return null;
+    public DrapuriaPlayer parseNonPlayer(CommandSender sender, String source) {
+        final Player target = Bukkit.getPlayer(source);
+        if (target == null)
+            return null;
+        final Optional<DrapuriaPlayer> optional = playerRepository.findById(target.getUniqueId());
+        return optional.orElse(null);
     }
 
     @Override
     public List<String> tabComplete(Player player, Set<String> flags, String source) {
         return Bukkit.getOnlinePlayers().stream().filter(player::canSee).map(HumanEntity::getName)
+                .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
+        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName)
                 .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
     }
 

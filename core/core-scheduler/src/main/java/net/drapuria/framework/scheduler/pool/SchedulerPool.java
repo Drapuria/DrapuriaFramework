@@ -52,11 +52,10 @@ public abstract class SchedulerPool<T extends ITask> {
             while (!toAdd.isEmpty())
                 this.schedulers.add(this.toAdd.poll());
         }
-        this.schedulers.removeIf(Objects::isNull);
-        this.schedulers.forEach(scheduler -> {
+        for (Scheduler<?> scheduler : this.schedulers) {
             if (scheduler.tick())
                 toRemove.add(scheduler);
-        });
+        }
         if (this.schedulers.isEmpty())
             this.scheduledRemove = true;
     }
@@ -70,6 +69,8 @@ public abstract class SchedulerPool<T extends ITask> {
     }
 
     public void addScheduler(Scheduler<?> scheduler) {
+        if (scheduler == null)
+            return;
         this.scheduledRemove = false;
         this.toAdd.add(scheduler);
         scheduler.setPool(this);

@@ -18,10 +18,10 @@ public abstract class CommandTypeParameter<T> implements CommandTypeParameterPar
 
     /**
      * @param sender The Command sender (
-     * @param value  The value as a string
+     * @param source  The value as a string
      * @return T as  the parsed value
      */
-    public abstract T parseNonPlayer(CommandSender sender, String value);
+    public abstract T parseNonPlayer(CommandSender sender, String source);
 
     /**
      * @param player The player who is performing the tab complete
@@ -30,5 +30,7 @@ public abstract class CommandTypeParameter<T> implements CommandTypeParameterPar
      * @return
      */
     public abstract List<String> tabComplete(Player player, Set<String> flags, String source);
+
+    public abstract List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source);
 
 }

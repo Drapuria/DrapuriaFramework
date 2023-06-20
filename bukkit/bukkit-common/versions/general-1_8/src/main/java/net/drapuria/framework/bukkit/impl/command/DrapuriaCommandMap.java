@@ -4,7 +4,6 @@
 
 package net.drapuria.framework.bukkit.impl.command;
 
-import com.google.common.collect.ImmutableSet;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.command.tabcompletion.DrapuriaTabCompletion;
 import org.bukkit.Location;
@@ -12,9 +11,7 @@ import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 // 1.8 IMPLEMENTATION

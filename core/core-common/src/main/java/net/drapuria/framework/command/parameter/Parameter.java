@@ -10,7 +10,7 @@ import net.drapuria.framework.command.annotation.NullParameterAction;
 import java.util.UUID;
 
 @Getter
-public class Parameter {
+public abstract class Parameter<T> {
 
     public static final String CURRENT_SELF = UUID.randomUUID().toString();
 
@@ -24,6 +24,8 @@ public class Parameter {
     private final java.lang.reflect.Parameter javaParameter;
     private final NullParameterAction nullParameterAction;
 
+
+
     public Parameter(Class<?> classType, String parameter, String defaultValue, boolean wildcard, boolean isAllowNull, java.lang.reflect.Parameter javaParameter, final NullParameterAction nullParameterAction) {
         this.classType = classType;
         this.parameter = parameter;
@@ -33,4 +35,7 @@ public class Parameter {
         this.javaParameter = javaParameter;
         this.nullParameterAction = nullParameterAction;
     }
+
+    public abstract boolean handleNullParameterAction(T t);
+
 }

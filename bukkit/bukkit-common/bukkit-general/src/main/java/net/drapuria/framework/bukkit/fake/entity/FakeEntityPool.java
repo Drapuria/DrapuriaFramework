@@ -60,20 +60,22 @@ public class FakeEntityPool {
             } catch (TaskAlreadyStartedException e) {
                 throw new RuntimeException(e);
             }
-     //   this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
+        this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
 
+        /*
         new BukkitRunnable() { // DEV MODE
             @Override
             public void run() {
                 tick();
             }
         }.runTaskTimer(Drapuria.PLUGIN, 20, 1);
-
+         */
     }
 
     public void shutdown() {
         if (this.scheduler == null) return;
         this.scheduler.cancel(false);
+        this.scheduler = null;
     }
 
     public void updateTeamForPlayer(final Player player) {

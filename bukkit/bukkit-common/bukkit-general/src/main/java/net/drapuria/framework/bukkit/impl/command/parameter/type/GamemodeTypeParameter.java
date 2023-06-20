@@ -15,16 +15,27 @@ import java.util.stream.Collectors;
 @Component
 public class GamemodeTypeParameter extends CommandTypeParameter<GameMode> {
     @Override
-    public GameMode parseNonPlayer(CommandSender sender, String value) {
+    public GameMode parseNonPlayer(CommandSender sender, String source) {
         try {
-            return GameMode.valueOf(value);
+            return GameMode.valueOf(source.toUpperCase());
         } catch (Exception ignored) {
-            return null;
+            try {
+                int number = Integer.parseInt(source);
+                return GameMode.getByValue(number);
+            } catch (NumberFormatException e) {
+                return null;
+            }
         }
     }
 
     @Override
     public List<String> tabComplete(Player player, Set<String> flags, String source) {
+        return Arrays.stream(GameMode.values()).map(gameMode -> gameMode.name().toLowerCase())
+                .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
         return Arrays.stream(GameMode.values()).map(gameMode -> gameMode.name().toLowerCase())
                 .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
     }

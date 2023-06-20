@@ -69,6 +69,11 @@ public class SchedulerFactory<T> {
     private Supplier<T> supplier;
 
     /**
+     * The iterations between updates of the supplied content
+     */
+    private long supplierUpdateIterations = -1;
+
+    /**
      * The {@link AbstractSchedulerProvider} of the {@link Scheduler}
      */
     private Class<? extends AbstractSchedulerProvider> provider = ThreadedSchedulerProvider.class;
@@ -109,7 +114,18 @@ public class SchedulerFactory<T> {
     }
 
     /**
-     * Adds a always performing {@link RepeatedAction} for {@link Scheduler}
+     * Sets the tick delay between supplier updates for {@link Scheduler}
+     *
+     * @param iterations iteration delay between supplier updates
+     * @return {@link SchedulerFactory}
+     */
+    public SchedulerFactory<T> supplierUpdateIterations(long iterations) {
+        this.supplierUpdateIterations = iterations;
+        return this;
+    }
+
+    /**
+     * Adds an always performing {@link RepeatedAction} for {@link Scheduler}
      *
      * @param repeatedAction repeatedly performed action
      * @return {@link SchedulerFactory}
@@ -186,6 +202,7 @@ public class SchedulerFactory<T> {
         scheduler.getTimedActions().putAll(scheduledActions);
         scheduler.getRepeatedActions().addAll(repeatedActions);
         scheduler.setSupplier(supplier);
+        scheduler.setSupplierUpdateIterations(supplierUpdateIterations);
         final AbstractSchedulerProvider provider = SchedulerService.getService.getProvider(this.provider);
         provider.addSchedulerToProvider(scheduler);
         scheduler.setProvider(provider);

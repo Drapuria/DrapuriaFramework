@@ -11,9 +11,9 @@ import java.util.Set;
 @Component
 public class DoubleTypeParameter extends CommandTypeParameter<Double>{
     @Override
-    public Double parseNonPlayer(CommandSender sender, String value) {
+    public Double parseNonPlayer(CommandSender sender, String source) {
         try {
-            return Double.parseDouble(value);
+            return Double.parseDouble(source);
         } catch (Exception ignored) {
             return null;
         }
@@ -21,6 +21,11 @@ public class DoubleTypeParameter extends CommandTypeParameter<Double>{
 
     @Override
     public List<String> tabComplete(Player player, Set<String> flags, String source) {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
         return Collections.emptyList();
     }
 

@@ -25,13 +25,28 @@ public class DrapuriaOfflinePlayerParameter extends CommandTypeParameter<Drapuri
     private final Map<String, DrapuriaOfflinePlayer> playerCache = new HashMap<>();
 
     @Override
-    public DrapuriaOfflinePlayer parseNonPlayer(CommandSender sender, String value) {
-        return null;
+    public DrapuriaOfflinePlayer parseNonPlayer(CommandSender sender, String source) {
+        if (playerCache.containsKey(source)) {
+            return playerCache.get(source);
+        }
+        DrapuriaOfflinePlayer player;
+        playerCache.put(source, player = new DrapuriaOfflinePlayer(source));
+        return player;
     }
 
     @Override
     public List<String> tabComplete(Player player, Set<String> flags, String source) {
         return getOfflinePlayerTabComplete(player, flags, source);
+    }
+
+    @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
+        if (flags.contains("online")) {
+            return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName)
+                    .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
+        }
+        return Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName)
+                .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
     }
 
     @NotNull
@@ -40,7 +55,9 @@ public class DrapuriaOfflinePlayerParameter extends CommandTypeParameter<Drapuri
             return Bukkit.getOnlinePlayers().stream().filter(player::canSee).map(HumanEntity::getName)
                     .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
         }
-        return Arrays.stream(Bukkit.getOfflinePlayers()).map(OfflinePlayer::getName)
+        return Arrays.stream(Bukkit.getOfflinePlayers())
+                .filter(offlinePlayer -> !offlinePlayer.isOnline() || player.canSee(offlinePlayer.getPlayer()))
+                .map(OfflinePlayer::getName)
                 .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
     }
 

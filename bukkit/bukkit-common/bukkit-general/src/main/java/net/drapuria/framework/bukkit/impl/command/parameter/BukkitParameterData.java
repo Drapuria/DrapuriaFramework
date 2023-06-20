@@ -12,7 +12,7 @@ import java.util.Set;
 public class BukkitParameterData extends ParameterData<BukkitParameter> {
 
 
-    public BukkitParameterData(Method method, BukkitParameter[] parameters, Set<String> labels) {
-        super(method, parameters, labels);
+    public BukkitParameterData(BukkitParameter[] parameters) {
+        super(parameters);
     }
 }

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
         repo = @MavenRepository(url = "https://maven.imanity.dev/repository/imanity-libraries/"))
 public class BeanContext {
 
-    public static boolean SHOW_LOGS = true;
+    public static boolean SHOW_LOGS = false;
     public static BeanContext INSTANCE;
     public static final int PLUGIN_LISTENER_PRIORITY = 100;
 

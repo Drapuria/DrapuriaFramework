@@ -52,11 +52,10 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
         this.commandService.setCommandAnnotation(Command.class);
         this.commandService.setSubCommandAnnotation(SubCommand.class);
         this.commandService.setParameterAnnotation(CommandParameter.class);
-        loadCommands(Drapuria.PLUGIN, "net.drapuria.framework.bukkit");
 
         PluginManager.INSTANCE.registerListener(new PluginListenerAdapter() {
             @Override
-            public void onPluginEnable(AbstractPlugin plugin) {
+            public void onPluginPostEnable(AbstractPlugin plugin) {
                 if (plugin.getClass().isAnnotationPresent(ClasspathScan.class)) {
                     for (String packageName : plugin.getClass().getAnnotation(ClasspathScan.class).value())
                         loadCommands(plugin, packageName);
@@ -145,7 +144,7 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
     private void loadCommand(Object source, Class<?> commandClass) {
         try {
             final Object instance = constructorDetails(commandClass).newInstance(BeanContext.INSTANCE);
-            registerCommand(source, new DrapuriaCommand(instance));
+            registerCommand(source, new DrapuriaCommand(commandService, instance));
         } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new RuntimeException(e);
         }

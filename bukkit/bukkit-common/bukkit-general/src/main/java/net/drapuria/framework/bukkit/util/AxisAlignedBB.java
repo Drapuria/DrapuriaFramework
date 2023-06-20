@@ -372,6 +372,14 @@ public class AxisAlignedBB
     }
 
     /**
+     * Checks if the specified location is within the XZ dimensions of the bounding box. Args: Vec3D
+     */
+    public boolean isLocationInBlock(Location location)
+    {
+        return location != null && location.getBlockX() >= this.minX && location.getBlockX() <= this.maxX && location.getBlockZ() >= this.minZ && location.getBlockZ() <= this.maxZ && location.getBlockY() >= this.minY && location.getBlockY() <= this.maxY;
+    }
+
+    /**
      * Sets the bounding box to the same bounds as the bounding box passed in. Args: axisAlignedBB
      */
     public void setBB(AxisAlignedBB boundingBox)

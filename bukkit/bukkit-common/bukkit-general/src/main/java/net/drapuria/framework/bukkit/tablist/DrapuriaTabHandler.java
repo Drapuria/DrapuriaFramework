@@ -173,7 +173,7 @@ public class DrapuriaTabHandler {
                         .provideForPlayer(player)
                         .getOrNull(TABLIST_KEY);
 
-                if (tablist != null) {
+                if (tablist != null && !tablist.isSetup()) {
                     try {
                         tablist.update();
                     } catch (Throwable throwable) {

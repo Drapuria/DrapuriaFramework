@@ -4,119 +4,92 @@
 
 package net.drapuria.framework.bukkit.impl.command.meta;
 
-import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
-import net.drapuria.framework.bukkit.impl.command.PlayerParameter;
-import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
-import net.drapuria.framework.bukkit.player.PlayerRepository;
 import lombok.Getter;
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
+import net.drapuria.framework.bukkit.impl.command.context.BukkitCommandContext;
+import net.drapuria.framework.bukkit.impl.command.executor.BukkitExecutorData;
+import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameter;
 import net.drapuria.framework.bukkit.impl.command.parameter.BukkitParameterData;
 import net.drapuria.framework.bukkit.impl.command.parameter.type.CommandTypeParameter;
+import net.drapuria.framework.bukkit.player.PlayerRepository;
 import net.drapuria.framework.command.annotation.SubCommand;
+import net.drapuria.framework.command.context.ParsedArgument;
+import net.drapuria.framework.command.context.permission.PermissionContext;
 import net.drapuria.framework.command.meta.CommandMeta;
 import net.drapuria.framework.command.meta.SubCommandMeta;
-import net.drapuria.framework.command.parameter.Parameter;
-import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
-public class BukkitSubCommandMeta extends SubCommandMeta<Player, BukkitParameterData> {
+public class BukkitSubCommandMeta extends SubCommandMeta<CommandSender, BukkitParameter, BukkitExecutorData, BukkitParameterData> {
 
     private final String commandPermission;
     private final DrapuriaCommand parent;
     private final SubCommand subCommand;
     private final boolean useDrapuriaPlayer;
 
-    public BukkitSubCommandMeta(CommandMeta<Player, ?> commandMeta, SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer, DrapuriaCommand parent) {
-        super(commandMeta, parameterData, subCommand.names(), instance, method, subCommand.parameters());
+    public BukkitSubCommandMeta(CommandMeta<CommandSender, BukkitParameter, BukkitExecutorData> commandMeta, SubCommand subCommand, BukkitParameterData parameterData, Object instance, Method method, boolean useDrapuriaPlayer,
+                                DrapuriaCommand parent, PermissionContext<CommandSender> permissionContext, Set<String> labels) {
+        super(commandMeta, new BukkitExecutorData(method, permissionContext, subCommand.permission(), new HashSet<>(Arrays.asList(subCommand.names())), parameterData, subCommand.names()[0]), labels);
         this.subCommand = subCommand;
         this.useDrapuriaPlayer = useDrapuriaPlayer;
         this.commandPermission = this.subCommand.permission();
         this.parent = parent;
     }
 
-    @SuppressWarnings({"DuplicatedCode", "Convert2streamapi"})
-    @Override
-    public boolean execute(Player executor, String[] params) {
-        boolean hasFilledEveryArgument = true;
-        Object[] objects = new Object[this.parameterData.getParameterCount() + 1];
-        objects[0] = useDrapuriaPlayer ? PlayerRepository.getRepository.findById(executor.getUniqueId()).get() : executor;
-        for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
-            /*
-            if (i == params.length) { // defaultCommand wenn vorhanden ausführen? TODO CHECK HOW TO TELL IF USAGE OR DEFAULT COMMAND
-                if (this.commandMeta != null && commandMeta.getMethod() != null) {
-                    commandMeta.execute(executor, params);
-                }
-                //   return true;
-            }
-             */
-            final BukkitParameter parameter = this.parameterData.get(i);
-            final CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
-
-            if (commandTypeParameter == null)
-                throw new NullPointerException("Found no type parameter for class: " + parameter.getClassType());
-
-            if (parameter.getClassType() == String.class && (i + 1) >= this.parameterData.getParameterCount() && (i + 1) < params.length) {
-                String builder = Arrays.stream(params, i, params.length).collect(Collectors.joining(" "));
-                if (parameter.isWildcard()) {
-                    objects[i + 1] = builder;
-                    break;
-                } else
-                    objects[i + 1] = builder.split(" ")[0];
+    public ParsedArgument<?>[] getParsedArguments(final CommandSender executor, final String[] params) {
+        final boolean isPlayer = executor instanceof Player;
+        final Player bukkitPlayer = isPlayer ? (Player) executor : null;
+        final ParsedArgument<?>[] parsedArguments = new ParsedArgument[super.getExecutorData().getParameterData().getParameterCount()];
+        for (int i = 0; i < super.executorData.getParameterData().getParameterCount(); i++) {
+            final BukkitParameter parameter = super.getExecutorData().getParameterData().get(i);
+            final String current = params.length == i ? parameter.getDefaultValue().isEmpty() ? null : parameter.getDefaultValue() : params[i];
+            if (current == null)
+                return parsedArguments;
+            final CommandTypeParameter<?> typeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
+            if (typeParameter == null)
+                return parsedArguments;
+            final Object parsedObject;
+            if (isPlayer) {
+                parsedObject = typeParameter.parse(bukkitPlayer, current);
             } else {
-                final String param = params.length <= i ? parameter.getDefaultValue() : params[i];
-                final Object parsedObject = commandTypeParameter.parse(executor, param);
-                hasFilledEveryArgument = parsedObject != null || parameter.isAllowNull();
-                if (parameter.getClassType() == Player.class && parameter.getJavaParameter().isAnnotationPresent(PlayerParameter.class)) {
-                    if (parameter.getJavaParameter().getAnnotation(PlayerParameter.class).hasToBeOnline()) {
-                        if (parsedObject == null) {
-                            parent.playerNotFound(PlayerRepository.getRepository.findById(executor.getUniqueId()).get(), param);
-                            return true;
-                        }
-                    }
-                }
-                objects[i + 1] = parsedObject;
-                // objects[i + 1] = commandTypeParameter.parse(executor, params[i]);
+                parsedObject = typeParameter.parseNonPlayer(executor, current);
             }
+            if (parsedObject == null)
+                return parsedArguments;
+            parsedArguments[i] = new ParsedArgument<>(i, parsedObject);
         }
-        if (!hasFilledEveryArgument) {
-            executor.sendMessage("TODO USAGE");
-            return true;
-        }
-        try {
-            this.method.invoke(this.instance, objects);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return true;
+        return parsedArguments;
     }
 
-    public boolean isEveryArgumentPresent(final Player executor, final String[] params) {
-        for (int i = 0; i < this.parameterData.getParameterCount(); i++) {
-            final Parameter parameter = this.parameterData.get(i);
-            String current = params.length == i ? parameter.getDefaultValue().isEmpty() ? null : parameter.getDefaultValue() : params[i];
-            if (current == null) {                 // TODO WHAT IS THIS? (SEE ABOVE TODO)
-                // executor.sendMessage("RETURNING @ i == params.length");
-                return true;
-            }
-            CommandTypeParameter<?> commandTypeParameter = Drapuria.getCommandProvider.getTypeParameter(parameter.getClassType());
-            if (commandTypeParameter == null || commandTypeParameter.parse(executor, current) == null) {
-                //executor.sendMessage("RETURNING FALSE @ == null");
-                return false;
-            }
+    public String isValidAlias(String input) {
+        for (String alias : executorData.getAliases()) {
+            if (input.startsWith(alias) || alias.startsWith(input))
+                return alias;
         }
-        return true;
+        return null;
     }
 
     @Override
-    public boolean canAccess(Player executor) {
-        if ("".equalsIgnoreCase(this.commandPermission))
-            return true;
-        return executor.hasPermission(this.commandPermission);
+    public boolean canAccess(CommandSender executor) {
+        return executorData.canAccess(executor);
+    }
+
+    public void execute(BukkitCommandContext<? extends CommandSender> context, ParsedArgument<?>[] value) {
+        Object[] methodArgs = new Object[value.length + 1];
+        methodArgs[0] = useDrapuriaPlayer && context.getSource() instanceof Player ? PlayerRepository.getRepository.findById(((Player) context.getSource()).getUniqueId()).get() : context.getSource();
+        System.arraycopy(Arrays.stream(value).map(parsedArgument -> (Object) parsedArgument.getResult()).toArray(), 0, methodArgs, 1, value.length);
+        try {
+            executorData.getMethod().invoke(parent.getInstance(), methodArgs);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

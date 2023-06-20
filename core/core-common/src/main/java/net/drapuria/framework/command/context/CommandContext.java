@@ -1,6 +1,7 @@
 package net.drapuria.framework.command.context;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.drapuria.framework.command.FrameworkCommand;
 import net.drapuria.framework.command.meta.CommandMeta;
 
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
+@Setter
 public class CommandContext<S, M extends CommandMeta>  {
 
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = new HashMap<>();
@@ -17,15 +19,20 @@ public class CommandContext<S, M extends CommandMeta>  {
     private final String input;
     private final String label;
     private final FrameworkCommand<M> command;
-    private final ParsedArgument<?>[] arguments;
+    private final String[] unparsedArguments;
+    private ParsedArgument<?>[] arguments;
+    private final int inputLength;
+    private int acceptedLength;
 
 
-    public CommandContext(S source, String input, String label, FrameworkCommand<M> command, ParsedArgument<?>[] arguments) {
+    public CommandContext(S source, String input, String label, FrameworkCommand<M> command, final String[] unparsedArguments, ParsedArgument<?>[] arguments) {
         this.source = source;
-        this.input = input;
+        this.input = input.toLowerCase();
         this.label = label;
         this.command = command;
         this.arguments = arguments;
+        this.unparsedArguments = unparsedArguments;
+        this.inputLength = unparsedArguments.length;
     }
 
     static {

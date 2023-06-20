@@ -15,8 +15,12 @@ import java.util.Set;
 @Component
 public class IntegerTypeParameter extends CommandTypeParameter<Integer> {
     @Override
-    public Integer parseNonPlayer(CommandSender sender, String value) {
-        return null;
+    public Integer parseNonPlayer(CommandSender sender, String source) {
+        try {
+            return Integer.parseInt(source);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     @Override
@@ -25,12 +29,13 @@ public class IntegerTypeParameter extends CommandTypeParameter<Integer> {
     }
 
     @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
+        return Collections.emptyList();
+    }
+
+    @Override
     public Integer parse(Player sender, String source) {
-        try {
-            return Integer.parseInt(source);
-        } catch (Exception ignored) {
-            return null;
-        }
+       return this.parseNonPlayer(sender, source);
     }
 
     @Override

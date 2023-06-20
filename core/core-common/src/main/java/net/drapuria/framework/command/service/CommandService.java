@@ -27,6 +27,7 @@ public class CommandService {
     private void preInit() {
         INSTANCE = this;
         FrameworkMisc.PLATFORM.registerCommandProvider();
+        commandProvider.registerDefaults();
     }
 
     @PostInitialize

@@ -71,8 +71,6 @@ import java.util.UUID;
 
 public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
-    private static final LanguageService languageService = LanguageService.getService;
-
     private final Player player;
     private final UUID uniqueId;
     private final long sessionJoin;

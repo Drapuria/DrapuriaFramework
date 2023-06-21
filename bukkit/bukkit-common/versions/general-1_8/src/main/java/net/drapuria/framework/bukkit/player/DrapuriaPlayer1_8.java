@@ -6,48 +6,23 @@ package net.drapuria.framework.bukkit.player;
 
 import com.google.common.base.Preconditions;
 import de.vantrex.hardcorespigot.modules.Module;
-import de.vantrex.hardcorespigot.modules.knockback.KnockbackModule;
-import de.vantrex.hardcorespigot.modules.potion.PotionModule;
 import de.vantrex.hardcorespigot.profiles.potion.PotionProfile;
-import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
-import org.bukkit.Achievement;
-import org.bukkit.Effect;
-import org.bukkit.EntityEffect;
-import org.bukkit.GameMode;
-import org.bukkit.Instrument;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Note;
-import org.bukkit.Server;
-import org.bukkit.Sound;
-import org.bukkit.Statistic;
-import org.bukkit.WeatherType;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Egg;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryView;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.*;
 import org.bukkit.map.MapView;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
@@ -61,13 +36,7 @@ import org.bukkit.util.Vector;
 import org.github.paperspigot.Title;
 
 import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
@@ -245,23 +214,14 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     }
 
     @Override
-    public KnockbackModule getKnockbackModule() {
-        return player.getKnockbackModule();
+    public Module getKnockbackModule() {
+        return this.player.getKnockbackModule();
     }
+
 
     @Override
     public void resetKnockbackModule() {
         player.resetKnockbackModule();
-    }
-
-    @Override
-    public PotionModule getPotionModule() {
-        return player.getPotionModule();
-    }
-
-    @Override
-    public void resetPotionModule() {
-        player.resetPotionModule();
     }
 
     @Override
@@ -724,15 +684,20 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
         player.showPlayer(player);
     }
 
+    @Override
+    public PotionProfile getPotionProfile() {
+        return player.getPotionProfile();
+    }
+
+    @Override
+    public void setPotionProfile(PotionProfile potionProfile) {
+        player.setPotionProfile(potionProfile);
+    }
+
 
     @Override
     public boolean canSee(Player player) {
         return player.canSee(player);
-    }
-
-    @Override
-    public boolean canSee(Entity entity) {
-        return player.canSee(entity);
     }
 
     @Override

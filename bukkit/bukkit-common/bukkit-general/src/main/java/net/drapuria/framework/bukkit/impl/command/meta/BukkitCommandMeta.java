@@ -134,7 +134,6 @@ public class BukkitCommandMeta extends CommandMeta<CommandSender, BukkitParamete
         Method[] methods = this.parent.getInstance().getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Executor.class)) {
-                Drapuria.LOGGER.info("Found command method " + method.getName());
                 Executor executor = method.getAnnotation(Executor.class);
 
                 Class<?>[] parameterTypes = method.getParameterTypes();

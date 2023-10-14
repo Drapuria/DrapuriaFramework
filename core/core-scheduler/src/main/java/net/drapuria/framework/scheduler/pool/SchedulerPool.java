@@ -12,7 +12,6 @@ import net.drapuria.framework.task.ITask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -62,15 +61,18 @@ public abstract class SchedulerPool<T extends ITask> {
 
     @SneakyThrows
     public void shutdown() {
-        task.shutdown();
+        if (task != null) {
+            task.shutdown();
+        }
         new ArrayList<>(this.schedulers).forEach(Scheduler::cancel);
         new ArrayList<>(this.toAdd).forEach(Scheduler::cancel);
         task = null;
     }
 
     public void addScheduler(Scheduler<?> scheduler) {
-        if (scheduler == null)
+        if (scheduler == null) {
             return;
+        }
         this.scheduledRemove = false;
         this.toAdd.add(scheduler);
         scheduler.setPool(this);

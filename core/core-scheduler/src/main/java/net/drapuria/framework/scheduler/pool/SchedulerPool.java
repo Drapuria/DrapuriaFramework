@@ -29,7 +29,7 @@ public abstract class SchedulerPool<T extends ITask> {
 
     private boolean scheduledRemove = false;
 
-    public SchedulerPool(final long period, final AbstractSchedulerProvider provider) {
+    protected SchedulerPool(final long period, final AbstractSchedulerProvider provider) {
         this.period = period;
         this.provider = provider;
         start();

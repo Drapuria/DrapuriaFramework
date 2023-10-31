@@ -129,7 +129,10 @@ public class DrapuriaTabCompletion {
                 }
             }
             if (!doneHere && addSpigotCompletions) {
-                completions.addAll(this.spigotCommandMap.spigotTabComplete(sender, cmdLine, location));
+                final List<String> spigotCompletions = this.spigotCommandMap.spigotTabComplete(sender, cmdLine, location);
+                if (spigotCompletions != null) {
+                    completions.addAll(this.spigotCommandMap.spigotTabComplete(sender, cmdLine, location));
+                }
             }
             return new ArrayList<>(completions);
         } catch (Exception e) {

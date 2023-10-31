@@ -34,6 +34,6 @@ public class ScoreboardAdapterHolder extends ComponentHolder {
 
     @Override
     public Class<?>[] type() {
-        return new Class[] {DefaultAdapter.class};
+        return new Class[] {ScoreboardAdapter.class};
     }
 }

@@ -52,7 +52,12 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
 
     @Override
     public boolean execute(CommandSender commandSender, String label, String[] arguments) {
-        final BukkitCommandContext<? extends CommandSender> commandContext = commandSender instanceof Player ? new PlayerCommandContext((Player) commandSender, String.join(" ", arguments), label, this, arguments, new ParsedArgument[arguments.length]) : new ConsoleCommandSenderCommandContext(Bukkit.getConsoleSender(), String.join(" ", arguments), label, this, arguments, new ParsedArgument[arguments.length]);
+        final BukkitCommandContext<? extends CommandSender> commandContext = commandSender instanceof Player
+                ? new PlayerCommandContext((Player) commandSender, String.join(" ", arguments),
+                label, this, arguments, new ParsedArgument[arguments.length])
+                : new ConsoleCommandSenderCommandContext(Bukkit.getConsoleSender(),
+                String.join(" ", arguments), label, this,
+                arguments, new ParsedArgument[arguments.length]);
         execute(commandContext);
         return true;
     }

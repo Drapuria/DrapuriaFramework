@@ -31,7 +31,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -305,7 +304,6 @@ public class BukkitCommandMeta extends CommandMeta<CommandSender, BukkitParamete
         final String label = context.getLabel();
         final int insertedArgumentLength = contextArguments.length;
         Entry<BukkitExecutorData, ParsedArgument<?>[]> closestExecutor = null;
-
         for (BukkitExecutorData executorData : this.executorData) {
             if (!executorData.isValidLabel(label) ||!executorData.canAccess(context.getSource()))
                 continue;
@@ -316,7 +314,6 @@ public class BukkitCommandMeta extends CommandMeta<CommandSender, BukkitParamete
             closestExecutor = new Entry<>(executorData, parsedArguments);
             if ((parsedArguments.length > 0 && parsedArguments[parsedArguments.length - 1] == null || contextArguments.length > parsedArguments.length))
                 continue;
-            System.out.println("RETURNING");
             return Optional.of(closestExecutor);
         }
         return Optional.ofNullable(closestExecutor);
@@ -375,7 +372,7 @@ public class BukkitCommandMeta extends CommandMeta<CommandSender, BukkitParamete
         for (int i = 0; i < parsedArguments.length; i++) {
             ParsedArgument<?> argument = parsedArguments[i];
             if (argument == null)
-                return new ParsedArgument<>(i, null);
+                return new ParsedArgument<>(i, null, false);
             if (argument.getResult() == null)
                 return argument;
         }

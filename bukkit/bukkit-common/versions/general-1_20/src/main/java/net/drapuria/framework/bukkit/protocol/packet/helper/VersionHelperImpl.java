@@ -19,6 +19,7 @@ import net.kyori.adventure.text.Component;
 import net.minecraft.EnumChatFormat;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
@@ -28,7 +29,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-public class VersionHelperImpl implements VersionHelper {
+public class VersionHelperImpl implements VersionHelper<DisplaySlot> {
 
 
     @BootstrapInvoke
@@ -76,5 +77,13 @@ public class VersionHelperImpl implements VersionHelper {
         return null;
     }
 
+    @Override
+    public Class<DisplaySlot> getDisplaySlotEnum() {
+        return DisplaySlot.class;
+    }
 
+    @Override
+    public DisplaySlot translateDisplaySlot(int slot) {
+        return DisplaySlot.values()[slot];
+    }
 }

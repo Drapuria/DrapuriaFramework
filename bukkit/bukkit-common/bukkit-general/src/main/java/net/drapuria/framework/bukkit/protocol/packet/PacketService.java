@@ -143,6 +143,9 @@ public class PacketService {
 
     @PostDestroy
     public void stop() {
+        if (this.nettyInjection == null) {
+            return;
+        }
         this.nettyInjection.unregisterChannels();
     }
 

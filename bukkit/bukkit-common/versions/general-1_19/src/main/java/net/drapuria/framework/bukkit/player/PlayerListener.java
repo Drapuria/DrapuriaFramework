@@ -7,8 +7,11 @@ package net.drapuria.framework.bukkit.player;
 import net.drapuria.framework.beans.annotation.Component;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.metadata.Metadata;
+import net.drapuria.framework.bukkit.java.FieldHelper;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
+import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
+import net.drapuria.framework.util.Stacktrace;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.network.chat.ChatHexColor;
 import org.bukkit.Bukkit;
@@ -24,10 +27,22 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.lang.reflect.Field;
+
 @Component
 public class PlayerListener implements Listener {
 
     private final PlayerRepository playerRepository = PlayerRepository.getRepository;
+
+    public PlayerListener() {
+        try {
+            Field valuesField = new FieldResolver(Minecraft.Version.class).resolve("$VALUES");
+            FieldHelper.makeNonFinal(valuesField);
+        } catch (NoSuchFieldException e) {
+            Stacktrace.print(e);
+        }
+    }
+
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {

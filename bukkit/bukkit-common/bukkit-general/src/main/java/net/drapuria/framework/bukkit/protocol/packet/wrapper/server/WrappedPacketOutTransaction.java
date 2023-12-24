@@ -40,8 +40,8 @@ public class WrappedPacketOutTransaction extends WrappedPacket implements Sendab
 
         try {
             packetConstructor = packetClass.getConstructor(int.class, short.class, boolean.class);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            // PACKET GOT REMOVED, WE DO NOT HAVE TO HANDLE THE EXCEPTION
         }
     }
 

@@ -11,6 +11,7 @@ import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacke
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutTitle;
 import net.drapuria.framework.bukkit.reflection.Reflection;
 import net.drapuria.framework.bukkit.reflection.annotation.ProtocolImpl;
+import net.drapuria.framework.bukkit.reflection.resolver.ResolverQuery;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ChatComponentWrapper;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.MethodWrapper;
@@ -36,10 +37,12 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Helper class to access minecraft/bukkit specific objects
@@ -118,7 +121,12 @@ public class Minecraft {
             NMS_ENTITY = NMS_CLASS_RESOLVER.resolve("Entity");
             CRAFT_ENTITY = OBC_CLASS_RESOLVER.resolve("entity.CraftEntity");
         } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
+          try {
+              NMS_ENTITY = NMS_CLASS_RESOLVER.resolve("Entity", "world.entity.Entity");
+              CRAFT_ENTITY = OBC_CLASS_RESOLVER.resolve("entity.CraftEntity");
+          } catch (ReflectiveOperationException e1) {
+              throw new RuntimeException(e1);
+          }
         }
 
         try {
@@ -146,24 +154,29 @@ public class Minecraft {
         }
 
         try {
-            Class<?> entityPlayerType = NMS_CLASS_RESOLVER.resolve("EntityPlayer");
-            Class<?> playerConnectionType = NMS_CLASS_RESOLVER.resolve("PlayerConnection");
-            Class<?> networkManagerType = NMS_CLASS_RESOLVER.resolve("NetworkManager");
+            Class<?> entityPlayerType = NMS_CLASS_RESOLVER.resolve("EntityPlayer", "server.level.EntityPlayer");
+            Class<?> playerConnectionType = NMS_CLASS_RESOLVER.resolve("PlayerConnection", "server.network.PlayerConnection");
+            Class<?> networkManagerType = NMS_CLASS_RESOLVER.resolve("NetworkManager", "network.NetworkManager");
 
             Minecraft.PLAYER_GET_HANDLE = new MethodWrapper(OBC_CLASS_RESOLVER.resolve("entity.CraftPlayer")
                     .getDeclaredMethod("getHandle"));
             Minecraft.FIELD_PLAYER_CONNECTION = new FieldResolver(entityPlayerType)
                     .resolveByFirstTypeDynamic(playerConnectionType);
 
-            Class<?> packetClass = NMS_CLASS_RESOLVER.resolve("Packet");
+            Class<?> packetClass = NMS_CLASS_RESOLVER.resolve("Packet", "network.protocol.Packet");
+            final MethodResolver sendPacketResolver = new MethodResolver(playerConnectionType);
+            Minecraft.METHOD_SEND_PACKET = new MethodWrapper<>(sendPacketResolver.resolve(new ResolverQuery(0, packetClass)));
 
-            Minecraft.METHOD_SEND_PACKET = new MethodWrapper(playerConnectionType.getDeclaredMethod("sendPacket", packetClass));
+            try {
+                Minecraft.FIELD_NETWORK_MANAGER = new FieldResolver(playerConnectionType)
+                        .resolveByFirstTypeWrapper(networkManagerType);
+            } catch (Throwable throwable) {
+                Class<?> serverCommonPacketListener = NMS_CLASS_RESOLVER.resolve("server.network.ServerCommonPacketListenerImpl");
+                Minecraft.FIELD_NETWORK_MANAGER = new FieldWrapper(new FieldResolver(serverCommonPacketListener)
+                        .resolveByFirstExtendingType(networkManagerType));
+            }
 
-            Minecraft.FIELD_NETWORK_MANAGER = new FieldResolver(playerConnectionType)
-                    .resolveByFirstTypeWrapper(networkManagerType);
-
-            Minecraft.FIELD_CHANNEL = new FieldResolver(networkManagerType)
-                    .resolveByFirstTypeDynamic(CHANNEL_TYPE);
+            Minecraft.FIELD_CHANNEL = new FieldResolver(networkManagerType).resolveByFirstTypeDynamic(CHANNEL_TYPE);
         } catch (Throwable throwable) {
             throw new IllegalStateException("Something went wrong when doing reflection", throwable);
         }
@@ -272,7 +285,7 @@ public class Minecraft {
     public static int getPing(Player player) throws ReflectiveOperationException {
         if (PING_FIELD == null) {
             try {
-                Class<?> type = NMS_CLASS_RESOLVER.resolve("EntityPlayer");
+                Class<?> type = NMS_CLASS_RESOLVER.resolve("EntityPlayer", "server.level.EntityPlayer");
                 PING_FIELD = new FieldResolver(type).resolveWrapper("ping");
             } catch (Throwable throwable) {
                 throw new RuntimeException(throwable);
@@ -305,7 +318,7 @@ public class Minecraft {
 
     public static int setEntityId(int newIds) {
         if (ENTITY_ID_RESOLVER == null) {
-            ENTITY_ID_RESOLVER = new FieldResolver(NMS_CLASS_RESOLVER.resolveSilent("Entity"))
+            ENTITY_ID_RESOLVER = new FieldResolver(NMS_CLASS_RESOLVER.resolveSilent("Entity", "world.entity.Entity"))
                     .resolveWrapper("entityCount");
         }
 
@@ -363,7 +376,7 @@ public class Minecraft {
         v1_19_R3(11904),
         /// (Potentially) Upcoming versions
 
-        v1_20_R1(12001);
+        v1_20_R2(12002);
 
 
         private final MinecraftVersion version;
@@ -442,7 +455,7 @@ public class Minecraft {
             for (Version version : values()) {
                 if (version.matchesPackageName(versionPackage)) {return version;}
             }
-            Drapuria.LOGGER.error("[ReflectionHelper] Failed to find version enum for '\" + name + \"'/'\" + versionPackage + \"'\"");
+            Drapuria.LOGGER.error("[ReflectionHelper] Failed to find version enum for '" + name + "'/'" + versionPackage + "'\"");
             Drapuria.LOGGER.info("[ReflectionHelper] Generating dynamic constant...");
             Matcher matcher = NUMERIC_VERSION_PATTERN.matcher(versionPackage);
             while (matcher.find()) {
@@ -510,7 +523,7 @@ public class Minecraft {
             return NMS_CLASS_RESOLVER.resolve("EnumGamemode");
         } catch (Throwable throwable) {
             try {
-                Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolve("WorldSettings$EnumGamemode");
+                Class<? extends Enum> type = NMS_CLASS_RESOLVER.resolve("WorldSettings$EnumGamemode", "world.level.EnumGamemode");
                 //    NMS_CLASS_RESOLVER.cache("EnumGamemode", type);
                 return type;
             } catch (Throwable throwable1) {

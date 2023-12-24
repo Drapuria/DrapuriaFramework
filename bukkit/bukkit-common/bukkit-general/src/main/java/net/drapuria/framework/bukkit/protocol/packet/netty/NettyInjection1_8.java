@@ -16,6 +16,7 @@ import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
 import net.drapuria.framework.bukkit.reflection.resolver.minecraft.NMSClassResolver;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
+import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -80,6 +81,7 @@ public class NettyInjection1_8 implements INettyInjection {
                 channel.pipeline().remove(PacketService.CHANNEL_HANDLER);
             } catch (NoSuchElementException ignored) {
                 // It's fine (?)
+                Stacktrace.print(ignored);
             }
         });
     }
@@ -99,15 +101,15 @@ public class NettyInjection1_8 implements INettyInjection {
     @Override
     public void registerChannels() throws Exception {
         NMSClassResolver classResolver = new NMSClassResolver();
-        Class<?> minecraftServerClass = classResolver.resolve("MinecraftServer");
-        Class<?> serverConnectionClass = classResolver.resolve("ServerConnection");
+        Class<?> minecraftServerClass = classResolver.resolve("MinecraftServer", "server.MinecraftServer");
+        Class<?> serverConnectionClass = classResolver.resolve("ServerConnection", "server.network.ServerConnection");
         FieldResolver mcFieldResolver = new FieldResolver(minecraftServerClass);
 
         Object minecraftServer = mcFieldResolver.resolve(minecraftServerClass, 0).get(null);
         Object serverConnection = mcFieldResolver.resolve(serverConnectionClass, 0).get(minecraftServer);
 
         FieldResolver serverConnectionFieldResolver = new FieldResolver(serverConnection.getClass());
-        this.networkManagers = serverConnectionFieldResolver.resolveWithGenericType(List.class, classResolver.resolve("NetworkManager")).get(serverConnection);
+        this.networkManagers = serverConnectionFieldResolver.resolveWithGenericType(List.class, classResolver.resolve("NetworkManager", "network.NetworkManager")).get(serverConnection);
 
         endInitProtocol = new ChannelInitializer<Channel>() {
 
@@ -191,6 +193,7 @@ public class NettyInjection1_8 implements INettyInjection {
                         pipeline.remove(serverChannelHandler);
                     } catch (NoSuchElementException e) {
                         // That's fine
+                        Stacktrace.print(e);
                     }
                 }
 

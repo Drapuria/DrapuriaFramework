@@ -27,10 +27,18 @@ public final class WrappedPacketInBlockDig extends WrappedPacket {
 
     public static void init() {
         blockDigClass = PacketTypeClasses.Client.BLOCK_DIG;
+        if (blockDigClass == null) {
+            try {
+                blockDigClass = NMS_CLASS_RESOLVER.resolveSilent("network.protocol.game.PacketPlayInBlockDig");
+            } catch (Exception ignored) {
+                // Packet got removed.
+                return;
+            }
+        }
         try {
             if (MinecraftVersion.VERSION.newerThan(Minecraft.Version.v1_7_R1)) {
-                blockPositionClass = NMS_CLASS_RESOLVER.resolve("BlockPosition");
-                enumDirectionClass = NMS_CLASS_RESOLVER.resolve("EnumDirection");
+                blockPositionClass = NMS_CLASS_RESOLVER.resolve("BlockPosition", "core.BlockPosition");
+                enumDirectionClass = NMS_CLASS_RESOLVER.resolve("EnumDirection", "core.EnumDirection");
             }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -41,7 +49,7 @@ public final class WrappedPacketInBlockDig extends WrappedPacket {
                 digTypeClass = NMS_CLASS_RESOLVER.resolve("EnumPlayerDigType");
             } catch (ClassNotFoundException e) {
                 //It is probably a subclass
-                digTypeClass = NMS_CLASS_RESOLVER.resolveSilent(blockDigClass.getSimpleName() + "$EnumPlayerDigType");
+                digTypeClass = NMS_CLASS_RESOLVER.resolveSilent(blockDigClass.getSimpleName() + "$EnumPlayerDigType", "network.protocol.game.PacketPlayInBlockDig$EnumPlayerDigType");
             }
         }
     }

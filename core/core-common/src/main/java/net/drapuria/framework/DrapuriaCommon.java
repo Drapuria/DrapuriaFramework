@@ -77,12 +77,16 @@ public final class DrapuriaCommon {
     private boolean LIBRARIES_INITIALIZED, BRIDGE_INITIALIZED;
 
     public ExecutorService executorService;
+    private CommonLoader loader;
 
     private final List<Terminable> TERMINATES = new ArrayList<>();
 
 
     public void init() {
         DrapuriaCommon.loadLibraries();
+        if (loader != null) {
+            loader.beforeBeanContextInit();
+        }
         DrapuriaCommon.BEAN_CONTEXT = new BeanContext();
         DrapuriaCommon.executorService = Executors.newCachedThreadPool();
         DrapuriaCommon.BEAN_CONTEXT.init();
@@ -196,6 +200,7 @@ public final class DrapuriaCommon {
         private IEventHandler eventHandler;
         private ITaskScheduler taskScheduler;
         private ObjectMapper mapper;
+        private CommonLoader commonLoader;
 
         public Builder platform(DrapuriaPlatform bridge) {
             this.platform = bridge;
@@ -213,6 +218,11 @@ public final class DrapuriaCommon {
             return this;
         }
 
+        public Builder loader(CommonLoader commonLoader) {
+            this.commonLoader = commonLoader;
+            return this;
+        }
+
 
         public void init() {
             if (this.platform != null) {
@@ -226,6 +236,9 @@ public final class DrapuriaCommon {
             if (this.taskScheduler != null) {
                 DrapuriaCommon.TASK_SCHEDULER = this.taskScheduler;
                 FrameworkMisc.TASK_SCHEDULER = this.taskScheduler;
+            }
+            if (this.commonLoader != null) {
+                DrapuriaCommon.loader = commonLoader;
             }
             DrapuriaCommon.init();
         }

@@ -25,9 +25,9 @@ public final class WrappedPacketInUseEntity extends WrappedPacket {
     }
 
     public static void init() {
-        Class<?> useEntityClass = NMS_CLASS_RESOLVER.resolveSilent("PacketPlayInUseEntity");
+        Class<?> useEntityClass = NMS_CLASS_RESOLVER.resolveSilent("PacketPlayInUseEntity", "network.protocol.game.PacketPlayInUseEntity");
         try {
-            ENUM_ENTITY_USE_ACTION = NMS_CLASS_RESOLVER.resolve("EnumEntityUseAction");
+            ENUM_ENTITY_USE_ACTION = NMS_CLASS_RESOLVER.resolve("EnumEntityUseAction", "network.protocol.game.PacketPlayInUseEntity$EnumEntityUseAction");
         } catch (ClassNotFoundException e) {
             //That is fine, it is probably a subclass
             ENUM_ENTITY_USE_ACTION = NMS_CLASS_RESOLVER.resolveSilent(useEntityClass.getSimpleName() + "$EnumEntityUseAction");

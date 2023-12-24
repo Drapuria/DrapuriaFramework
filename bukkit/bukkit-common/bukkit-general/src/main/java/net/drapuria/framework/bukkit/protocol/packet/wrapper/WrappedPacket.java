@@ -27,8 +27,7 @@ public class WrappedPacket implements WrapperPacketReader {
 
     public static void init() {
         try {
-            NMS_ITEM_STACK = NMS_CLASS_RESOLVER.resolve("ItemStack");
-
+            NMS_ITEM_STACK = NMS_CLASS_RESOLVER.resolve("ItemStack", "world.item.ItemStack");
             Class<?> type = CRAFT_CLASS_RESOLVER.resolve("inventory.CraftItemStack");
             ITEM_COPY_OF_METHOD = new MethodWrapper<>(type.getMethod("asBukkitCopy", NMS_ITEM_STACK));
         } catch (ClassNotFoundException | NoSuchMethodException e) {

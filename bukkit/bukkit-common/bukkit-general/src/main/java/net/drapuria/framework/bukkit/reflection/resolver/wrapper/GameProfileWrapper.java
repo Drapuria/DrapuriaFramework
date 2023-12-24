@@ -19,7 +19,7 @@ public class GameProfileWrapper extends WrapperAbstract {
     static {
         try {
             NMSClassResolver classResolver = new NMSClassResolver();
-            Class<?> entityHumanClass = classResolver.resolve("EntityHuman");
+            Class<?> entityHumanClass = classResolver.resolve("EntityHuman", "world.entity.player.EntityHuman");
 
             GAME_PROFILE_FIELD = new FieldResolver(entityHumanClass)
                     .resolveByFirstTypeWrapper(GameProfileWrapper.IMPLEMENTATION.getGameProfileClass());
@@ -44,7 +44,7 @@ public class GameProfileWrapper extends WrapperAbstract {
         if (GAME_PROFILE_FIELD == null) {
             try {
                 NMSClassResolver classResolver = new NMSClassResolver();
-                Class<?> entityHumanClass = classResolver.resolve("EntityHuman");
+                Class<?> entityHumanClass = classResolver.resolve("EntityHuman", "world.entity.player.EntityHuman");
 
                 GAME_PROFILE_FIELD = new FieldResolver(entityHumanClass)
                         .resolveByFirstTypeWrapper(GameProfileWrapper.IMPLEMENTATION.getGameProfileClass());

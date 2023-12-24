@@ -8,9 +8,13 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import io.papermc.paper.adventure.PaperAdventure;
 import net.drapuria.framework.BootstrapInvoke;
+import net.drapuria.framework.bukkit.java.FieldHelper;
 import net.drapuria.framework.bukkit.protocol.ProtocolService;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
 import net.drapuria.framework.bukkit.util.Skin;
+import net.drapuria.framework.util.Stacktrace;
 import net.kyori.adventure.text.Component;
 import net.minecraft.EnumChatFormat;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
@@ -21,6 +25,7 @@ import net.minecraft.world.scores.ScoreboardTeamBase;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 public class VersionHelperImpl implements VersionHelper {

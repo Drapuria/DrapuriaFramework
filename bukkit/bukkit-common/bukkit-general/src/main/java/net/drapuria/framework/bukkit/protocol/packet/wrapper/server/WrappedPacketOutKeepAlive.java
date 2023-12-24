@@ -7,6 +7,7 @@ import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
 
 
@@ -33,19 +34,28 @@ public class WrappedPacketOutKeepAlive extends WrappedPacket implements Sendable
 
     public static void init() {
         packetClass = PacketTypeClasses.Server.KEEP_ALIVE;
+        if (packetClass == null) {
+            return;
+        }
         integerMode = new FieldResolver(packetClass).resolveSilent(int.class, 0).exists();
 
         if (integerMode) {
             try {
                 keepAliveConstructor = packetClass.getConstructor(int.class);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                if (Minecraft.VERSION != null && Minecraft.VERSION.olderThan(Minecraft.Version.v1_19_R1)) {
+                   e.printStackTrace();
+                }
+             // PACKET GOT REMOVED, WE DO NOT HAVE TO HANDLE THE EXCEPTION
             }
         } else {
             try {
                 keepAliveConstructor = packetClass.getConstructor(long.class);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                if (Minecraft.VERSION != null && Minecraft.VERSION.olderThan(Minecraft.Version.v1_19_R1)) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }

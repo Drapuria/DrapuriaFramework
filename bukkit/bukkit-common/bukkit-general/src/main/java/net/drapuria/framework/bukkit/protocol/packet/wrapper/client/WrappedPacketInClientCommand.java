@@ -27,7 +27,7 @@ public final class WrappedPacketInClientCommand extends WrappedPacket {
         } catch (ClassNotFoundException e) {
             //Probably a subclass
             try {
-                enumClientCommandClass = NMS_CLASS_RESOLVER.resolve(packetClass.getSimpleName() + "$EnumClientCommand");
+                enumClientCommandClass = NMS_CLASS_RESOLVER.resolve(packetClass.getSimpleName() + "$EnumClientCommand", "network.protocol.game.PacketPlayInClientCommand$EnumClientCommand");
             } catch (ClassNotFoundException ex) {
                 throw new IllegalStateException("Cound't find EnumClientCommand class!", ex);
             }

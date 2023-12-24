@@ -34,14 +34,13 @@ public class WrappedPacketInSettings extends WrappedPacket {
         packetClass = PacketTypeClasses.Client.SETTINGS;
 
         isLowerThan_v_1_8 = MinecraftVersion.getVersion().olderThan(Minecraft.Version.v1_8_R1);
-
         try {
             chatVisibilityEnumClass = NMS_CLASS_RESOLVER.resolve("EnumChatVisibility");
         } catch (ClassNotFoundException e) {
-            Class<?> entityHumanClass = NMS_CLASS_RESOLVER.resolveSilent("EntityHuman");
+            Class<?> entityHumanClass = NMS_CLASS_RESOLVER.resolveSilent("EntityHuman", "world.entity.player.EntityHuman");
             //They are just on an outdated version
             assert entityHumanClass != null;
-            chatVisibilityEnumClass = NMS_CLASS_RESOLVER.resolveSilent(entityHumanClass.getSimpleName() + "$EnumChatVisibility");
+            chatVisibilityEnumClass = NMS_CLASS_RESOLVER.resolveSilent(entityHumanClass.getSimpleName() + "$EnumChatVisibility", "world.entity.player.EnumChatVisibility");
         }
     }
 

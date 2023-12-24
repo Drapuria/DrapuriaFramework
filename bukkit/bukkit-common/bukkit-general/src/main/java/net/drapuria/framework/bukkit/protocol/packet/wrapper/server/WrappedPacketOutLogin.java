@@ -64,8 +64,8 @@ public class WrappedPacketOutLogin extends WrappedPacket implements SendableWrap
         try {
             ENUM_GAMEMODE_CLASS = Minecraft.getEnumGamemodeClass();
 
-            ENUM_DIFFICULTY_CLASS = NMS_CLASS_RESOLVER.resolve("EnumDifficulty");
-            WORLD_TYPE_CLASS = NMS_CLASS_RESOLVER.resolve("WorldType");
+            ENUM_DIFFICULTY_CLASS = NMS_CLASS_RESOLVER.resolve("EnumDifficulty", "world.EnumDifficulty");
+            WORLD_TYPE_CLASS = NMS_CLASS_RESOLVER.resolve("WorldType", "world.level.dimension.WorldType");
 
             MethodResolver methodResolver = new MethodResolver(WORLD_TYPE_CLASS);
             NMS_WORLD_TYPE_GET_BY_NAME = methodResolver.resolve(WORLD_TYPE_CLASS, 0, String.class);
@@ -81,8 +81,8 @@ public class WrappedPacketOutLogin extends WrappedPacket implements SendableWrap
                     WORLD_TYPE_CLASS,
                     boolean.class
             ));
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
+        } catch (Throwable ignored) {
+
         }
 
     }

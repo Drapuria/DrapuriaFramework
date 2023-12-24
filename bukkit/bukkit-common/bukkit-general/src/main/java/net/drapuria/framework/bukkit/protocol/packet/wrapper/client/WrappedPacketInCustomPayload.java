@@ -7,6 +7,7 @@ import net.drapuria.framework.bukkit.protocol.packet.type.PacketType;
 import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.resolver.FieldResolver;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.FieldWrapper;
 
@@ -26,13 +27,18 @@ public final class WrappedPacketInCustomPayload extends WrappedPacket {
 
     public static void init() {
         packetClass = PacketTypeClasses.Client.CUSTOM_PAYLOAD;
+        if (packetClass == null) {
+            return;
+        }
         strPresentInIndex0 = new FieldResolver(packetClass)
             .resolveSilent(String.class, 0)
             .exists();
         try {
             nmsPacketDataSerializer = NMS_CLASS_RESOLVER.resolve("PacketDataSerializer");
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            if (Minecraft.VERSION != null && Minecraft.VERSION.olderThan(Minecraft.Version.v1_19_R1)) {
+                e.printStackTrace();
+            }
         }
         try {
             //Only on 1.13+

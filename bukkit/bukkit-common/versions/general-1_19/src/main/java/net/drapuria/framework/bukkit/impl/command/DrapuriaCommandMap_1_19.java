@@ -25,7 +25,6 @@ public class DrapuriaCommandMap_1_19 extends CraftCommandMap implements ICommand
         super(server);
         this.commandProvider = commandProvider;
         this.tabCompletion = new DrapuriaTabCompletion(commandProvider, this);
-
     }
 
     @Override

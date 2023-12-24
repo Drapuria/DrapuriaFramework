@@ -20,9 +20,13 @@ public final class WrappedPacketInKeepAlive extends WrappedPacket {
     }
 
     public static void init() {
-        integerPresent = new FieldResolver(PacketTypeClasses.Client.KEEP_ALIVE)
-            .resolveSilent(int.class, 0)
-            .exists();
+        try {
+            integerPresent = new FieldResolver(PacketTypeClasses.Client.KEEP_ALIVE)
+                    .resolveSilent(int.class, 0)
+                    .exists();
+        } catch (Exception ignored) {
+            // Packet got removed.
+        }
     }
 
     @Override

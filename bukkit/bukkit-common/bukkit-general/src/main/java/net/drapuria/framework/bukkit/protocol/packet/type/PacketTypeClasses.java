@@ -12,7 +12,8 @@ public class PacketTypeClasses {
     }
 
     public static class Client {
-        private static final String c = "PacketPlayIn";
+        private static final String a = "PacketPlayIn";
+        private static String c = "PacketPlayIn";
         public static Class<?> FLYING, POSITION, POSITION_LOOK, LOOK, CLIENT_COMMAND,
                 TRANSACTION, BLOCK_DIG, ENTITY_ACTION, USE_ENTITY,
                 WINDOW_CLICK, STEER_VEHICLE, CUSTOM_PAYLOAD, ARM_ANIMATION,
@@ -32,15 +33,20 @@ public class PacketTypeClasses {
          */
         @SneakyThrows
         public static void load() {
+            try {
+                PACKET_CLASS_RESOLVER.resolve(c + "Flying");
+            } catch (ClassNotFoundException e) {
+                c = "network.protocol.game.PacketPlayIn";
+            }
             FLYING = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying");
             try {
                 POSITION = PACKET_CLASS_RESOLVER.resolve(c + "Position");
                 POSITION_LOOK = PACKET_CLASS_RESOLVER.resolve(c + "PositionLook");
                 LOOK = PACKET_CLASS_RESOLVER.resolve(c + "Look");
             } catch (ClassNotFoundException e) {
-                POSITION = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying$" + c + "Position") ;//SubclassUtil.getSubClass(FLYING, c + "Position");
-                POSITION_LOOK = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying$" + c + "PositionLook"); //SubclassUtil.getSubClass(FLYING, c + "PositionLook");
-                LOOK = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying$" + c + "Look"); // SubclassUtil.getSubClass(FLYING, c + "Look");
+                POSITION = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying$" + a + "Position") ;//SubclassUtil.getSubClass(FLYING, c + "Position");
+                POSITION_LOOK = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying$" + a + "PositionLook"); //SubclassUtil.getSubClass(FLYING, c + "PositionLook");
+                LOOK = PACKET_CLASS_RESOLVER.resolveSilent(c + "Flying$" + a + "Look"); // SubclassUtil.getSubClass(FLYING, c + "Look");
             }
 
             LOGIN_START = PACKET_CLASS_RESOLVER.resolveSilent("PacketLoginInStart");
@@ -96,7 +102,7 @@ public class PacketTypeClasses {
             } catch (ClassNotFoundException e) {
                 //They are just on a newer version
                 try {
-                    USE_ITEM = PACKET_CLASS_RESOLVER.resolve(c + "UseItem");
+                    USE_ITEM = PACKET_CLASS_RESOLVER.resolve(c + "UseItem", "network.protocol.game.PacketPlayInUseItem");
                 } catch (ClassNotFoundException e2) {
                     e.printStackTrace();
                     e2.printStackTrace();
@@ -108,7 +114,8 @@ public class PacketTypeClasses {
     }
 
     public static class Server {
-        private static final String s = "PacketPlayOut";
+        private static final String u = "PacketPlayOut";
+        private static String s = "PacketPlayOut";
         public static Class<?> SPAWN_ENTITY, SPAWN_ENTITY_EXPERIENCE_ORB, SPAWN_ENTITY_WEATHER, SPAWN_ENTITY_LIVING,
                 SPAWN_ENTITY_PAINTING, ANIMATION, STATISTIC,
                 BLOCK_BREAK, BLOCK_BREAK_ANIMATION, TILE_ENTITY_DATA, BLOCK_ACTION,
@@ -138,12 +145,17 @@ public class PacketTypeClasses {
          */
         @SneakyThrows
         public static void load() {
+            try {
+                PACKET_CLASS_RESOLVER.resolve(s + "SpawnEntity");
+            } catch (ClassNotFoundException e) {
+                s = "network.protocol.game.PacketPlayOut";
+            }
             SPAWN_ENTITY = PACKET_CLASS_RESOLVER.resolveSilent(s + "SpawnEntity");
             SPAWN_ENTITY_EXPERIENCE_ORB = PACKET_CLASS_RESOLVER.resolveSilent(s + "SpawnEntityExperienceOrb");
             SPAWN_ENTITY_WEATHER = PACKET_CLASS_RESOLVER.resolveSilent(s + "SpawnEntityWeather");
             SPAWN_ENTITY_LIVING = PACKET_CLASS_RESOLVER.resolveSilent(s + "SpawnEntityLiving");
             SPAWN_ENTITY_PAINTING = PACKET_CLASS_RESOLVER.resolveSilent(s + "SpawnEntityPainting");
-            ANIMATION = PACKET_CLASS_RESOLVER.resolveSilent(s + "Animation");
+            ANIMATION = PACKET_CLASS_RESOLVER.resolveSilent(s + "Animation"); // PacketPlayOutAnimation
             STATISTIC = PACKET_CLASS_RESOLVER.resolveSilent(s + "Statistic");
             BLOCK_BREAK = PACKET_CLASS_RESOLVER.resolveSilent(s + "BlockBreak");
             BLOCK_BREAK_ANIMATION = PACKET_CLASS_RESOLVER.resolveSilent(s + "BlockBreakAnimation");
@@ -164,7 +176,7 @@ public class PacketTypeClasses {
             SET_COOLDOWN = PACKET_CLASS_RESOLVER.resolveSilent(s + "SetCooldown");
             CUSTOM_PAYLOAD = PACKET_CLASS_RESOLVER.resolveSilent(s + "CustomPayload");
             CUSTOM_SOUND_EFFECT = PACKET_CLASS_RESOLVER.resolveSilent(s + "CustomSoundEffect");
-            KICK_DISCONNECT = PACKET_CLASS_RESOLVER.resolveSilent(s + "KickDisconnect");
+            KICK_DISCONNECT = PACKET_CLASS_RESOLVER.resolveSilent(s + "KickDisconnect", "network.protocol.login.PacketLoginOutDisconnect");
             ENTITY_STATUS = PACKET_CLASS_RESOLVER.resolveSilent(s + "EntityStatus");
             EXPLOSION = PACKET_CLASS_RESOLVER.resolveSilent(s + "Explosion");
             UNLOAD_CHUNK = PACKET_CLASS_RESOLVER.resolveSilent(s + "UnloadChunk");
@@ -179,9 +191,9 @@ public class PacketTypeClasses {
             MAP = PACKET_CLASS_RESOLVER.resolveSilent(s + "Map");
             OPEN_WINDOW_MERCHANT = PACKET_CLASS_RESOLVER.resolveSilent(s + "OpenWindowMerchant");
             ENTITY = PACKET_CLASS_RESOLVER.resolveSilent(s + "Entity");
-            REL_ENTITY_MOVE = PACKET_CLASS_RESOLVER.resolveSilent(s + "Flying$" + s + "RelEntityMove"); //SubclassUtil.getSubClass(ENTITY, s + "RelEntityMove");
-            REL_ENTITY_MOVE_LOOK = PACKET_CLASS_RESOLVER.resolveSilent(s + "Flying$" + s + "RelEntityMoveLook"); //SubclassUtil.getSubClass(ENTITY, s + "RelEntityMoveLook");
-            ENTITY_LOOK = PACKET_CLASS_RESOLVER.resolveSilent(s + "Entity$" + s + "EntityLook"); //SubclassUtil.getSubClass(ENTITY, s + "EntityLook");
+            REL_ENTITY_MOVE = PACKET_CLASS_RESOLVER.resolveSilent(s + "Flying$" + u + "RelEntityMove"); //SubclassUtil.getSubClass(ENTITY, s + "RelEntityMove");
+            REL_ENTITY_MOVE_LOOK = PACKET_CLASS_RESOLVER.resolveSilent(s + "Flying$" + u + "RelEntityMoveLook"); //SubclassUtil.getSubClass(ENTITY, s + "RelEntityMoveLook");
+            ENTITY_LOOK = PACKET_CLASS_RESOLVER.resolveSilent(s + "Entity$" + u + "EntityLook"); //SubclassUtil.getSubClass(ENTITY, s + "EntityLook");
             if (REL_ENTITY_MOVE == null) {
                 //is not a subclass and should be accessed normally
                 REL_ENTITY_MOVE = PACKET_CLASS_RESOLVER.resolveSilent(s + "RelEntityMove");

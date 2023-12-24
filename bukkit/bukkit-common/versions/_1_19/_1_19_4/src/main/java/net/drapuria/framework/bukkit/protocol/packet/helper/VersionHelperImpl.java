@@ -69,6 +69,4 @@ public class VersionHelperImpl implements VersionHelper {
         }
         return null;
     }
-
-
 }

@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
-public class VersionHelperImpl implements VersionHelper {
+public class VersionHelperImpl implements VersionHelper<Object> {
 
     @BootstrapInvoke
     public static void init() {
@@ -75,5 +75,13 @@ public class VersionHelperImpl implements VersionHelper {
         return null;
     }
 
+    @Override
+    public Class<Object> getDisplaySlotEnum() {
+        return null;
+    }
 
+    @Override
+    public Object translateDisplaySlot(int slot) {
+        return null;
+    }
 }

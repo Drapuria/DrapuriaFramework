@@ -4,9 +4,14 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.ImmutableBiMap;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.bukkit.protocol.ProtocolService;
+import net.drapuria.framework.bukkit.protocol.packet.PacketService;
 import net.drapuria.framework.bukkit.protocol.packet.type.PacketTypeClasses;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.PacketWrapper;
 import org.bukkit.scoreboard.DisplaySlot;
 import net.drapuria.framework.bukkit.protocol.packet.PacketDirection;
@@ -20,6 +25,7 @@ import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.Autowire
 public class WrappedPacketOutScoreboardDisplayObjective extends WrappedPacket implements SendableWrapper {
 
     private static ImmutableBiMap<DisplaySlot, Integer> DISPLAY_SLOT_TO_ID;
+    private static PacketService packetService;
 
     public static void init() {
 
@@ -28,7 +34,7 @@ public class WrappedPacketOutScoreboardDisplayObjective extends WrappedPacket im
                 .put(DisplaySlot.SIDEBAR, 1)
                 .put(DisplaySlot.BELOW_NAME, 2)
                 .build();
-
+        packetService = DrapuriaCommon.getBean(PacketService.class);
     }
 
     private DisplaySlot displaySlot;
@@ -57,9 +63,16 @@ public class WrappedPacketOutScoreboardDisplayObjective extends WrappedPacket im
                 .getPacket();
     }
 
+    @SneakyThrows
     public PacketContainer asProtocolLibPacketContainer() {
+
         final PacketContainer packetContainer = ProtocolLibService.getService.getProtocolManager().createPacket(com.comphenix.protocol.PacketType.Play.Server.SCOREBOARD_DISPLAY_OBJECTIVE);
-        packetContainer.getIntegers().write(0, DISPLAY_SLOT_TO_ID.get(this.displaySlot));
+        if (Minecraft.MINECRAFT_VERSION.newerThan(Minecraft.Version.v1_20_R2)) {
+            packetContainer.getEnumModifier(ProtocolService.protocolService.getVersionHelper().getDisplaySlotEnum(), 0)
+                    .write(0, ProtocolService.protocolService.getVersionHelper().translateDisplaySlot(DISPLAY_SLOT_TO_ID.get(this.displaySlot)));
+        } else {
+            packetContainer.getIntegers().write(0, DISPLAY_SLOT_TO_ID.get(this.displaySlot));
+        }
         packetContainer.getStrings().write(0, this.objective);
         return packetContainer;
     }

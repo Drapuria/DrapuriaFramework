@@ -14,6 +14,8 @@ import net.drapuria.framework.bukkit.sound.SoundConstants;
 import net.drapuria.framework.bukkit.sound.SoundData;
 import net.drapuria.framework.bukkit.util.DrapuriaSoundDefaults;
 import net.minecraft.network.NetworkManager;
+import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -23,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 public class ConstantHelper {
     @BootstrapInvoke
     public static void loadConstants() {
+
         DrapuriaBoard.MAX_PREFIX_SUFFIX_LENGTH = 40;
         ItemConstants.BARRIER = ItemBuilder.of(Material.BARRIER).build();
         ItemConstants.RED_PANE = ItemBuilder.of(Material.RED_STAINED_GLASS_PANE).build();

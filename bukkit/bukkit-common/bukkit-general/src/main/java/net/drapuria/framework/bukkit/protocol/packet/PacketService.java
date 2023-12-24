@@ -83,7 +83,9 @@ public class PacketService {
             }
         }
 
-        DrapuriaCommon.BEAN_CONTEXT.injectBeans(nettyInjection);
+        if (nettyInjection != null) {
+            DrapuriaCommon.BEAN_CONTEXT.injectBeans(nettyInjection);
+        }
         Bukkit.getOnlinePlayers().forEach(this::inject);
 
         try {

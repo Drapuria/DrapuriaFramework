@@ -20,6 +20,7 @@ import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
 import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.imanity.framework.reflect.ReflectLookup;
@@ -53,7 +54,10 @@ public class PacketService {
         try {
 
             Class.forName("io.netty.channel.Channel");
-            nettyInjection = new NettyInjection1_8();
+
+            if (Minecraft.VERSION.equals(Minecraft.Version.v1_8_R1)) {
+                nettyInjection = new NettyInjection1_8();
+            }
 
         } catch (ClassNotFoundException ex) {
 
@@ -64,20 +68,24 @@ public class PacketService {
         PacketTypeClasses.load();
         WrappedPacket.init();
 
-        try {
-            nettyInjection.registerChannels();
-        } catch (Throwable throwable) {
-            Drapuria.PLUGIN.getLogger().info("Late Bind was enabled, late inject channels.");
-            DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> {
-                try {
-                    nettyInjection.registerChannels();
-                } catch (Throwable throwable1) {
-                    throw new RuntimeException(throwable1);
-                }
-            }, 0L);
+        if (nettyInjection != null) {
+            try {
+                nettyInjection.registerChannels();
+            } catch (Throwable throwable) {
+                Drapuria.PLUGIN.getLogger().info("Late Bind was enabled, late inject channels.");
+                DrapuriaCommon.TASK_SCHEDULER.runScheduled(() -> {
+                    try {
+                        nettyInjection.registerChannels();
+                    } catch (Throwable throwable1) {
+                        throw new RuntimeException(throwable1);
+                    }
+                }, 0L);
+            }
         }
 
-        DrapuriaCommon.BEAN_CONTEXT.injectBeans(nettyInjection);
+        if (nettyInjection != null) {
+            DrapuriaCommon.BEAN_CONTEXT.injectBeans(nettyInjection);
+        }
         Bukkit.getOnlinePlayers().forEach(this::inject);
 
         try {
@@ -85,7 +93,8 @@ public class PacketService {
             this.loadWrappers();
 
         } catch (Throwable throwable) {
-            throw new RuntimeException("Something wrong while loading wrapped packets", throwable);
+            Stacktrace.print("Something wrong while loading wrapped packets", throwable);
+            //   throw new RuntimeException("Something wrong while loading wrapped packets", throwable);
         }
     }
 
@@ -123,7 +132,8 @@ public class PacketService {
             } catch (NoSuchMethodException ex) {
                 // Ignores
             } catch (Throwable throwable) {
-                throw new RuntimeException(throwable);
+                Stacktrace.print(throwable);
+                //   throw new RuntimeException(throwable);
             }
         }
 
@@ -133,6 +143,9 @@ public class PacketService {
 
     @PostDestroy
     public void stop() {
+        if (this.nettyInjection == null) {
+            return;
+        }
         this.nettyInjection.unregisterChannels();
     }
 
@@ -147,10 +160,16 @@ public class PacketService {
     }
 
     public void inject(Player player) {
+        if (this.nettyInjection == null) {
+            return;
+        }
         this.nettyInjection.inject(player);
     }
 
     public void eject(Player player) {
+        if (this.nettyInjection == null) {
+            return;
+        }
         this.nettyInjection.eject(player);
     }
 

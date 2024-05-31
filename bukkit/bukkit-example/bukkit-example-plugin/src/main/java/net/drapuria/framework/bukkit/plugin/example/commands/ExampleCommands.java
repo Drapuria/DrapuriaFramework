@@ -4,26 +4,21 @@
 
 package net.drapuria.framework.bukkit.plugin.example.commands;
 
-import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.command.annotation.Command;
-import net.drapuria.framework.command.annotation.CommandParameter;
-import net.drapuria.framework.command.annotation.DefaultCommand;
 import net.drapuria.framework.command.annotation.SubCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-@Command(names = "example", useSubCommandsOnly = false)
-public class ExampleCommands extends DrapuriaCommand {
+@Command(names = "example")
+public class ExampleCommands {
 
     private final Plugin plugin;
 
     public ExampleCommands(Plugin plugin) {
-        super();
         this.plugin = plugin;
     }
 
-    @DefaultCommand
     public void defaultCommand(final DrapuriaPlayer player) {
 
     }

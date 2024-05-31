@@ -12,7 +12,6 @@ import net.drapuria.framework.task.ITask;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -30,7 +29,7 @@ public abstract class SchedulerPool<T extends ITask> {
 
     private boolean scheduledRemove = false;
 
-    public SchedulerPool(final long period, final AbstractSchedulerProvider provider) {
+    protected SchedulerPool(final long period, final AbstractSchedulerProvider provider) {
         this.period = period;
         this.provider = provider;
         start();
@@ -52,24 +51,28 @@ public abstract class SchedulerPool<T extends ITask> {
             while (!toAdd.isEmpty())
                 this.schedulers.add(this.toAdd.poll());
         }
-        this.schedulers.removeIf(Objects::isNull);
-        this.schedulers.forEach(scheduler -> {
+        for (Scheduler<?> scheduler : this.schedulers) {
             if (scheduler.tick())
                 toRemove.add(scheduler);
-        });
+        }
         if (this.schedulers.isEmpty())
             this.scheduledRemove = true;
     }
 
     @SneakyThrows
     public void shutdown() {
-        task.shutdown();
+        if (task != null) {
+            task.shutdown();
+        }
         new ArrayList<>(this.schedulers).forEach(Scheduler::cancel);
         new ArrayList<>(this.toAdd).forEach(Scheduler::cancel);
         task = null;
     }
 
     public void addScheduler(Scheduler<?> scheduler) {
+        if (scheduler == null) {
+            return;
+        }
         this.scheduledRemove = false;
         this.toAdd.add(scheduler);
         scheduler.setPool(this);

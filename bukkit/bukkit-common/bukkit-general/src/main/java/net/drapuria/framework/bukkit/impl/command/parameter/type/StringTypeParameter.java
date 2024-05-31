@@ -14,12 +14,17 @@ import java.util.Set;
 @Component
 public class StringTypeParameter extends CommandTypeParameter<String>{
     @Override
-    public String parseNonPlayer(CommandSender sender, String value) {
-        return value;
+    public String parseNonPlayer(CommandSender sender, String source) {
+        return source;
     }
 
     @Override
     public List<String> tabComplete(Player player, Set<String> flags, String source) {
+        return null;
+    }
+
+    @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
         return null;
     }
 

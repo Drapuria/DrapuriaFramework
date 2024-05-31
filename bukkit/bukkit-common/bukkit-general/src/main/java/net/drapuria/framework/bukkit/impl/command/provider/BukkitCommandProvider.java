@@ -4,6 +4,7 @@
 
 package net.drapuria.framework.bukkit.impl.command.provider;
 
+import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.beans.annotation.ClasspathScan;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.annotation.UseFrameworkPlugin;
@@ -31,7 +32,6 @@ import net.drapuria.framework.util.Stacktrace;
 import net.drapuria.framework.util.TypeAnnotationScanner;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.plugin.Plugin;
 
@@ -52,11 +52,10 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
         this.commandService.setCommandAnnotation(Command.class);
         this.commandService.setSubCommandAnnotation(SubCommand.class);
         this.commandService.setParameterAnnotation(CommandParameter.class);
-        loadCommands(Drapuria.PLUGIN, "net.drapuria.framework.bukkit");
 
         PluginManager.INSTANCE.registerListener(new PluginListenerAdapter() {
             @Override
-            public void onPluginEnable(AbstractPlugin plugin) {
+            public void onPluginPostEnable(AbstractPlugin plugin) {
                 if (plugin.getClass().isAnnotationPresent(ClasspathScan.class)) {
                     for (String packageName : plugin.getClass().getAnnotation(ClasspathScan.class).value())
                         loadCommands(plugin, packageName);
@@ -136,63 +135,18 @@ public class BukkitCommandProvider extends CommandProvider<DrapuriaCommand, Comm
     }
 
     public void loadCommands(Object source, String packageName) {
-        List<Class<DrapuriaCommand>> commandTypeList = source == null ?
-                loadCommandClasses() :
-                loadCommandClasses(source.getClass().getProtectionDomain().getCodeSource(), packageName);
+        List<Class<?>> commandTypeList = source == null ?
+                findCommandClasses() :
+                findCommandClasses(source.getClass().getProtectionDomain().getCodeSource(), packageName);
         commandTypeList.forEach(commandClass -> loadCommand(source, commandClass));
     }
 
-    private void loadCommand(Object source, Class<DrapuriaCommand> commandClass) {
-        final Map<Constructor<?>, Integer> constructorLength = new HashMap<>();
-        final Map<Constructor<?>, List<Object>> constructors = new HashMap<>();
-        for (Constructor<?> constructor : commandClass.getConstructors()) {
-            constructorLength.put(constructor, constructor.getParameterCount());
+    private void loadCommand(Object source, Class<?> commandClass) {
+        try {
+            final Object instance = constructorDetails(commandClass).newInstance(BeanContext.INSTANCE);
+            registerCommand(source, new DrapuriaCommand(commandService, instance));
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new RuntimeException(e);
         }
-
-        for (Constructor<?> constructor : constructorLength.entrySet().stream()
-                .sorted(Comparator.comparingInt(Map.Entry::getValue))
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList())) {
-            final List<Object> parameters = new ArrayList<>();
-            for (int index = 0; index < constructor.getParameterCount(); index++) {
-                Parameter parameter = constructor.getParameters()[index];
-                Object object = transformToObject(constructor, parameter.getType(), source);
-                parameters.add(object);
-            }
-            constructors.put(constructor, parameters);
-        }
-        final AtomicReference<DrapuriaCommand> commandReference = new AtomicReference<>(null);
-        constructors.entrySet().removeIf(entry -> entry.getValue().contains(null));
-        constructors.entrySet().stream().max(Comparator.comparingInt(value -> value.getValue().size()))
-                .ifPresent(entry -> {
-                    try {
-                        commandReference.set((DrapuriaCommand) entry.getKey().newInstance(entry.getValue().toArray()));
-                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                        Stacktrace.print("Error while loading command in class " + commandClass.getName(), e);
-                    }
-                });
-        if (commandReference.get() == null) {
-            commandReference.set((DrapuriaCommand) DrapuriaInstanceFactory.createInstanceOf(commandClass));
-        }
-        if (commandReference.get() != null)
-            this.registerCommand(source, commandReference.get());
-
-    }
-
-    private Object transformToObject(Constructor<?> constructor, Class<?> type, Object source) {
-        if (Plugin.class.isAssignableFrom(type)) {
-            if (source instanceof Plugin) {
-                return source;
-            } else if (constructor.isAnnotationPresent(UseFrameworkPlugin.class)) {
-                return Drapuria.PLUGIN;
-            }
-        }
-        if (DrapuriaCommon.BEAN_CONTEXT.isBean(type)) {
-            return DrapuriaCommon.BEAN_CONTEXT.getBean(type);
-        }
-        if (constructor.isAnnotationPresent(NewInstance.class)) {
-            return DrapuriaInstanceFactory.createInstanceOf(type);
-        }
-        return null;
     }
 }

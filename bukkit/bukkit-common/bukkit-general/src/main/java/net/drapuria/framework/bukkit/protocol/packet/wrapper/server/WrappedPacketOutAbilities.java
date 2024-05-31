@@ -24,7 +24,7 @@ public final class WrappedPacketOutAbilities extends WrappedPacket implements Se
 
     static {
         try {
-            PLAYER_ABILITIES_CLASS = NMS_CLASS_RESOLVER.resolve("PlayerAbilities");
+            PLAYER_ABILITIES_CLASS = NMS_CLASS_RESOLVER.resolve("PlayerAbilities", "world.entity.player.PlayerAbilities");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Component
 public class PlayerTypeParameter extends CommandTypeParameter<Player>{
     @Override
-    public Player parseNonPlayer(CommandSender sender, String value) {
+    public Player parseNonPlayer(CommandSender sender, String source) {
         return null;
     }
 
@@ -29,7 +29,15 @@ public class PlayerTypeParameter extends CommandTypeParameter<Player>{
     }
 
     @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
+        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName)
+                .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
+    }
+
+    @Override
     public Player parse(Player player, String source) {
+        if (source.isEmpty())
+            return null;
         return (source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? player : Bukkit.getPlayer(source));
     }
 

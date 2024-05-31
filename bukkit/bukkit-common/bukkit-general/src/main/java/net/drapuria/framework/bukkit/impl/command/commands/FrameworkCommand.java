@@ -4,35 +4,44 @@
 
 package net.drapuria.framework.bukkit.impl.command.commands;
 
-import net.drapuria.framework.bukkit.impl.annotation.UseFrameworkPlugin;
-import net.drapuria.framework.bukkit.impl.command.DrapuriaCommand;
-import net.drapuria.framework.annotations.NewInstance;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
+import net.drapuria.framework.bukkit.scoreboard.ScoreboardService;
 import net.drapuria.framework.command.annotation.Command;
-import net.drapuria.framework.command.annotation.DefaultCommand;
+import net.drapuria.framework.command.annotation.CommandParameter;
+import net.drapuria.framework.command.annotation.Executor;
 import net.drapuria.framework.command.annotation.SubCommand;
-import net.drapuria.framework.module.ModuleAdapter;
-import net.drapuria.framework.module.service.ModuleService;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-import java.util.Optional;
+@Command(names = {"drapuria"})
+public class FrameworkCommand {
 
-//@Command(names = {"drapuria"}, useSubCommandsOnly = false)
-public class FrameworkCommand extends DrapuriaCommand {
+    private final ScoreboardService testService;
 
-    private final Plugin plugin;
-
-    @NewInstance
-    @UseFrameworkPlugin
-    public FrameworkCommand(Plugin plugin, ModuleService moduleService) {
-        super();
-        this.plugin = plugin;
+    public FrameworkCommand(ScoreboardService testService) {
+        this.testService = testService;
     }
 
-    @DefaultCommand
-    public void execute(final DrapuriaPlayer player ){
-     //   player.sendActionBar("§fThis ");
+    /*
+    @Executor
+    public void executeNoArgs(final DrapuriaPlayer player) {
+        player.sendActionBar("§a§lWORKING");
+        //   player.sendActionBar("§fThis ");
+    }
+     */
+    @Executor(parameters = "Spieler")
+    public void executeOneArgs(final DrapuriaPlayer player, @CommandParameter(defaultValue = "self") final Player target) {
+
+        player.sendMessage("SPIELER -> " + target);
     }
 
+
+    @Executor(parameters = "Nummer")
+    public void executeOneArgs2(final DrapuriaPlayer player, Integer number) {
+        player.sendMessage("NUMMER -> " + number);
+    }
+
+    @SubCommand(names = "test", parameters = "{Spieler}")
+    public void test(final DrapuriaPlayer player, final Player target) {
+        player.sendMessage("TARGET: " + target);
+    }
 }

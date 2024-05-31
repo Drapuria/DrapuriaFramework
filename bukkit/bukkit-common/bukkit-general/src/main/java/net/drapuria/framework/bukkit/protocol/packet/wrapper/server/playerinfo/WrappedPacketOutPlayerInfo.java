@@ -8,6 +8,8 @@ import net.drapuria.framework.bukkit.protocol.packet.wrapper.PacketContainer;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.SendableWrapper;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.WrappedPacket;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.annotation.AutowiredWrappedPacket;
+import net.drapuria.framework.bukkit.reflection.minecraft.Minecraft;
+import net.drapuria.framework.bukkit.reflection.minecraft.MinecraftVersion;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.ChatComponentWrapper;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.GameProfileWrapper;
 import net.drapuria.framework.bukkit.reflection.resolver.wrapper.PacketWrapper;
@@ -30,7 +32,8 @@ public class WrappedPacketOutPlayerInfo extends WrappedPacket implements Sendabl
         try {
             PACKET_CLASS = NMS_CLASS_RESOLVER.resolve("PacketPlayOutPlayerInfo");
         } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
+
+            // PACKET GOT REMOVED, WE DO NOT HAVE TO HANDLE THE EXCEPTION
         }
     }
 

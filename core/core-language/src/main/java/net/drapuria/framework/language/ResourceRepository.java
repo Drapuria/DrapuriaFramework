@@ -23,16 +23,13 @@ public class ResourceRepository {
     }
 
     protected void loadContainer(final LanguageContainer container) {
-        System.out.println("loading container..");
         for (LanguageFile languageFile : container.getLanguageFiles()) {
             final Locale locale = Locale.forLanguageTag(languageFile.getIsoCode().replaceAll("_", "-"));
             LanguageResource resource = this.findResource(locale);
             if (resource == null) {
-                System.out.println("adding new resource for " + locale);
                 this.addResource(resource = new LanguageResource(service, locale));
             }
             for (Map.Entry<String, String> entry : languageFile.readProperties().entrySet()) {
-                System.out.println(entry);
                 resource.add(entry.getKey(), new LanguageString(container, locale, entry.getKey(), entry.getValue()));
             }
         }

@@ -35,7 +35,8 @@ import java.util.function.BiFunction;
 public interface ServerImplementation {
 
     @SneakyThrows
-    static ServerImplementation load(BeanContext beanContext) {
+    static ServerImplementation load() {
+
         ReflectLookup reflectLookup = new ReflectLookup(Collections.singleton(ServerImplementation.class.getClassLoader()),
                 Collections.singleton("net.drapuria.framework"));
         Class<?> lastSuccess = null;

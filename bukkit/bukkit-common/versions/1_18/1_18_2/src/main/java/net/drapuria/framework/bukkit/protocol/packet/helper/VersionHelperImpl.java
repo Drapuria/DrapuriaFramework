@@ -23,7 +23,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Optional;
 
-public class VersionHelperImpl implements VersionHelper {
+public class VersionHelperImpl implements VersionHelper<Object> {
 
     @BootstrapInvoke
     public static void init() {
@@ -66,6 +66,16 @@ public class VersionHelperImpl implements VersionHelper {
             String signature = property.getSignature();
             return new Skin(texture, signature);
         }
+        return null;
+    }
+
+    @Override
+    public Class<Object> getDisplaySlotEnum() {
+        return null;
+    }
+
+    @Override
+    public Object translateDisplaySlot(int slot) {
         return null;
     }
 }

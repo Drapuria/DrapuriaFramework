@@ -25,6 +25,8 @@ import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +42,8 @@ public class DrapuriaTabHandler {
     private static final MetadataKey<SimpleHeaderFooter> SIMPLE_HEADER_FOOTER_KEY = MetadataKey.create("Drapuria_" + "SimpleHeaderFooter", SimpleHeaderFooter.class);
 
 
-    private final DrapuriaTabAdapter adapter;
+    private final DrapuriaTabAdapter defaultAdapter;
+    private final Set<DrapuriaTabAdapter> adapters = new HashSet<>();
     private ScheduledExecutorService thread;
     private IDrapuriaTab implementation;
 
@@ -53,7 +56,7 @@ public class DrapuriaTabHandler {
 
     private long t = 0;
 
-    public DrapuriaTabHandler(DrapuriaTabAdapter adapter) {
+    public DrapuriaTabHandler(DrapuriaTabAdapter defaultAdapter) {
         if (instance != null) {
             instance = null;
             System.out.println("Tablist registered twice, be careful.");
@@ -61,8 +64,8 @@ public class DrapuriaTabHandler {
 
         instance = this;
 
-        this.adapter = adapter;
-
+        this.defaultAdapter = defaultAdapter;
+        this.adapters.add(defaultAdapter);
         DrapuriaCommon.injectBean(this);
 
         this.registerImplementation();
@@ -164,12 +167,13 @@ public class DrapuriaTabHandler {
                 return;
             }
             this.t = 0;
+            this.adapters.forEach(DrapuriaTabAdapter::tick);
             for (Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
                 DrapuriaTablist tablist = Metadata
                         .provideForPlayer(player)
                         .getOrNull(TABLIST_KEY);
 
-                if (tablist != null) {
+                if (tablist != null && !tablist.isSetup()) {
                     try {
                         tablist.update();
                     } catch (Throwable throwable) {

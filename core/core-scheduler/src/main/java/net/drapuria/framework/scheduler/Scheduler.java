@@ -46,6 +46,10 @@ public class Scheduler<T> {
 
     @Setter(AccessLevel.PUBLIC)
     private Supplier<T> supplier;
+    private T currentData;
+    @Setter(AccessLevel.PUBLIC)
+    private long supplierUpdateIterations;
+    private long iterationsTillSupplierUpdate;
 
     public Scheduler(long delay) {
         this(delay, 0, 0);
@@ -81,13 +85,13 @@ public class Scheduler<T> {
                     if (!repeatedAction.isLastTick() && iterations == 0) return;
                     if (!repeatedAction.isFirstTick() && currentIteration == 1) return;
                     try {
-                        repeatedAction.getAction().accept(expiredTime, getSupplier().get());
+                        repeatedAction.getAction().accept(expiredTime, this.getSuppliedData());
                     } catch (Exception e) {
                         Stacktrace.print(e);
                     }
                 } else if (currentIteration % repeatedAction.getDivision() == repeatedAction.getRemainder())
                     try {
-                        repeatedAction.getAction().accept(expiredTime, getSupplier().get());
+                        repeatedAction.getAction().accept(expiredTime, this.getSuppliedData());
                     } catch (Exception e) {
                         Stacktrace.print(e);
                     }
@@ -95,7 +99,7 @@ public class Scheduler<T> {
             ScheduledAction<T> scheduledAction = parseAction(currentIteration);
             if (scheduledAction != null)
                  try {
-                     scheduledAction.accept(supplier.get());
+                     scheduledAction.accept(this.getSuppliedData());
                  } catch (Exception e) {
                      Stacktrace.print(e);
                  }
@@ -104,6 +108,20 @@ public class Scheduler<T> {
         }
 
         return iterations == 0;
+    }
+
+    private T getSuppliedData() {
+        if (this.supplierUpdateIterations == -1) {
+            return this.supplier.get();
+        }
+        if (this.currentData == null) {
+            return this.currentData = this.supplier.get();
+        }
+        if (++this.iterationsTillSupplierUpdate == this.supplierUpdateIterations) {
+            this.iterationsTillSupplierUpdate = 0;
+            return this.currentData = this.supplier.get();
+        }
+        return this.currentData;
     }
 
     public ScheduledAction<T> parseAction(long time) {
@@ -138,7 +156,7 @@ public class Scheduler<T> {
         this.timedActions.forEach((key, scheduledAction) -> {
             if (scheduledAction.getPriority() == ActionPriority.HIGH && (iterations == -1 || currentIteration < key)) {
                 try {
-                    scheduledAction.accept(supplier.get());
+                    scheduledAction.accept(this.getSuppliedData());
                 } catch (Exception ignored) {
                 }
             }
@@ -147,7 +165,7 @@ public class Scheduler<T> {
         this.repeatedActions.forEach(scheduledAction -> {
             if (scheduledAction.getPriority() == ActionPriority.HIGH) {
                 try {
-                    scheduledAction.getAction().accept(-1L, supplier.get());
+                    scheduledAction.getAction().accept(-1L, this.getSuppliedData());
                 } catch (Exception ignored) {
                 }
             }

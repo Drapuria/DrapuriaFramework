@@ -132,6 +132,12 @@ public class NPC extends FakeEntity {
             super.hologram.hide(player);
     }
 
+    @Override
+    public void updateHologram() {
+        if (super.hologram != null)
+            super.hologram.checkHologram();
+    }
+
     public void sneak(final Player player, final boolean sneaking) {
         if (isRespawning()) return;
         metadataModifier().queue(NPCMetadataModifier.EntityMetadata.SNEAKING, sneaking)

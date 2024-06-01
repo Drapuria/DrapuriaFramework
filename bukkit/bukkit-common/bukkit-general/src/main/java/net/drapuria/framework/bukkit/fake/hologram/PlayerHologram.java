@@ -6,6 +6,7 @@ import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
+import net.drapuria.framework.bukkit.fake.hologram.line.ConsumedTextLine;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -92,6 +93,15 @@ public class PlayerHologram implements Hologram {
     public void updateLines() {
         for (Line line : lines) {
             this.updateLine(line);
+        }
+    }
+
+    @Override
+    public void updateConsumedLines() {
+        for (Line line : this.lines) {
+            if (line instanceof ConsumedTextLine) {
+             this.updateLine(line);
+            }
         }
     }
 

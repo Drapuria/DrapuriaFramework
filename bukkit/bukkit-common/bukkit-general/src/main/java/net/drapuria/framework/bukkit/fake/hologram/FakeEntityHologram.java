@@ -6,6 +6,7 @@ import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.entity.FakeEntity;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
+import net.drapuria.framework.bukkit.fake.hologram.line.ConsumedTextLine;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -84,9 +85,13 @@ public class FakeEntityHologram implements Hologram {
 
     @Override
     public void show(Player player) {
+        if (!playerLines.containsKey(player)) {
+            playerLines.put(player, new ArrayList<>());
+        }
         double currentY = this.getLocation(player).getY() + getFullHologramHeight();
         for (int i = 0; i < this.lines.size(); i++) {
             final Line line = this.lines.get(i);
+            playerLines.get(player).add(line);
             if (i != 0) {
                 currentY -= line.getHeight();
                 currentY -= 0.05D;
@@ -97,6 +102,7 @@ public class FakeEntityHologram implements Hologram {
 
     @Override
     public void hide(Player player) {
+        playerLines.remove(player);
         if (player.getWorld().equals(this.location.getWorld())) {
             for (final Line line : this.lines) {
                 PacketHelper.sendPackets(player, line.getDestroyPackets());
@@ -130,7 +136,7 @@ public class FakeEntityHologram implements Hologram {
 
     @Override
     public void checkHologram() {
-
+        updateConsumedLines();
     }
 
     public void addLine(final Line line) {
@@ -222,6 +228,20 @@ public class FakeEntityHologram implements Hologram {
             if (this.playerLines.containsKey(seeingPlayer) && !this.playerLines.get(seeingPlayer).contains(line))
                 continue;
             PacketHelper.sendPackets(seeingPlayer, line.getUpdatePackets(seeingPlayer));
+        }
+    }
+
+
+    @Override
+    public void updateConsumedLines() {
+        for (Player seeingPlayer : this.fakeEntity.getSeeingPlayers()) {
+            if (!this.playerLines.containsKey(seeingPlayer)) continue;
+            for (Line line : this.playerLines.get(seeingPlayer)) {
+                if (!(line instanceof ConsumedTextLine)) {
+                    continue;
+                }
+                PacketHelper.sendPackets(seeingPlayer, line.getUpdatePackets(seeingPlayer));
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
+import net.drapuria.framework.bukkit.fake.hologram.line.ConsumedTextLine;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
 import net.drapuria.framework.bukkit.util.BukkitUtil;
 import org.bukkit.Bukkit;
@@ -159,8 +160,13 @@ public class PlayerDefinedHologram implements Hologram {
             hide(player);
             return;
         }
-        if (isInRange && !isLoaded(player))
-            show(player);
+        if (isInRange) {
+            if (!isLoaded(player)) {
+                show(player);
+            } else {
+                updateConsumedLines();
+            }
+        }
     }
 
     @Override
@@ -217,6 +223,20 @@ public class PlayerDefinedHologram implements Hologram {
         for (Player player : this.shownFor) {
             if (this.playerLines.containsKey(player) && this.playerLines.get(player).contains(line))
                 PacketHelper.sendPackets(player, line.getUpdatePackets(player));
+        }
+    }
+
+    @Override
+    public void updateConsumedLines() {
+        for (Player player : this.shownFor) {
+            if (this.playerLines.containsKey(player)) {
+                for (Line line : this.playerLines.get(player)) {
+                    if (!(line instanceof ConsumedTextLine)) {
+                        continue;
+                    }
+                    PacketHelper.sendPackets(player, line.getUpdatePackets(player));
+                }
+            }
         }
     }
 

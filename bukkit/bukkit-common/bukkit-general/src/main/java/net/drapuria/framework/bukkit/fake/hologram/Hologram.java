@@ -121,6 +121,13 @@ public interface Hologram {
     void updateLine(Line line);
 
     /**
+     * Update the content of all {@link net.drapuria.framework.bukkit.fake.hologram.line.ConsumedTextLine}
+     *
+     */
+
+    void updateConsumedLines();
+
+    /**
      * A {@link List} of excluded or included {@link Player players}
      *
      * @return All the excluded or included {@link Player players}.

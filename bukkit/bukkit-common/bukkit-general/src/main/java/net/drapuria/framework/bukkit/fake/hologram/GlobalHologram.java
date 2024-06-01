@@ -3,10 +3,12 @@ package net.drapuria.framework.bukkit.fake.hologram;
 import com.comphenix.protocol.events.PacketContainer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import net.drapuria.framework.bukkit.fake.FakeShowType;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramHelper;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
+import net.drapuria.framework.bukkit.fake.hologram.line.ConsumedTextLine;
 import net.drapuria.framework.bukkit.fake.hologram.line.Line;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.util.BukkitUtil;
@@ -23,10 +25,11 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class GlobalHologram implements Hologram {
 
+    @Getter
     private final List<Line> lines = new ArrayList<>();
     private final List<Line> clientSynchronized = new ArrayList<>();
     private Location location;
-    private transient final Set<Player> shownFor = new HashSet<>();
+    private final Set<Player> shownFor = new HashSet<>();
     private boolean isBoundToPlayer = false;
     private Player boundTo = null;
     private double boundYOffset = 0.8;
@@ -185,6 +188,15 @@ public class GlobalHologram implements Hologram {
         }
     }
 
+    @Override
+    public void updateConsumedLines() {
+        for (Line line : lines) {
+            if (line instanceof ConsumedTextLine) {
+                updateLine(line);
+            }
+        }
+    }
+
     public void destroy() {
         ImmutableSet.copyOf(this.shownFor).forEach(this::hide);
     }
@@ -308,13 +320,13 @@ public class GlobalHologram implements Hologram {
             hide(player);
             return;
         }
-        if (isInRange && !this.isLoaded(player)) {
-            show(player);
+        if (isInRange) {
+            if (!this.isLoaded(player)) {
+                show(player);
+            } else {
+                updateConsumedLines();
+            }
         }
-    }
-
-    public List<Line> getLines() {
-        return lines;
     }
 
     private double getFullHologramHeight() {

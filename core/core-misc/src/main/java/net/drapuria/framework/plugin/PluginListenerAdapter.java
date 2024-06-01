@@ -18,6 +18,10 @@ public interface PluginListenerAdapter {
 
     }
 
+    default void onPluginPostEnable(AbstractPlugin plugin) {
+
+    }
+
     /**
      * @return The priority of the listener
      */

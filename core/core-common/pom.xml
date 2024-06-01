@@ -24,6 +24,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.imanity.framework</groupId>
+            <artifactId>reflect</artifactId>
+            <version>${reflect.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.13.2</version>
@@ -60,6 +66,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <caffeine.version>2.9.0</caffeine.version>
+        <reflect.version>0.0.1-SNAPSHOT</reflect.version>
     </properties>
 
 </project>

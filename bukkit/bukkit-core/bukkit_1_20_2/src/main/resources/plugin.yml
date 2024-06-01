@@ -1,0 +1,9 @@
+name: Drapuria
+version: ${project.version}
+main: net.drapuria.framework.bukkit.plugin.DrapuriaStandalonePlugin
+author: Drapuria Development Team
+load: STARTUP
+api-version: 1.20
+softdepend:
+  - ProtocolLib
+  - HeadDatabase

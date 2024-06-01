@@ -70,6 +70,13 @@ public class LivingFakeEntity extends FakeEntity {
             super.hologram.hide(player);
     }
 
+    @Override
+    public void updateHologram() {
+        if (super.hologram != null) {
+            super.hologram.checkHologram();
+        }
+    }
+
     public void setItemInHand(ItemStack itemInHand) {
         this.itemInHand = itemInHand;
         equipmentModifier().queue(EnumWrappers.ItemSlot.MAINHAND, itemInHand)

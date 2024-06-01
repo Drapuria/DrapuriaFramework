@@ -7,6 +7,8 @@ import java.util.Set;
 
 public interface DrapuriaTabAdapter {
 
+    void tick();
+
     Set<BufferedTabObject> getSlots(Player player);
 
     String getFooter(Player player);

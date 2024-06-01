@@ -43,7 +43,7 @@ public final class WrappedPacketOutAnimation extends WrappedPacket implements Se
 
         animationClass = PacketTypeClasses.Server.ANIMATION;
         try {
-            nmsEntityClass = NMS_CLASS_RESOLVER.resolve("Entity");
+            nmsEntityClass = NMS_CLASS_RESOLVER.resolve("Entity", "world.entity.Entity");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -27,8 +27,8 @@ public class ProtocolCheckMethodVersion implements ProtocolCheck {
         NMSClassResolver nmsClassResolver = new NMSClassResolver();
         try {
             Class<?> networkManager = nmsClassResolver.resolve("NetworkManager");
-            Class<?> playerConnection = nmsClassResolver.resolve("PlayerConnection");
-            Class<?> entityPlayer = nmsClassResolver.resolve("EntityPlayer");
+            Class<?> playerConnection = nmsClassResolver.resolve("PlayerConnection", "network.PlayerConnection");
+            Class<?> entityPlayer = nmsClassResolver.resolve("EntityPlayer", "server.level.EntityPlayer");
 
             FieldResolver fieldResolver = new FieldResolver(entityPlayer);
 

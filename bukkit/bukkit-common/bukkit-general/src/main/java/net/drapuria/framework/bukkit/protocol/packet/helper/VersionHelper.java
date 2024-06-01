@@ -4,11 +4,12 @@
 
 package net.drapuria.framework.bukkit.protocol.packet.helper;
 
+import com.comphenix.protocol.events.PacketContainer;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.util.Skin;
 import org.bukkit.entity.Player;
 
-public interface VersionHelper {
+public interface VersionHelper<T> {
 
 
     Object getScoreboardTeamOptional(String name,
@@ -23,5 +24,10 @@ public interface VersionHelper {
     Object getChatFormat(String str);
 
     Skin getSkinFromPlayer(final Player player);
+
+    // SCOREBOARD_DISPLAY_OBJECTIVE
+    Class<T> getDisplaySlotEnum();
+
+    T translateDisplaySlot(int slot);
 
 }

@@ -4,140 +4,82 @@
 
 package net.drapuria.framework.bukkit.impl.command;
 
+import lombok.Getter;
+import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.Drapuria;
+import net.drapuria.framework.bukkit.impl.command.context.BukkitCommandContext;
+import net.drapuria.framework.bukkit.impl.command.context.ConsoleCommandSenderCommandContext;
+import net.drapuria.framework.bukkit.impl.command.context.PlayerCommandContext;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitCommandMeta;
 import net.drapuria.framework.bukkit.impl.command.meta.BukkitSubCommandMeta;
-import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.command.FrameworkCommand;
+import net.drapuria.framework.command.context.ParsedArgument;
+import net.drapuria.framework.command.service.CommandService;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitCommandMeta> {
-    private BukkitCommandMeta commandMeta;
+    private final CommandService commandService;
+    private final BukkitCommandMeta commandMeta;
+    @Getter
+    private final Object instance;
 
-    protected DrapuriaCommand() {
-        super("name");
-        this.commandMeta = new BukkitCommandMeta(this);
+    public DrapuriaCommand(final CommandService commandService, final Object instance) {
+        super(UUID.randomUUID().toString());
+        this.instance = instance;
+        this.commandService = commandService;
+        this.commandMeta = new BukkitCommandMeta(commandService, this);
     }
 
-    public void execute(Player player, String[] arguments) {
-        if (!canAccess(player)) {
-            Drapuria.IMPLEMENTATION.sendActionBar(player, generateDefaultPermission());
-            return;
-        }
-        if (arguments.length == 0) {
-            if (this.commandMeta.isUseUnlySubCommands())
-                player.sendMessage(generateDefaultUsage(null, ""));
-            else {
-                if (this.commandMeta.getMethod() == null)
-                    execute(player);
-                else {
-                    this.commandMeta.execute(player, arguments);
-                }
-            }
-            return;
-        }
-        final String cmdLine = String.join(" ", arguments);
-        StringBuilder actualCommand = new StringBuilder();
-        Map<BukkitSubCommandMeta, String[]> objects = new HashMap<>();
-        for (final String argument : arguments) {
-            if (actualCommand.length() > 0)
-                actualCommand.append(" ");
-            actualCommand.append(argument);
-            List<BukkitSubCommandMeta> subCommandMeta = this.commandMeta.getValidSubCommandMetas(actualCommand.toString().toLowerCase());
-            for (BukkitSubCommandMeta bukkitSubCommandMeta : subCommandMeta) {
-                if (bukkitSubCommandMeta != null) {
-                    String[] array = Arrays.stream(cmdLine.replaceFirst(actualCommand.toString(), "")
-                                    .split(" "))
-                            .filter(s -> !s.isEmpty()).toArray(String[]::new);
-                    objects.put(bukkitSubCommandMeta, array);
-                }
-            }
-        }
-        //System.out.println("ACTUAL COMMAND: " + actualCommand.toString());
-        /*
-        actualCommand = new StringBuilder();
-        for (final String argument : arguments) {
-            if (actualCommand.length() > 0)
-                actualCommand.append(" ");
-            actualCommand.append(argument);
-            BukkitSubCommandMeta subCommandMeta = this.commandMeta.getSubCommandMeta(actualCommand.toString().toLowerCase());
-            if (subCommandMeta != null) {
-                String[] array = Arrays.stream(cmdLine.replaceFirst(actualCommand.toString(), "")
-                        .split(" "))
-                        .filter(s -> !s.isEmpty()).toArray(String[]::new);
-                objects.put(subCommandMeta, array);
-            }
-        }
-         */
-        if (objects.isEmpty()) {
-            if (this.commandMeta.isUseUnlySubCommands())
-                player.sendMessage(generateDefaultUsage(null, ""));
-            else {
-                if (this.commandMeta.getMethod() == null)
-                    execute(player);
-                else {
-                    this.commandMeta.execute(player, arguments);
-                }
-            }
-        } else {
-            Map.Entry<BukkitSubCommandMeta, String[]> subCommandEntry = objects.entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey().isEveryArgumentPresent(player, entry.getValue()))
-                    .max(Comparator.comparingInt(value -> value.getKey().getParameterData().getParameterCount()))
-                    .orElse(objects.entrySet()
-                            .stream()
-                            .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
-                            .orElse(null));
-            if (subCommandEntry == null) {
-                player.sendMessage("wrong arguments todo"); // TODO DEFAULT VALUE
-                return;
-            }
-            if (subCommandEntry.getKey().isAsyncExecution()) {
-                DrapuriaCommon.executorService.execute(() -> subCommandEntry.getKey().execute(player, subCommandEntry.getValue()));
-            } else
-                    subCommandEntry.getKey().execute(player, subCommandEntry.getValue());
-            /*
-            objects.entrySet().stream()
-                    .max(Comparator.comparingInt(value -> value.getKey().getDefaultAlias().split(" ").length))
-                    .ifPresent(entry -> {
-                        if (entry.getKey().isAsyncExecution()) {
-                            DrapuriaCommon.executorService.execute(() -> entry.getKey().execute(player, entry.getValue()));
-                        } else
-                            entry.getKey().execute(player, entry.getValue());
-                    });
-             */
-        }
-    }
 
     @Override
     public BukkitCommandMeta getCommandMeta() {
         return this.commandMeta;
     }
 
-    public void execute(Player player) {
-    }
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] strings) {
-        if (!(commandSender instanceof Player)) return false;
-        execute((Player) commandSender, strings);
+    public boolean execute(CommandSender commandSender, String label, String[] arguments) {
+        final BukkitCommandContext<? extends CommandSender> commandContext = commandSender instanceof Player
+                ? new PlayerCommandContext((Player) commandSender, String.join(" ", arguments),
+                label, this, arguments, new ParsedArgument[arguments.length])
+                : new ConsoleCommandSenderCommandContext(Bukkit.getConsoleSender(),
+                String.join(" ", arguments), label, this,
+                arguments, new ParsedArgument[arguments.length]);
+        execute(commandContext);
         return true;
     }
+
+    private void execute(BukkitCommandContext<? extends CommandSender> context) {
+        if (!commandMeta.canAccess(context.getSource())) {
+            if (context instanceof PlayerCommandContext)
+                Drapuria.IMPLEMENTATION.sendActionBar((Player) context.getSource(), generateDefaultPermission());
+            else
+                context.getSource().sendMessage(generateDefaultPermission());
+            return;
+        }
+        commandMeta.execute2(context);
+    }
+
 
     private String generateDefaultPermission() {
         return "§cDazu hast du keine Berechtigung!";
     }
 
-    public boolean canAccess(Player player) {
-        return commandMeta.canAccess(player);
+    public boolean canAccess(CommandSender sender) {
+        return commandMeta.canAccess(sender);
     }
 
     public void playerNotFound(final DrapuriaPlayer executor, final String player) {
@@ -149,30 +91,41 @@ public class DrapuriaCommand extends Command implements FrameworkCommand<BukkitC
     }
 
 
-    protected String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
+    public String generateDefaultUsage(BukkitSubCommandMeta subCommand, String label) {
         if (subCommand == null) {
             StringBuilder builder = new StringBuilder();
             AtomicInteger index = new AtomicInteger();
 
             // TODO PREBUILD PARAMETER STRING AND REPLACE OPTIONAL (EVERYTHING WITH A DEFAULT VALUE OR EVERYTHING WITH MULTIPLE OPTIONS WHERE IT IS THE LARGER THING WITH [argument] INSTEAD OF <argument>
-            this.commandMeta.getSubCommandMetaCollection().forEach((subCommandMeta) -> {
-                builder.append("Verwendung: /")
-                        .append(this.getName())
-                        .append(" ")
-                        .append(subCommandMeta.getDefaultAlias())
-                        .append(" ")
-                        .append(subCommandMeta.getParameterString().replace("{", "<")
-                                .replace("}", ">"));
-                index.getAndIncrement();
-                if (index.get() < this.commandMeta.getSubCommandMeta().size())
-                    builder.append("\n");
-            });
-
+            this.commandMeta.getSubCommandMetaCollection()
+                    .stream().filter(meta -> meta.getExecutorData().isValidLabel(label))
+                    .forEach((subCommandMeta) -> {
+                        builder.append("Verwendung: /")
+                                .append(this.getName())
+                                .append(" ")
+                                .append(subCommandMeta.getExecutorData().getName())
+                                .append(" ")
+                                .append(String.join(" ", Arrays.stream(subCommandMeta.getExecutorData().getParameterData().getParameters()).map(s -> "<" + s + ">").toArray(String[]::new)));
+                        index.getAndIncrement();
+                        if (index.get() < this.commandMeta.getSubCommandMeta().size())
+                            builder.append("\n");
+                    });
+            this.commandMeta.getExecutorData()
+                    .stream()
+                    .filter(data -> data.isValidLabel(label))
+                    .forEach(data -> {
+                        if (builder.length() != 0)
+                            builder.append("\n");
+                        builder.append("Verwendung: /")
+                                .append(label)
+                                .append(" ")
+                                .append(Arrays.stream(data.getParameterData().getParameters()).map(bukkitParameter -> "<" + bukkitParameter.getParameter() + ">").collect(Collectors.joining(" ")));
+                    });
+            if (builder.length() == 0)
+                return "THIS BITCH EMPTY";
             return builder.toString();
         }
-        return "Verwendung: /" + this.getName() + " " + label + " " + subCommand.getSubCommand()
-                .parameters()
-                .replace("{", "<")
-                .replace("}", ">");
+        return "Verwendung: /" + this.getName() + " " + label + " " + String.join(" ", Arrays.stream(subCommand.getSubCommand()
+                .parameters()).map(s -> "<" + s + ">").toArray(String[]::new));
     }
 }

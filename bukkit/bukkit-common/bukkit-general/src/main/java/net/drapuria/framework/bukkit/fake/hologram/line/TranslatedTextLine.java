@@ -1,6 +1,8 @@
 package net.drapuria.framework.bukkit.fake.hologram.line;
 
 import com.comphenix.protocol.events.PacketContainer;
+import lombok.Getter;
+import lombok.Setter;
 import net.drapuria.framework.bukkit.fake.hologram.helper.HologramOffsets;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
 import org.bukkit.entity.Player;
@@ -11,6 +13,8 @@ import org.bukkit.entity.Player;
 public class TranslatedTextLine implements Line {
 
     private final int entityId;
+    @Getter
+    @Setter
     private String textToTranslate;
 
     public TranslatedTextLine(int entityId, String textToTranslate) {
@@ -21,14 +25,6 @@ public class TranslatedTextLine implements Line {
     @Override
     public double getHeight() {
         return .23D;
-    }
-
-    public void setTextToTranslate(String textToTranslate) {
-        this.textToTranslate = textToTranslate;
-    }
-
-    public String getTextToTranslate() {
-        return textToTranslate;
     }
 
     @Override

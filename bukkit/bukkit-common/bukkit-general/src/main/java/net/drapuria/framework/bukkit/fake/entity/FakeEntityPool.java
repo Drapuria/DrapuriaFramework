@@ -39,12 +39,13 @@ public class FakeEntityPool {
     private final Map<Integer, FakeEntity> entities = new ConcurrentHashMap<>();
     private Collection<FakeEntity> entityCollection = new ArrayList<>();
     private long delayMillis = 300L;
-    private long tabListRemoveMillis = 1000;
+    private long tabListRemoveMillis = 2000;
     private double spawnDistance = 10;
     private double actionDistance = 6;
     private boolean updating = false;
     private final Queue<PlayerFakeEntityInteractEvent> eventQueue = new ConcurrentLinkedQueue<>();
     private ScheduledFuture<?> scheduler;
+    private long lastHologramUpdate = 1;
 
     public FakeEntityPool(Plugin holder, String name) {
         this.holder = holder;
@@ -60,20 +61,22 @@ public class FakeEntityPool {
             } catch (TaskAlreadyStartedException e) {
                 throw new RuntimeException(e);
             }
-     //   this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
+        this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
 
+        /*
         new BukkitRunnable() { // DEV MODE
             @Override
             public void run() {
                 tick();
             }
         }.runTaskTimer(Drapuria.PLUGIN, 20, 1);
-
+         */
     }
 
     public void shutdown() {
         if (this.scheduler == null) return;
         this.scheduler.cancel(false);
+        this.scheduler = null;
     }
 
     public void updateTeamForPlayer(final Player player) {
@@ -135,6 +138,12 @@ public class FakeEntityPool {
                 }
                 entity.show(player);
             }
+        }
+
+        if (--lastHologramUpdate > 0) return;
+        lastHologramUpdate = 4;
+        for (final FakeEntity entity : this.entityCollection) {
+            entity.updateHologram();
         }
     }
 

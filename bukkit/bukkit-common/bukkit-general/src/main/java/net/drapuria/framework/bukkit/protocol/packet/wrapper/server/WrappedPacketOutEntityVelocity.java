@@ -49,7 +49,7 @@ public final class WrappedPacketOutEntityVelocity extends WrappedPacket implemen
         velocityClass = PacketTypeClasses.Server.ENTITY_VELOCITY;
         if (MinecraftVersion.getVersion().newerThan(Minecraft.Version.v1_13_R2)) {
             try {
-                vec3dClass = NMS_CLASS_RESOLVER.resolve("Vec3D");
+                vec3dClass = NMS_CLASS_RESOLVER.resolve("Vec3D", "world.phys.Vec3D");
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -65,7 +65,10 @@ public final class WrappedPacketOutEntityVelocity extends WrappedPacket implemen
                 //vec3d constructor
                 vec3dConstructor = vec3dClass.getConstructor(double.class, double.class, double.class);
             } catch (NoSuchMethodException e2) {
-                e2.printStackTrace();
+                if (Minecraft.VERSION != null && Minecraft.VERSION.olderThan(Minecraft.Version.v1_19_R1)) {
+                    e2.printStackTrace();
+                }
+                // PACKET GOT REMOVED, WE DO NOT HAVE TO HANDLE THE EXCEPTION
             }
 
         }

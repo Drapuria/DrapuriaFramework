@@ -9,10 +9,14 @@ import com.google.common.collect.ImmutableMap;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.DrapuriaCommon;
-import net.drapuria.framework.beans.annotation.*;
+import net.drapuria.framework.beans.annotation.PostInitialize;
+import net.drapuria.framework.beans.annotation.PreDestroy;
+import net.drapuria.framework.beans.annotation.PreInitialize;
+import net.drapuria.framework.beans.annotation.Service;
 import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.impl.metadata.Metadata;
+import net.drapuria.framework.bukkit.listener.events.EventSubscription;
 import net.drapuria.framework.bukkit.listener.events.Events;
 import net.drapuria.framework.bukkit.scoreboard.board.DrapuriaBoard;
 import net.drapuria.framework.bukkit.scoreboard.board.adapter.ScoreboardAdapter;
@@ -21,6 +25,7 @@ import net.drapuria.framework.bukkit.scoreboard.board.impl.PacketDrapuriaBoard;
 import net.drapuria.framework.bukkit.scoreboard.events.ScoreboardAdapterRemovedEvent;
 import net.drapuria.framework.metadata.MetadataKey;
 import net.drapuria.framework.metadata.MetadataMap;
+import net.drapuria.framework.scheduler.Scheduler;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import net.drapuria.framework.scheduler.provider.ScheduledExecutorSchedulerProvider;
 import org.bukkit.Bukkit;
@@ -28,16 +33,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import static org.bukkit.event.EventPriority.*;
+import static org.bukkit.event.EventPriority.MONITOR;
 
 @Service(name = "sidebar")
 @Setter
@@ -56,7 +62,9 @@ public class ScoreboardService {
     private Constructor<?> boardImplementationConstructor;
     private final Map<ScoreboardAdapter, List<Player>> adapters = new HashMap<>();
     private final Map<ScoreboardAdapter, Long> ticksDown = new HashMap<>();
-
+    private boolean enabled = true;
+    private Scheduler<?> scheduler;
+    private Set<EventSubscription<?>> eventSubscriptions = new HashSet<>();
 
     @PreInitialize
     public void preInit() {
@@ -73,7 +81,7 @@ public class ScoreboardService {
 
     @PostInitialize
     public void init() {
-        Events.subscribe(PlayerQuitEvent.class)
+        eventSubscriptions.add(Events.subscribe(PlayerQuitEvent.class)
                 .priority(EventPriority.HIGHEST)
                 .listen((subscription, event) -> {
                     final Player player = event.getPlayer();
@@ -86,9 +94,9 @@ public class ScoreboardService {
                     metadataMap.get(SCOREBOARD_KEY).ifPresent(DrapuriaBoard::remove);
                     metadataMap.remove(ADAPTER_KEY);
                     metadataMap.remove(SCOREBOARD_KEY);
-                }).build(Drapuria.PLUGIN);
+                }).build(Drapuria.PLUGIN));
 
-        Events.subscribe(PlayerJoinEvent.class)
+        eventSubscriptions.add(Events.subscribe(PlayerJoinEvent.class)
                 .priority(MONITOR)
                 .listen((subscription, event) -> {
 
@@ -113,13 +121,13 @@ public class ScoreboardService {
                         e.printStackTrace();
                     }
 
-                }).build(Drapuria.PLUGIN);
-        Events.subscribe(ScoreboardAdapterRemovedEvent.class)
+                }).build(Drapuria.PLUGIN));
+        eventSubscriptions.add(Events.subscribe(ScoreboardAdapterRemovedEvent.class)
                 .priority(MONITOR)
                 .filter(event -> event.getNewAdapter() != null)
                 .listen(event -> setAdapter(event.getPlayer(), event.getNewAdapter()))
-                .build(Drapuria.PLUGIN);
-        new SchedulerFactory<Runnable>()
+                .build(Drapuria.PLUGIN));
+        this.scheduler = new SchedulerFactory<Runnable>()
                 .provider(ScheduledExecutorSchedulerProvider.class)
                 .period(1)
                 .delay(1)
@@ -130,7 +138,19 @@ public class ScoreboardService {
 
     @PreDestroy
     public void shutdown() {
+        this.disable();
+    }
 
+    public void disable() {
+        this.enabled = false;
+        this.adapters.clear();
+        this.ticksDown.clear();
+        if (this.scheduler != null) {
+            this.scheduler.cancel();
+            this.scheduler = null;
+        }
+        eventSubscriptions.forEach(EventSubscription::unregister);
+        eventSubscriptions.clear();
     }
 
     public void addAdapter(ScoreboardAdapter adapter) {
@@ -145,10 +165,39 @@ public class ScoreboardService {
 
     public void setAdapter(final Player player, final ScoreboardAdapter adapter) {
         if (adapter == null) {
-            Metadata.provideForPlayer(player).put(ADAPTER_KEY, this.defaultAdapter);
+            this.setAdapter(player, this.defaultAdapter);
             return;
         }
+        Metadata.provideForPlayer(player).get(ADAPTER_KEY)
+                        .ifPresent(scoreboardAdapter -> this.adapters.get(scoreboardAdapter).remove(player));
+        adapters.get(adapter).add(player);
+        DrapuriaBoard board = Metadata.provideForPlayer(player).getOrNull(SCOREBOARD_KEY);
+        if (board == null) {
+            try {
+                board = (DrapuriaBoard) boardImplementationConstructor.newInstance(SidebarOptions.defaultOptions(),
+                        player,
+                        adapter.getTitle(player));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Metadata.get(player).ifPresent(metadataMap -> metadataMap.remove(SCOREBOARD_KEY));
+        board.setLines(adapter.getLines(player));
+        board.setTitle(adapter.getTitle(player));
+        Metadata.provideForPlayer(player).put(SCOREBOARD_KEY, board);
         Metadata.provideForPlayer(player).put(ADAPTER_KEY, adapter);
+    }
+
+    public void removeAdapter(final Player player) {
+        Metadata.provideForPlayer(player).get(ADAPTER_KEY)
+                .ifPresent(scoreboardAdapter -> {
+            List<Player> list = this.adapters.get(scoreboardAdapter);
+            if (list != null)
+                list.remove(player);
+        });
+        Metadata.provideForPlayer(player).get(SCOREBOARD_KEY).ifPresent(DrapuriaBoard::remove);
+        Metadata.provideForPlayer(player).remove(ADAPTER_KEY);
+        Metadata.provideForPlayer(player).remove(SCOREBOARD_KEY);
     }
 
     public void resetAdapter(final Player player) {

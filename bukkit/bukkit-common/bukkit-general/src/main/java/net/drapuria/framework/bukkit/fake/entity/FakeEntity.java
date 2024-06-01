@@ -18,8 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Setter
 public abstract class FakeEntity {
 
-    protected transient final Collection<Player> seeingPlayers = new CopyOnWriteArrayList<>();
-    protected transient final Collection<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
+    protected final transient Collection<Player> seeingPlayers = new CopyOnWriteArrayList<>();
+    protected final transient Collection<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
 
     protected Location location;
     private final int entityId;
@@ -58,6 +58,8 @@ public abstract class FakeEntity {
     public abstract void show(final Player player);
 
     public abstract void hide(final Player player);
+
+    public abstract void updateHologram();
 
     public abstract void tickActionForPlayer(final Player player);
 

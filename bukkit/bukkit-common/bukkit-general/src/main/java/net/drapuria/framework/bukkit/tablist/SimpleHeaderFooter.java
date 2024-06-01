@@ -25,7 +25,7 @@ public class SimpleHeaderFooter {
     public void update() {
         if (destroying)
             return;
-        DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getAdapter();
+        DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getDefaultAdapter();
         String headerNow = CC.translate(adapter.getHeader(player));
         String footerNow = CC.translate(adapter.getFooter(player));
         if (!headerNow.equals(this.header) || !footerNow.equals(this.footer)) {

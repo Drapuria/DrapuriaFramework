@@ -5,32 +5,33 @@
 package net.drapuria.framework.command.meta;
 
 import lombok.Getter;
+import net.drapuria.framework.command.context.permission.PermissionContext;
+import net.drapuria.framework.command.executor.ExecutorData;
+import net.drapuria.framework.command.parameter.Parameter;
 import net.drapuria.framework.command.parameter.ParameterData;
 
-import java.lang.reflect.Method;
-import java.util.Map;
+import java.util.List;
 
 @Getter
-public abstract class CommandMeta<E, T extends ParameterData<?>> {
+public abstract class CommandMeta<E, P extends Parameter, T extends ExecutorData<E, P>> {
 
-    protected Method method;
     protected boolean isAsyncDefaultCommand;
     protected final Object instance;
-    protected T parameterData;
+    protected List<T> executorData;
     protected String commandName;
     protected String commandDescription;
-
     protected String[] commandAliases;
+    protected PermissionContext<E> permissionContext;
 
-    public CommandMeta(Object instance, String commandName, String commandDescription) {
+    public CommandMeta(Object instance, String commandName, String commandDescription, PermissionContext<E> permissionContext) {
         this.commandName = commandName;
-        this.parameterData = null;
         this.commandDescription = commandDescription;
         this.instance = instance;
+        this.permissionContext = permissionContext;
     }
 
     public abstract boolean canAccess(E executor);
 
-    public abstract void execute(E executor, String[] params);
+    public abstract void execute(E executor, String label, String[] params);
 
 }

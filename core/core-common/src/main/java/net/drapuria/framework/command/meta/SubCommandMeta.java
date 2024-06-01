@@ -5,37 +5,39 @@
 package net.drapuria.framework.command.meta;
 
 import lombok.Getter;
+import net.drapuria.framework.command.context.permission.PermissionContext;
+import net.drapuria.framework.command.executor.ExecutorData;
+import net.drapuria.framework.command.parameter.Parameter;
 import net.drapuria.framework.command.parameter.ParameterData;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Getter
-public abstract class SubCommandMeta<E, T extends ParameterData<?>> {
+public abstract class SubCommandMeta<E, P extends Parameter, D extends ExecutorData<E, P>, T extends ParameterData<P>> {
 
-    protected final CommandMeta<E, ?> commandMeta;
-    protected final T parameterData;
-    protected final String[] aliases;
+    protected final CommandMeta<E, P, D> commandMeta;
+    protected final D executorData;
+    private final List<String> labels;
 
-    protected final Object instance;
-    protected final Method method;
-
-    protected final String defaultAlias;
-    protected final String parameterString;
     protected boolean asyncExecution;
 
-    public SubCommandMeta(CommandMeta<E, ?> commandMeta, T parameterData, String[] aliases, Object instance, Method method, String parameterString) {
+    public SubCommandMeta(CommandMeta<E, P, D> commandMeta, D executorData, Set<String> labels) {
         this.commandMeta = commandMeta;
-        this.parameterData = parameterData;
-        this.aliases = aliases;
-        this.instance = instance;
-        this.method = method;
-        this.defaultAlias = aliases.length == 0 ? "" : aliases[0];
-        for (int i = 0; i < aliases.length; i++)
-            aliases[i] = aliases[i].toLowerCase();
-        this.parameterString = parameterString;
+        this.executorData = executorData;
+        this.labels = new ArrayList<>(labels);
+        this.labels.replaceAll(String::toLowerCase);
     }
 
-    public abstract boolean execute(E executor, String[] params);
+    public boolean isValidLabel(final String label) {
+        if (this.labels.isEmpty())
+            return true;
+        return this.labels.contains(label);
+    }
+
 
     public abstract boolean canAccess(E executor);
 

@@ -6,6 +6,7 @@ package net.drapuria.framework.bukkit.inventory.menu;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -17,6 +18,8 @@ import java.util.Set;
 
 
 public abstract class Menu extends AbstractMenu {
+
+    private static final ItemStack AIR = new ItemStack(Material.AIR);
 
     private final Map<Player, Map<Integer, IButton>> playerButtons = new HashMap<>();
     private final Map<Player, Inventory> inventories = new HashMap<>();
@@ -96,7 +99,15 @@ public abstract class Menu extends AbstractMenu {
     @Override
     public void updateButton(Player player, int slot, IButton button) {
         final Inventory inventory = this.getInventory(player);
+        playerButtons.get(player).put(slot, button);
         inventory.setItem(slot, button.getIcon(player));
+    }
+
+    @Override
+    public void removeButton(Player player, int slot) {
+        final Inventory inventory = this.getInventory(player);
+        inventory.setItem(slot, AIR);
+        playerButtons.get(player).remove(slot);
     }
 
     @Override

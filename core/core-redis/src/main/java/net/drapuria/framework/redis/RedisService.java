@@ -47,7 +47,7 @@ public class RedisService {
     }
 
     @SneakyThrows
-    @PostInitialize
+    @PreInitialize
     public void initClient() {
         System.out.println("redis client init");
         this.client = Redisson.create(Config.fromYAML(new File(DrapuriaCommon.PLATFORM.getDataFolder(), "redis.yml"))

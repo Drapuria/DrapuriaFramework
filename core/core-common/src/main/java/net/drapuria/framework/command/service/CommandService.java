@@ -6,11 +6,11 @@ package net.drapuria.framework.command.service;
 
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.FrameworkMisc;
-import net.drapuria.framework.command.provider.CommandProvider;
 import net.drapuria.framework.beans.annotation.PostDestroy;
 import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
 import net.drapuria.framework.beans.annotation.Service;
+import net.drapuria.framework.command.provider.CommandProvider;
 
 import java.lang.annotation.Annotation;
 
@@ -27,6 +27,7 @@ public class CommandService {
     private void preInit() {
         INSTANCE = this;
         FrameworkMisc.PLATFORM.registerCommandProvider();
+        commandProvider.registerDefaults();
     }
 
     @PostInitialize
@@ -42,7 +43,7 @@ public class CommandService {
 
     public void registerCommandProvider(CommandProvider<?, ?> commandProvider) {
         if (this.commandProvider != null) {
-            DrapuriaCommon.getLogger().error("[Drapuria] Command Provier already registered.");
+            DrapuriaCommon.getLogger().error("[Drapuria] Command Provider already registered.");
             return;
         }
         this.commandProvider = commandProvider;

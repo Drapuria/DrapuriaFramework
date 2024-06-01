@@ -5,11 +5,8 @@
 package net.drapuria.framework.bukkit.player;
 
 import com.google.common.base.Preconditions;
-import de.vantrex.hardcorespigot.modules.Module;
 import de.vantrex.hardcorespigot.modules.knockback.KnockbackModule;
 import de.vantrex.hardcorespigot.modules.potion.PotionModule;
-import de.vantrex.hardcorespigot.profiles.potion.PotionProfile;
-import net.drapuria.framework.language.LanguageService;
 import net.drapuria.framework.language.message.AbstractLocalizedMessage;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.minecraft.server.v1_8_R3.IChatBaseComponent;
@@ -70,8 +67,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
-
-    private static final LanguageService languageService = LanguageService.getService;
 
     private final Player player;
     private final UUID uniqueId;
@@ -248,8 +243,9 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
     @Override
     public KnockbackModule getKnockbackModule() {
-        return player.getKnockbackModule();
+        return null;
     }
+
 
     @Override
     public void resetKnockbackModule() {
@@ -258,12 +254,12 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
     @Override
     public PotionModule getPotionModule() {
-        return player.getPotionModule();
+        return null;
     }
 
     @Override
     public void resetPotionModule() {
-        player.resetPotionModule();
+
     }
 
     @Override
@@ -726,6 +722,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
         player.showPlayer(player);
     }
 
+
     @Override
     public boolean canSee(Player player) {
         return player.canSee(player);
@@ -733,7 +730,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
 
     @Override
     public boolean canSee(Entity entity) {
-        return player.canSee(entity);
+        return false;
     }
 
     @Override

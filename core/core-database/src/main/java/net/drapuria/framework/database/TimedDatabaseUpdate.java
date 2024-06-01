@@ -17,7 +17,7 @@ public abstract class TimedDatabaseUpdate extends AsyncTimedUpdate implements Co
 
 
     public TimedDatabaseUpdate(final String handlerName, final boolean timedUpdate, final long executeDelay) {
-        super(handlerName);
+        super(handlerName, executeDelay, timedUpdate);
         this.completionState = new CompletionStateImpl();
         this.timedUpdate = timedUpdate;
     }

@@ -10,13 +10,19 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import me.arcaniax.hdb.api.DatabaseLoadEvent;
 import net.drapuria.framework.BootstrapInvoke;
+import net.drapuria.framework.CommonLoader;
 import net.drapuria.framework.DrapuriaCommon;
 import net.drapuria.framework.beans.BeanContext;
 import net.drapuria.framework.beans.annotation.Autowired;
 import net.drapuria.framework.beans.component.ComponentRegistry;
 import net.drapuria.framework.beans.details.SimpleBeanDetails;
 import net.drapuria.framework.bukkit.configuration.BukkitDrapuriaConfiguration;
-import net.drapuria.framework.bukkit.impl.*;
+import net.drapuria.framework.bukkit.impl.BukkitDrapuriaPlatform;
+import net.drapuria.framework.bukkit.impl.BukkitEventHandler;
+import net.drapuria.framework.bukkit.impl.BukkitPluginHandler;
+import net.drapuria.framework.bukkit.impl.BukkitTaskScheduler;
+import net.drapuria.framework.bukkit.impl.ComponentHolderBukkitListener;
+import net.drapuria.framework.bukkit.impl.LocalizedMessage;
 import net.drapuria.framework.bukkit.impl.command.provider.BukkitCommandProvider;
 import net.drapuria.framework.bukkit.impl.metadata.Metadata;
 import net.drapuria.framework.bukkit.impl.module.scanners.PluginDependenciesScanner;
@@ -39,7 +45,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
@@ -91,7 +96,6 @@ public class Drapuria {
         Drapuria.initCommon();
         BeanContext.INSTANCE.registerBean(new SimpleBeanDetails(Bukkit.getServer(), "Server", Server.class));
         Drapuria.drapuriaConfiguration = new BukkitDrapuriaConfiguration();
-        IMPLEMENTATION = ServerImplementation.load(BeanContext.INSTANCE);
         AbstractVirtualAnvil.load();
         getCommandProvider = (BukkitCommandProvider) getCommandService.getCommandProvider();
         LanguageService.getService.setLocalizedMessageClass(LocalizedMessage.class);
@@ -125,6 +129,12 @@ public class Drapuria {
                 .platform(new BukkitDrapuriaPlatform())
                 .eventHandler(new BukkitEventHandler())
                 .taskScheduler(new BukkitTaskScheduler(PLUGIN))
+                .loader(new CommonLoader() {
+                    @Override
+                    public void beforeBeanContextInit() {
+                        IMPLEMENTATION = ServerImplementation.load();
+                    }
+                })
                 .init();
         try {
             Bukkit.getPluginManager().registerEvents(new Listener() {

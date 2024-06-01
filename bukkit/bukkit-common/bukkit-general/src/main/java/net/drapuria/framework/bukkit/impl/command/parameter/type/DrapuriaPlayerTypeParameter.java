@@ -24,8 +24,12 @@ public class DrapuriaPlayerTypeParameter extends CommandTypeParameter<DrapuriaPl
     private static final PlayerRepository playerRepository = PlayerRepository.getRepository;
 
     @Override
-    public DrapuriaPlayer parseNonPlayer(CommandSender sender, String value) {
-        return null;
+    public DrapuriaPlayer parseNonPlayer(CommandSender sender, String source) {
+        final Player target = Bukkit.getPlayer(source);
+        if (target == null)
+            return null;
+        final Optional<DrapuriaPlayer> optional = playerRepository.findById(target.getUniqueId());
+        return optional.orElse(null);
     }
 
     @Override
@@ -35,8 +39,18 @@ public class DrapuriaPlayerTypeParameter extends CommandTypeParameter<DrapuriaPl
     }
 
     @Override
+    public List<String> tabCompleteNonPlayer(CommandSender sender, Set<String> flags, String source) {
+        return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName)
+                .filter(name -> name.toLowerCase().startsWith(source)).collect(Collectors.toList());
+    }
+
+    @Override
     public DrapuriaPlayer parse(Player player, String source) {
-        final Optional<DrapuriaPlayer> optional = source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? playerRepository.findById(player.getUniqueId()) : playerRepository.findById(Bukkit.getPlayer(source).getUniqueId());
+        if (source.equalsIgnoreCase(Parameter.CURRENT_SELF)) {
+            return playerRepository.findById(player.getUniqueId()).get();
+        }
+        final Player target = Bukkit.getPlayer(source);
+        final Optional<DrapuriaPlayer> optional = source.equalsIgnoreCase(Parameter.CURRENT_SELF) ? playerRepository.findById(player.getUniqueId()) : target == null ? Optional.empty() : playerRepository.findById(target.getUniqueId());
         return optional.orElse(null);
     }
 

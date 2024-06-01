@@ -82,16 +82,18 @@ public class DrapuriaTablist {
             currentEntries.add(tabEntry);
         }
         //   AzureTabHandler.getInstance().getImplementation().removeSelf(player);
-        isSetup = false;
-
+        DrapuriaCommon.executorService.execute(() -> {
+            update();
+            isSetup = false;
+        });
     }
 
     boolean destroying = false;
 
     public void update() {
-        if (destroying || isSetup)
+        if (destroying)
             return;
-        DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getAdapter();
+        DrapuriaTabAdapter adapter = DrapuriaTabHandler.getInstance().getDefaultAdapter();
 
         final boolean version_1_7 = Minecraft.getProtocol(player) == PlayerVersion.v1_7;
 

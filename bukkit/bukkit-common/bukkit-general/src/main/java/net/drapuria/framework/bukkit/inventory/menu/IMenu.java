@@ -74,6 +74,8 @@ public interface IMenu {
 
     void updateButton(Player player, int slot, IButton button);
 
+    void removeButton(Player player, int slot);
+
     Set<Player> getPlayersInMenu();
 
     default int size(Map<Integer, IButton> buttons) {

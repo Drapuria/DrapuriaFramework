@@ -20,7 +20,8 @@ public class FakeEntityFactory {
     private FakeEntityPool entityPool;
     private NPCOptions npcOptions;
 
-    public FakeEntity create() {
+    @SuppressWarnings("unchecked")
+    public <T extends FakeEntity> T create() {
         if (entityType == null) {
             throw new IllegalArgumentException("Entity type must be set");
         }
@@ -35,7 +36,7 @@ public class FakeEntityFactory {
         }
         switch (entityType) {
             case VILLAGER:
-                return new VillagerFakeEntity(FakeEntityService.getService.getFreeEntityId(),
+                return (T) new VillagerFakeEntity(FakeEntityService.getService.getFreeEntityId(),
                         options,
                         location,
                         entityPool,
@@ -44,13 +45,13 @@ public class FakeEntityFactory {
                 case PLAYER:
                     if (npcOptions == null)
                         throw new IllegalArgumentException("NPCOptions must be set for NPC entity type");
-                    return new NPC(FakeEntityService.getService.getFreeEntityId(),
+                    return (T) new NPC(FakeEntityService.getService.getFreeEntityId(),
                             options,
                             location,
                             entityPool,
                             npcOptions);
             default:
-                return new LivingFakeEntity(FakeEntityService.getService.getFreeEntityId(),
+                return (T) new LivingFakeEntity(FakeEntityService.getService.getFreeEntityId(),
                         options,
                         location,
                         entityPool,

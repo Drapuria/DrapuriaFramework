@@ -1,5 +1,7 @@
 package net.drapuria.framework.bukkit.fake.entity;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.drapuria.framework.bukkit.fake.entity.living.LivingFakeEntity;
@@ -12,6 +14,7 @@ import org.bukkit.entity.Villager;
 
 @Setter
 @Accessors(chain = true, fluent = true)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FakeEntityFactory {
 
     private EntityType entityType;
@@ -57,5 +60,9 @@ public class FakeEntityFactory {
                         entityPool,
                         entityType);
         }
+    }
+
+    public static FakeEntityFactory of(final EntityType entityType) {
+        return new FakeEntityFactory().entityType(entityType);
     }
 }

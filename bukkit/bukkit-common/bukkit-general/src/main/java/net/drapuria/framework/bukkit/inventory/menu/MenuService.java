@@ -4,12 +4,14 @@
 
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import lombok.Getter;
 import net.drapuria.framework.beans.annotation.Service;
 import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Getter
 @Service(name = "menus")
 public class MenuService {
 
@@ -33,7 +35,4 @@ public class MenuService {
         return this.openedMenus.get(player);
     }
 
-    public Map<String, IMenu> getOpenedMenus() {
-        return openedMenus;
-    }
 }

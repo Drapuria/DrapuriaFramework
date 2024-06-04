@@ -53,9 +53,17 @@ import org.jetbrains.annotations.Nullable;
 import java.net.InetSocketAddress;
 import java.util.*;
 
-public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements DrapuriaPlayer {
+public final class DrapuriaPlayer1_18_2 implements DrapuriaPlayer {
 
     private static final LanguageService languageService = LanguageService.getService;
+    private final Player player;
+    private final long sessionJoin;
+    private long lastTeleport;
+
+    public DrapuriaPlayer1_18_2(Player player, long sessionJoin) {
+        this.player = player;
+        this.sessionJoin = sessionJoin;
+    }
 
     @Override
     public void sendActionBar(String text) {
@@ -98,6 +106,16 @@ public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements D
         } else {
             getInventory().addItem(item);
         }
+    }
+
+    @Override
+    public long getLastTeleport() {
+        return this.lastTeleport;
+    }
+
+    @Override
+    public void setLastTeleport(long time) {
+        this.lastTeleport = time;
     }
 
     @Override
@@ -2716,5 +2734,35 @@ public record DrapuriaPlayer1_18_2(Player player, long sessionJoin) implements D
     public void sendLocalizedMessage(AbstractLocalizedMessage<DrapuriaPlayer, ?, MessageShowType, ?> localizedMessage) {
         localizedMessage.send(this);
     }
+
+    public Player player() {
+        return player;
+    }
+
+    public long sessionJoin() {
+        return sessionJoin;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (DrapuriaPlayer1_18_2) obj;
+        return Objects.equals(this.player, that.player) &&
+                this.sessionJoin == that.sessionJoin;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player, sessionJoin);
+    }
+
+    @Override
+    public String toString() {
+        return "DrapuriaPlayer1_18_2[" +
+                "player=" + player + ", " +
+                "sessionJoin=" + sessionJoin + ']';
+    }
+
 }
 

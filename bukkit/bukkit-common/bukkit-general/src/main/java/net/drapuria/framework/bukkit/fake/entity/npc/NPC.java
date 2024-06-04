@@ -38,6 +38,8 @@ public class NPC extends FakeEntity {
     private static final FakeEntityService SERVICE = DrapuriaCommon.getBean(FakeEntityService.class);
     public static final Map<EnumWrappers.ItemSlot, Integer> SLOT_CONVERTER = new HashMap<>();
 
+    private static final Map<NPCProfile, WrappedGameProfile> CACHED_GAME_PROFILES = new HashMap<>();
+
 
     static {
         SLOT_CONVERTER.put(EnumWrappers.ItemSlot.HEAD, 4);
@@ -50,6 +52,7 @@ public class NPC extends FakeEntity {
     @Setter
     private WrappedGameProfile gameProfile;
     private final NPCOptions npcOptions;
+    @Getter
     @Setter
     private NPCInventory inventory = new NPCInventory(this);
     private transient boolean invisible = false;
@@ -67,10 +70,6 @@ public class NPC extends FakeEntity {
             super.hologram = new FakeEntityHologram(this);
             super.hologram.addLine(new TextLine(HologramHelper.newId(), this.options.getDisplayName()));
         }
-    }
-
-    public NPCInventory getInventory() {
-        return inventory;
     }
 
     private void updateName() {
@@ -109,16 +108,25 @@ public class NPC extends FakeEntity {
                 if (!player.isOnline()) return;
                 visibilityModifier.queuePlayerListChange(craftPlayer, EnumWrappers.PlayerInfoAction.REMOVE_PLAYER).send(player);
                 metadataModifier().queue(NPCMetadataModifier.EntityMetadata.SKIN_LAYERS, true).send(player);
-                if (!super.options.isPlayerLook())
+                if (!super.options.isPlayerLook()) {
                     animationModifier().queue(NPCAnimationModifier.EntityAnimation.SWING_MAIN_ARM).send(player);
-                else
+                    SERVICE.getExecutorService().schedule(() -> {
+                        if (!player.isOnline()) return;
+                        animationModifier().queue(NPCAnimationModifier.EntityAnimation.SWING_MAIN_ARM).send(player);
+                        SERVICE.getExecutorService().schedule(() -> {
+                            if (!player.isOnline()) return;
+                            animationModifier().queue(NPCAnimationModifier.EntityAnimation.SWING_MAIN_ARM).send(player);
+                        }, 300, TimeUnit.MILLISECONDS);
+                    }, 300, TimeUnit.MILLISECONDS);
+                } else {
                     positionModifier().queueLookAt(player.getLocation())
                             .send(player);
+                }
                 for (FakeEntitySpawnHandler spawnHandler : options.getSpawnHandlers()) {
                     spawnHandler.onSpawn(player);
                 }
             }, entityPool.getTabListRemoveMillis(), TimeUnit.MILLISECONDS);
-        }, 500, TimeUnit.MILLISECONDS);
+        }, 300, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -174,12 +182,15 @@ public class NPC extends FakeEntity {
     }
 
     private WrappedGameProfile convertProfile(NPCProfile npcProfile) {
+        if (CACHED_GAME_PROFILES.containsKey(npcProfile))
+            return CACHED_GAME_PROFILES.get(npcProfile);
         WrappedGameProfile gameProfile = new WrappedGameProfile(npcProfile.getUniqueId(),
                 npcProfile.getName());
         if (gameProfile.getProperties().isEmpty() && npcProfile.isComplete())
             gameProfile = WrappedGameProfile.fromHandle(ReflectionUtils.fillProfileProperties(gameProfile.getHandle()));
         WrappedGameProfile finalGameProfile = gameProfile;
         npcProfile.getProperties().forEach(property -> finalGameProfile.getProperties().put(property.getName(), property.asWrapped()));
+        CACHED_GAME_PROFILES.put(npcProfile, finalGameProfile);
         return finalGameProfile;
     }
 

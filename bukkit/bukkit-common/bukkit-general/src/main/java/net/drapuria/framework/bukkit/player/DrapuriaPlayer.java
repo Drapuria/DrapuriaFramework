@@ -4,7 +4,6 @@
 
 package net.drapuria.framework.bukkit.player;
 
-import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.drapuria.framework.language.aware.LocalizedMessageSender;
 import net.drapuria.framework.scheduler.factory.SchedulerFactory;
 import org.bukkit.GameMode;
@@ -39,6 +38,9 @@ public interface DrapuriaPlayer extends Player, Permissible, LocalizedMessageSen
 
     void giveItem(final ItemStack item);
 
+    long getLastTeleport();
+
+    void setLastTeleport(long time);
 
     long getSessionJoin();
 

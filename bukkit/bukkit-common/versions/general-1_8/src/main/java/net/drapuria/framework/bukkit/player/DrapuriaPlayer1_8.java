@@ -72,6 +72,7 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
     private final UUID uniqueId;
     private final long sessionJoin;
     private Locale locale;
+    private long lastTeleport;
 
     public DrapuriaPlayer1_8(Player player, final Locale locale) {
         this.player = player;
@@ -117,6 +118,16 @@ public class DrapuriaPlayer1_8 implements DrapuriaPlayer {
         } else {
             getInventory().addItem(item);
         }
+    }
+
+    @Override
+    public long getLastTeleport() {
+        return this.lastTeleport;
+    }
+
+    @Override
+    public void setLastTeleport(long time) {
+        this.lastTeleport = time;
     }
 
     @Override

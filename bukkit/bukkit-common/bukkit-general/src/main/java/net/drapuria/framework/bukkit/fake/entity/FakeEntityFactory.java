@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.drapuria.framework.bukkit.fake.entity.living.LivingFakeEntity;
+import net.drapuria.framework.bukkit.fake.entity.living.SheepFakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.living.VillagerFakeEntity;
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.NPCOptions;
@@ -53,6 +54,12 @@ public class FakeEntityFactory {
                             location,
                             entityPool,
                             npcOptions);
+            case SHEEP:
+                return (T) new SheepFakeEntity(FakeEntityService.getService.getFreeEntityId(),
+                        options,
+                        location,
+                        entityPool,
+                        entityType);
             default:
                 return (T) new LivingFakeEntity(FakeEntityService.getService.getFreeEntityId(),
                         options,

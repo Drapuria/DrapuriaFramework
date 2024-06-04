@@ -16,9 +16,11 @@ public class VillagerFakeEntity extends LivingFakeEntity {
                               FakeEntityPool entityPool, EntityType entityType, Villager.Profession profession) {
         super(entityId, options, location, entityPool, entityType);
         this.profession = profession;
+        super.dataWatcher.setObject(16, profession.ordinal());
     }
 
     public void setProfession(Villager.Profession profession) {
+        this.profession = profession;
         super.dataWatcher.setObject(16, profession.ordinal());
     }
 }

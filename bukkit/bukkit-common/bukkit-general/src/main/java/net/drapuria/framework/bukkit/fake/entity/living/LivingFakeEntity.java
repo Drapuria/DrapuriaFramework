@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 public class LivingFakeEntity extends FakeEntity {
 
     private EntityType entityType;
-    private WrappedDataWatcher dataWatcher;
+    protected WrappedDataWatcher dataWatcher;
     private ItemStack itemInHand;
 
     public LivingFakeEntity(int entityId, FakeEntityOptions options, final Location location, final FakeEntityPool entityPool, final EntityType entityType) {

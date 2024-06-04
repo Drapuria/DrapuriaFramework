@@ -109,6 +109,8 @@ public abstract class FakeEntity {
                 return 2.85;
             case GUARDIAN:
                 return 1;
+            case SHEEP:
+                return 1.65;
             default:
                 return 2;
         }

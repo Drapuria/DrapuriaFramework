@@ -4,6 +4,8 @@
 
 package net.drapuria.framework.bukkit.inventory.menu;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.util.inventory.TitleUpdater;
 import org.apache.logging.log4j.util.TriConsumer;
@@ -31,6 +33,8 @@ public abstract class Menu extends AbstractMenu {
 
     private final Map<Player, Map<Integer, IButton>> playerButtons = new HashMap<>();
     private final Map<Player, Inventory> inventories = new HashMap<>();
+    @Getter
+    @Setter
     private Button placeholderButton = Button.placeholder();
 
 
@@ -96,9 +100,7 @@ public abstract class Menu extends AbstractMenu {
         IMenu previousMenu = MenuService.getService.getOpenedMenu(player.getName());
         if (inventory == null) {
             if (player.getOpenInventory() != null) {
-                if (previousMenu == null)
-                    player.closeInventory();
-                else if (previousMenu instanceof Menu) {
+                if (previousMenu instanceof Menu) {
                     final int previousSize = player.getOpenInventory().getTopInventory().getSize();
                     if (previousSize == size) {
                         inventory = player.getOpenInventory().getTopInventory();
@@ -134,14 +136,6 @@ public abstract class Menu extends AbstractMenu {
             inventory.setItem(entry.getKey(), entry.getValue().getIcon(player));
         }
         consumer.accept(inventory, update);
-    }
-
-    public void setPlaceholderButton(Button placeholderButton) {
-        this.placeholderButton = placeholderButton;
-    }
-
-    public Button getPlaceholderButton() {
-        return placeholderButton;
     }
 
     @Override

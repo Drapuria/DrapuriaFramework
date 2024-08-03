@@ -88,11 +88,12 @@ public class MenuListener implements Listener {
     }
 
     private void handleItemRemoveOrInsert(InventoryClickEvent event, Player player, IMenu currentMenu, Inventory clickedInventory, Inventory menuInventory) {
-        if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
-            currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
-        }
-        if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
-            currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
+        if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR
+                && currentMenu.acceptItemRemove() && !currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot())) {
+            event.setCancelled(true);
+        } else if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR
+                && currentMenu.isAcceptNewItems() && !currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot())) {
+            event.setCancelled(true);
         }
     }
 

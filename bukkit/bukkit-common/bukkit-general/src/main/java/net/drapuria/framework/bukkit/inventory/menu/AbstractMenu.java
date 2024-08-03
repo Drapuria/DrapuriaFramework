@@ -121,13 +121,13 @@ public abstract class AbstractMenu implements IMenu {
     }
 
     @Override
-    public void onItemInsert(Player player, ItemStack itemStack, int slot) {
-
+    public boolean onItemInsert(Player player, ItemStack itemStack, int slot) {
+        return true;
     }
 
     @Override
-    public void onItemRemove(Player player, ItemStack itemStack, int slot) {
-
+    public boolean onItemRemove(Player player, ItemStack itemStack, int slot) {
+        return true;
     }
 
     public Inventory getCurrentInventory(final Player player) {

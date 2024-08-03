@@ -50,9 +50,9 @@ public interface IMenu {
 
     boolean acceptItemRemove();
 
-    void onItemInsert(final Player player, final ItemStack itemStack, int slot);
+    boolean onItemInsert(final Player player, final ItemStack itemStack, int slot);
 
-    void onItemRemove(final Player player, final ItemStack itemStack, int slot);
+    boolean onItemRemove(final Player player, final ItemStack itemStack, int slot);
 
     void setAcceptItemRemove(boolean acceptItemRemove);
 

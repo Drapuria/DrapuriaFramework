@@ -88,13 +88,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-public record DrapuriaPlayer1_20(Player player, long sessionJoin) implements DrapuriaPlayer {
+public final class DrapuriaPlayer1_20 implements DrapuriaPlayer {
 
     private static final LanguageService languageService = LanguageService.getService;
+    private final Player player;
+    private final long sessionJoin;
+    private long lastTeleport;
+
+    public DrapuriaPlayer1_20(Player player, long sessionJoin) {
+        this.player = player;
+        this.sessionJoin = sessionJoin;
+    }
 
     @Override
     public @UnmodifiableView @NotNull Iterable<? extends BossBar> activeBossBars() {
@@ -2947,6 +2956,16 @@ public record DrapuriaPlayer1_20(Player player, long sessionJoin) implements Dra
     }
 
     @Override
+    public long getLastTeleport() {
+        return this.lastTeleport;
+    }
+
+    @Override
+    public void setLastTeleport(long time) {
+        this.lastTeleport = time;
+    }
+
+    @Override
     public long getSessionJoin() {
         return this.sessionJoin;
     }
@@ -3170,4 +3189,34 @@ public record DrapuriaPlayer1_20(Player player, long sessionJoin) implements Dra
     public <T extends Projectile> @NotNull T launchProjectile(@NotNull Class<? extends T> aClass, @Nullable Vector vector, @Nullable Consumer<? super T> consumer) {
         return player.launchProjectile(aClass, vector, consumer);
     }
+
+    public Player player() {
+        return player;
+    }
+
+    public long sessionJoin() {
+        return sessionJoin;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (DrapuriaPlayer1_20) obj;
+        return Objects.equals(this.player, that.player) &&
+                this.sessionJoin == that.sessionJoin;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(player, sessionJoin);
+    }
+
+    @Override
+    public String toString() {
+        return "DrapuriaPlayer1_20[" +
+                "player=" + player + ", " +
+                "sessionJoin=" + sessionJoin + ']';
+    }
+
 }

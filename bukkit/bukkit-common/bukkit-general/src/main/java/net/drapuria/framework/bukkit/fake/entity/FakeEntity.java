@@ -98,7 +98,8 @@ public abstract class FakeEntity {
             case SPIDER:
             case CAVE_SPIDER:
             case PIG:
-                return 1.5;
+            case WOLF:
+                return 1.2;
             case CREEPER:
                 return 1.8;
             case COW:
@@ -108,6 +109,8 @@ public abstract class FakeEntity {
                 return 2.85;
             case GUARDIAN:
                 return 1;
+            case SHEEP:
+                return 1.65;
             default:
                 return 2;
         }

@@ -13,7 +13,11 @@ import net.drapuria.framework.bukkit.inventory.menu.MenuUpdatePolicy;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
@@ -60,12 +64,14 @@ public class MenuListener implements Listener {
         final IButton currentButton = buttons.get(slot);
         if (currentButton == null) {
 
-            if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
-                currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
+            if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR
+                    && currentMenu.acceptItemRemove() && !currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot())) {
+                event.setCancelled(true);
+            } else if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR
+                    && currentMenu.isAcceptNewItems() && !currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot())) {
+                event.setCancelled(true);
             }
-            if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
-                currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
-            }
+
             return;
         }
         if (!event.isCancelled() && currentButton.shouldCancel(player, slot, clickType))

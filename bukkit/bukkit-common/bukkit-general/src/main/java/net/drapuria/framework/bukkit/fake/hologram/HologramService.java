@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Service(name = "hologramService")
 public class HologramService {
 
-    private boolean isUseEventsForHologramHandling = true, oldUseEventsForHologramHandling = isUseEventsForHologramHandling;
+    private boolean isUseEventsForHologramHandling = false, oldUseEventsForHologramHandling = isUseEventsForHologramHandling;
     private final Set<EventSubscription<?>> subscribedEvents = new HashSet<>();
     private ScheduledFuture<?> scheduledFuture;
     private boolean destroying = false;
@@ -187,12 +187,12 @@ public class HologramService {
 
     private void checkLoadableHolograms() {
         for (final Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
-
             for (Hologram hologram : this.hologramRepository.getHolograms(player)) {
-                if (hologram.isLocationBoundToPlayer())
+                if (hologram.isLocationBoundToPlayer()) {
                     hologram.updateBound();
-                else
+                } else {
                     hologram.checkHologram();
+                }
             }
         }
         for (GlobalHologram globalHologram : this.hologramRepository.getGlobalHolograms()) {

@@ -10,17 +10,21 @@ import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import lombok.Setter;
 import net.drapuria.framework.DrapuriaCommon;
-import net.drapuria.framework.bukkit.Drapuria;
 import net.drapuria.framework.bukkit.fake.entity.event.PlayerFakeEntityInteractEvent;
 import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
 import net.drapuria.framework.bukkit.player.PlayerRepository;
 import net.drapuria.framework.task.TaskAlreadyStartedException;
+import net.drapuria.framework.util.Stacktrace;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledFuture;
@@ -39,12 +43,13 @@ public class FakeEntityPool {
     private final Map<Integer, FakeEntity> entities = new ConcurrentHashMap<>();
     private Collection<FakeEntity> entityCollection = new ArrayList<>();
     private long delayMillis = 300L;
-    private long tabListRemoveMillis = 1000;
+    private long tabListRemoveMillis = 2000;
     private double spawnDistance = 10;
     private double actionDistance = 6;
     private boolean updating = false;
     private final Queue<PlayerFakeEntityInteractEvent> eventQueue = new ConcurrentLinkedQueue<>();
     private ScheduledFuture<?> scheduler;
+    private long lastHologramUpdate = 1;
 
     public FakeEntityPool(Plugin holder, String name) {
         this.holder = holder;
@@ -58,6 +63,7 @@ public class FakeEntityPool {
             try {
                 throw new TaskAlreadyStartedException("EntityPool scheduler for " + this.name + " already running!");
             } catch (TaskAlreadyStartedException e) {
+                Stacktrace.print(e);
                 throw new RuntimeException(e);
             }
         this.scheduler = entityService.getExecutorService().scheduleWithFixedDelay(this::tick, 100, 50, TimeUnit.MILLISECONDS);
@@ -104,39 +110,57 @@ public class FakeEntityPool {
     }
 
     private void tick() {
-        handleEventQueue();
-        for (final Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
-            if (this.updating) return;
-            if (player.isDead()) continue;
-            final Optional<DrapuriaPlayer> optDrapuriaPlayer = playerRepository.findById(player.getUniqueId());
-            if (!optDrapuriaPlayer.isPresent())
-                continue;
-            final DrapuriaPlayer drapuriaPlayer = optDrapuriaPlayer.get();
-            if (drapuriaPlayer.getSessionJoin() > System.currentTimeMillis() - 600) continue;
-            for (final FakeEntity entity : this.entityCollection) {
-                if (entity.isRespawning()) continue;
-                boolean isShownFor = entity.isShownTo(player);
-                if (!entity.getLocation().getWorld().equals(player.getWorld())) {
-                    if (isShownFor) {
-                        entity.getSeeingPlayers().remove(player);
-                        //entity.hide(player);
+        try {
+            handleEventQueue();
+            for (final Player player : ImmutableList.copyOf(Bukkit.getOnlinePlayers())) {
+                if (this.updating) return;
+                if (player.isDead()) continue;
+                final Optional<DrapuriaPlayer> optDrapuriaPlayer = playerRepository.findById(player.getUniqueId());
+                if (!optDrapuriaPlayer.isPresent())
+                    continue;
+                final DrapuriaPlayer drapuriaPlayer = optDrapuriaPlayer.get();
+                if (drapuriaPlayer.getSessionJoin() > System.currentTimeMillis() - 600 || entityService.getScoreboardTeamPacket(player) == null)
+                    continue;
+                final long lastTeleport = drapuriaPlayer.getLastTeleport();
+                final boolean isTeleporting = lastTeleport > System.currentTimeMillis() - 250;
+                boolean removed = false;
+                for (final FakeEntity entity : this.entityCollection) {
+                    if (entity.isRespawning()) continue;
+                    boolean isShownFor = entity.isShownTo(player);
+                    if (!entity.getLocation().getWorld().equals(player.getWorld())) {
+                        if (isShownFor) {
+                            entity.getSeeingPlayers().remove(player);
+                            removed = true;
+                        }
+                        continue;
                     }
-                    continue;
+                    final double distance = entity.getLocation().distance(player.getLocation());
+                    boolean inRange = distance <= this.spawnDistance;
+                    if (!inRange) {
+                        if (isShownFor) {
+                            entity.hide(player);
+                            removed = true;
+                        }
+                        continue;
+                    }
+                    if (isShownFor) {
+                        if (distance <= this.actionDistance)
+                            entity.tickActionForPlayer(player);
+                        continue;
+                    }
+                    if (!removed && !isTeleporting) {
+                        entity.show(player);
+                    }
                 }
-                final double distance = entity.getLocation().distance(player.getLocation());
-                boolean inRange = distance <= this.spawnDistance;
-                if (!inRange) {
-                    if (isShownFor)
-                        entity.hide(player);
-                    continue;
-                }
-                if (isShownFor) {
-                    if (distance <= this.actionDistance)
-                        entity.tickActionForPlayer(player);
-                    continue;
-                }
-                entity.show(player);
             }
+
+            if (--lastHologramUpdate > 0) return;
+            lastHologramUpdate = 4;
+            for (final FakeEntity entity : this.entityCollection) {
+                entity.updateHologram();
+            }
+        } catch (Exception e) {
+            Stacktrace.print("Error while running FakeEntityPool tick", e);
         }
     }
 

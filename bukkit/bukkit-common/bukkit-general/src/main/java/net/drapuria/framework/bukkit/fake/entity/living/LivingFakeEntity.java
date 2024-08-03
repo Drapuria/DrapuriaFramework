@@ -24,7 +24,7 @@ import org.bukkit.inventory.ItemStack;
 public class LivingFakeEntity extends FakeEntity {
 
     private EntityType entityType;
-    private WrappedDataWatcher dataWatcher;
+    protected WrappedDataWatcher dataWatcher;
     private ItemStack itemInHand;
 
     public LivingFakeEntity(int entityId, FakeEntityOptions options, final Location location, final FakeEntityPool entityPool, final EntityType entityType) {
@@ -68,6 +68,13 @@ public class LivingFakeEntity extends FakeEntity {
         super.seeingPlayers.remove(player);
         if (super.hologram != null)
             super.hologram.hide(player);
+    }
+
+    @Override
+    public void updateHologram() {
+        if (super.hologram != null) {
+            super.hologram.checkHologram();
+        }
     }
 
     public void setItemInHand(ItemStack itemInHand) {

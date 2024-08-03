@@ -18,8 +18,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @Setter
 public abstract class FakeEntity {
 
-    protected transient final Collection<Player> seeingPlayers = new CopyOnWriteArrayList<>();
-    protected transient final Collection<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
+    protected final transient Collection<Player> seeingPlayers = new CopyOnWriteArrayList<>();
+    protected final transient Collection<Player> includedOrExcludedPlayers = new CopyOnWriteArrayList<>();
 
     protected Location location;
     private final int entityId;
@@ -59,6 +59,8 @@ public abstract class FakeEntity {
 
     public abstract void hide(final Player player);
 
+    public abstract void updateHologram();
+
     public abstract void tickActionForPlayer(final Player player);
 
     public abstract void respawn();
@@ -96,7 +98,8 @@ public abstract class FakeEntity {
             case SPIDER:
             case CAVE_SPIDER:
             case PIG:
-                return 1.5;
+            case WOLF:
+                return 1.2;
             case CREEPER:
                 return 1.8;
             case COW:
@@ -106,6 +109,8 @@ public abstract class FakeEntity {
                 return 2.85;
             case GUARDIAN:
                 return 1;
+            case SHEEP:
+                return 1.65;
             default:
                 return 2;
         }

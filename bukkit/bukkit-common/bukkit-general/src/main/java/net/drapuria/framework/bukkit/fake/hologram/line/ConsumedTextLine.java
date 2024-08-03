@@ -7,16 +7,20 @@ import net.drapuria.framework.bukkit.fake.hologram.helper.HologramOffsets;
 import net.drapuria.framework.bukkit.fake.hologram.helper.PacketHelper;
 import org.bukkit.entity.Player;
 
-public class TextLine implements Line {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
+
+public class ConsumedTextLine implements Line {
 
     private final int entityId;
     @Getter
     @Setter
-    private String text;
-
-    public TextLine(int entityId, String text) {
+    private Function<Player, String> function;
+    private Map<Player, String> cache = new HashMap<>();
+    public ConsumedTextLine(int entityId, Function<Player, String> function) {
         this.entityId = entityId;
-        this.text = text;
+        this.function = function;
     }
 
     @Override
@@ -27,7 +31,11 @@ public class TextLine implements Line {
     @Override
     public PacketContainer[] getSpawnPackets(Player player, double x, double y, double z) {
         final double offset = HologramOffsets.getOffset(player);
-        return new PacketContainer[]{PacketHelper.armorStandSpawn(this.entityId, x, y + offset - 1.25D, z), PacketHelper.armorStandMeta(this.entityId, this.text)};
+        final String text = function.apply(player);
+        cache.put(player, text);
+        return new PacketContainer[]{PacketHelper.armorStandSpawn(this.entityId, x, y + offset - 1.25D, z),
+                PacketHelper.armorStandMeta(this.entityId,
+                        text)};
     }
 
     @Override
@@ -44,6 +52,11 @@ public class TextLine implements Line {
 
     @Override
     public PacketContainer[] getUpdatePackets(Player player) {
-        return new PacketContainer[]{PacketHelper.armorStandMeta(this.entityId, this.text)};
+        final String text = function.apply(player);
+        if (cache.containsKey(player) && cache.get(player).equals(text)) {
+            return new PacketContainer[0];
+        }
+        cache.put(player, text);
+        return new PacketContainer[]{PacketHelper.armorStandMeta(this.entityId, text)};
     }
 }

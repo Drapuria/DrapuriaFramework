@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import net.drapuria.framework.DrapuriaCommon;
+import net.drapuria.framework.beans.annotation.Autowired;
 import net.drapuria.framework.beans.annotation.PostDestroy;
 import net.drapuria.framework.beans.annotation.PostInitialize;
 import net.drapuria.framework.beans.annotation.PreInitialize;
@@ -14,6 +15,8 @@ import net.drapuria.framework.bukkit.fake.entity.exception.FakeEntityPoolNotFoun
 import net.drapuria.framework.bukkit.fake.entity.npc.NPC;
 import net.drapuria.framework.bukkit.fake.entity.npc.NameTagType;
 import net.drapuria.framework.bukkit.listener.events.Events;
+import net.drapuria.framework.bukkit.player.DrapuriaPlayer;
+import net.drapuria.framework.bukkit.player.PlayerRepository;
 import net.drapuria.framework.bukkit.protocol.packet.PacketService;
 import net.drapuria.framework.bukkit.protocol.packet.wrapper.server.WrappedPacketOutScoreboardTeam;
 import net.drapuria.framework.bukkit.protocol.protocollib.ProtocolLibService;
@@ -21,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -29,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
@@ -44,6 +49,9 @@ public class FakeEntityService {
     public static FakeEntityService getService;
 
     private final Map<UUID, UUID> playersRandomId = new HashMap<>();
+
+    @Autowired
+    private PlayerRepository playerRepository;
 
     private FakeEntityPool defaultPool;
     private final Map<String, FakeEntityPool> pools = new HashMap<>();
@@ -111,6 +119,17 @@ public class FakeEntityService {
                     this.getPools().stream().flatMap(fakeEntityPool -> fakeEntityPool.getEntityCollection().stream())
                             .filter(fakeEntity -> fakeEntity.getSeeingPlayers().contains(player))
                             .forEach(fakeEntity -> fakeEntity.getSeeingPlayers().remove(player));
+                })
+                .build(Drapuria.PLUGIN);
+
+        Events
+                .subscribe(PlayerTeleportEvent.class)
+                .priority(EventPriority.MONITOR)
+                .filter(playerTeleportEvent -> !playerTeleportEvent.getFrom().equals(playerTeleportEvent.getTo()))
+                .listen(event -> {
+                    final Player player = event.getPlayer();
+                    final Optional<DrapuriaPlayer> drapuriaPlayer = this.playerRepository.findById(player.getUniqueId());
+                    drapuriaPlayer.ifPresent(drapuriaPlayer1 -> drapuriaPlayer1.setLastTeleport(System.currentTimeMillis()));
                 })
                 .build(Drapuria.PLUGIN);
     }

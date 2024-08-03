@@ -30,6 +30,8 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
     @Getter
     private final Class<ID> key;
 
+    private transient boolean loaded = false;
+
     public JSONRepository() {
         this(new File(FrameworkMisc.PLATFORM.getDataFolder(), "repositories/json/{JSON_REPOSITORY}.json"));
     }
@@ -61,6 +63,7 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+            loaded = true;
         }
         initGson();
         if (loadInstant())
@@ -69,6 +72,7 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
 
     @PostDestroy
     public void saveToFile() {
+        if (!loaded) return;
         try {
             final List<T> items = this.inMemoryRepository.stream().collect(Collectors.toList());
             final FileWriter fileWriter = new FileWriter(jsonFile);
@@ -94,6 +98,8 @@ public abstract class JSONRepository<T, ID extends Serializable> implements Crud
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+        loaded = true;
     }
 
     @Override

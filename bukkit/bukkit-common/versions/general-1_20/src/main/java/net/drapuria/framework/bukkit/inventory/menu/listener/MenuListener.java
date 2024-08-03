@@ -63,12 +63,12 @@ public class MenuListener implements Listener {
         final Map<Integer, IButton> buttons = currentMenu.getCachedButtons(player);
         final IButton currentButton = buttons.get(slot);
         if (currentButton == null) {
-
-            if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR && currentMenu.acceptItemRemove()) {
-                currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot());
-            }
-            if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR && currentMenu.isAcceptNewItems()) {
-                currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot());
+            if (clickedInventory.equals(menuInventory) && event.getCurrentItem() != null && event.getCurrentItem().getType() != AIR
+                    && currentMenu.acceptItemRemove() && !currentMenu.onItemRemove(player, event.getCurrentItem(), event.getRawSlot())) {
+                event.setCancelled(true);
+            } else if (clickedInventory.equals(menuInventory) && event.getCursor() != null && event.getCursor().getType() != AIR
+                    && currentMenu.isAcceptNewItems() && !currentMenu.onItemInsert(player, event.getCursor(), event.getRawSlot())) {
+                event.setCancelled(true);
             }
             return;
         }
